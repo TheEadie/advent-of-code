@@ -2,22 +2,29 @@ import { readFileSync } from "fs";
 
 const file = readFileSync("./src/day02/input.txt", "utf-8");
 
+interface parsedRow {
+  min: number;
+  max: number;
+  letter: string;
+  password: string;
+}
+
 const partOne = (input: string): number => {
   const rows = input.split("\n");
   return rows.filter(validPasswordPartOne).length;
 };
 
 const validPasswordPartOne = (input: string): boolean => {
-  const [min, max, letter, password] = parseRow(input);
+  const parsedRow = parseRow(input);
 
-  const letterTally = password.split("").reduce((acc, char) => {
+  const letterTally = parsedRow.password.split("").reduce((acc, char) => {
     acc[char] = (acc[char] || 0) + 1;
     return acc;
   }, {});
 
-  const count = letterTally[letter];
+  const count = letterTally[parsedRow.letter];
 
-  if (count >= min && count <= max) {
+  if (count >= parsedRow.min && count <= parsedRow.max) {
     return true;
   }
 
@@ -30,15 +37,15 @@ const partTwo = (input: string): number => {
 };
 
 const validPasswordPartTwo = (input: string): boolean => {
-  const [lower, higher, letter, password] = parseRow(input);
+  const parsedRow = parseRow(input);
 
-  const passwordLetters = password.split("");
-  const firstLetterIndex = lower - 1;
-  const secondLetterIndex = higher - 1;
+  const passwordLetters = parsedRow.password.split("");
+  const firstLetterIndex = parsedRow.min - 1;
+  const secondLetterIndex = parsedRow.max - 1;
 
   if (
-    (passwordLetters[firstLetterIndex] === letter) !=
-    (passwordLetters[secondLetterIndex] === letter)
+    (passwordLetters[firstLetterIndex] === parsedRow.letter) !=
+    (passwordLetters[secondLetterIndex] === parsedRow.letter)
   ) {
     return true;
   }
@@ -46,9 +53,7 @@ const validPasswordPartTwo = (input: string): boolean => {
   return false;
 };
 
-const parseRow = (
-  input: string
-): [min: number, max: number, letter: string, password: string] => {
+const parseRow = (input: string): parsedRow => {
   const elements = input.split(" ");
 
   const rangeString = elements[0];
@@ -62,7 +67,7 @@ const parseRow = (
   const charElements = charString.split(":");
   const char = charElements[0];
 
-  return [min, max, char, password];
+  return { min: min, max: max, letter: char, password: password };
 };
 
 console.log(`Part 1: ${partOne(file)}`);
