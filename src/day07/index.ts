@@ -15,7 +15,9 @@ const partOne = (input: string[]): number => {
 };
 
 const partTwo = (input: string[]): number => {
-  return 0;
+  const bags = input.map(parse);
+  const result = numberOfBags("shiny gold", bags);
+  return result - 1;
 };
 
 const getBagColoursBagCanBeIn = (colours: string[], bag: bagNode) => {
@@ -24,15 +26,26 @@ const getBagColoursBagCanBeIn = (colours: string[], bag: bagNode) => {
     bag.canBeIn.forEach((x) => getBagColoursBagCanBeIn(colours, x));
 };
 
+const numberOfBags = (colour: string, bags: bag[]): number => {
+  const bag = bags.find(x => x.colour === colour);
+  let total = 1;
+
+  bag.mustContain.forEach((x) => {
+    if (x === null) return; 
+    total += x.number * numberOfBags(x.colour, bags);
+  });
+  return total;
+};
+
 const createGraph = (bags: bag[]): bagNode[] => {
   const bagGraph = bags.map((x) => {
     return { colour: x.colour, canBeIn: [] };
   });
 
   bags.map((bag) => {
-    bag.canContain.map((bagColour) => {
-      const bagInGraph = bagGraph.find((node) => node.colour === bagColour);
-      if (bagInGraph === undefined) return;
+    bag.mustContain.map((mustContain) => {
+      if (mustContain === null) return;
+      const bagInGraph = bagGraph.find((node) => node.colour === mustContain.colour);
       bagInGraph.canBeIn.push(
         bagGraph.find((node) => node.colour === bag.colour)
       );
@@ -43,7 +56,12 @@ const createGraph = (bags: bag[]): bagNode[] => {
 
 interface bag {
   colour: string;
-  canContain: string[];
+  mustContain: mustContain[];
+}
+
+interface mustContain {
+  number: number;
+  colour: string
 }
 
 interface bagNode {
@@ -59,16 +77,16 @@ const parse = (input: string): bag => {
 
   return {
     colour: lineRegex[1],
-    canContain: canContainColours,
+    mustContain: canContainColours,
   };
 };
 
-const parseBagColour = (input: string): string => {
-  const regexResult = input.match(/[0-9]+ (.*) bag/);
+const parseBagColour = (input: string): mustContain => {
+  const regexResult = input.match(/([0-9]+) (.*) bag/);
   if (regexResult === null) {
     return null;
   }
-  return regexResult[1];
+  return { number: parseInt(regexResult[1]), colour: regexResult[2] };
 };
 
 console.log(`Part 1: ${partOne(file)}`);
