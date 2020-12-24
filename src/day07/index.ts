@@ -27,11 +27,11 @@ const getBagColoursBagCanBeIn = (colours: string[], bag: bagNode) => {
 };
 
 const numberOfBags = (colour: string, bags: bag[]): number => {
-  const bag = bags.find(x => x.colour === colour);
+  const bag = bags.find((x) => x.colour === colour);
   let total = 1;
 
   bag.mustContain.forEach((x) => {
-    if (x === null) return; 
+    if (x === null) return;
     total += x.number * numberOfBags(x.colour, bags);
   });
   return total;
@@ -45,7 +45,9 @@ const createGraph = (bags: bag[]): bagNode[] => {
   bags.map((bag) => {
     bag.mustContain.map((mustContain) => {
       if (mustContain === null) return;
-      const bagInGraph = bagGraph.find((node) => node.colour === mustContain.colour);
+      const bagInGraph = bagGraph.find(
+        (node) => node.colour === mustContain.colour
+      );
       bagInGraph.canBeIn.push(
         bagGraph.find((node) => node.colour === bag.colour)
       );
@@ -61,7 +63,7 @@ interface bag {
 
 interface mustContain {
   number: number;
-  colour: string
+  colour: string;
 }
 
 interface bagNode {
