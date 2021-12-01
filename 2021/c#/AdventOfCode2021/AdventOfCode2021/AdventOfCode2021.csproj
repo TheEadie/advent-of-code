@@ -9,4 +9,10 @@
       <PackageReference Include="NUnit" Version="3.13.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Day01.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
