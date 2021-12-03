@@ -13,21 +13,21 @@ namespace AdventOfCode2021
         public void Part1()
         {
             var input = ParseInput();
-            var gamma = string.Empty;
+            var gammaBinary = string.Empty;
 
             for (var position = 0; position < input[0].Length; position++)
             {
                 var ones = NumberOfBits(input, '1', position);
                 var zeros = NumberOfBits(input, '0', position);
-                gamma += ones > zeros ? '1' : '0';
+                gammaBinary += ones > zeros ? '1' : '0';
             }
 
-            var epsilon = new string(gamma.Select(x => x == '1' ? '0' : '1').ToArray());
+            var epsilonBinary = new string(gammaBinary.Select(x => x == '1' ? '0' : '1').ToArray());
 
-            var gammaAsNumber = Convert.ToInt32(gamma, 2);
-            var epsilonAsNumber = Convert.ToInt32(epsilon, 2);
+            var gamma = Convert.ToInt32(gammaBinary, 2);
+            var epsilon = Convert.ToInt32(epsilonBinary, 2);
 
-            var answer = gammaAsNumber * epsilonAsNumber;
+            var answer = gamma * epsilon;
             Console.WriteLine(answer);
             answer.ShouldBe(3429254);
         }
@@ -46,7 +46,7 @@ namespace AdventOfCode2021
                 if (oxygenInput.Count == 1) break;
             }
 
-            var oxygen = new string(oxygenInput[0]);
+            var oxygen = Convert.ToInt32(new string(oxygenInput[0]), 2);
 
             var co2Input = ParseInput().ToList();
 
@@ -59,12 +59,9 @@ namespace AdventOfCode2021
                 if (co2Input.Count == 1) break;
             }
 
-            var co2 = new string(co2Input[0]);
+            var co2 = Convert.ToInt32(new string(co2Input[0]), 2);
 
-            var oxygenAsNumber = Convert.ToInt32(oxygen, 2);
-            var co2AsNumber = Convert.ToInt32(co2, 2);
-            var answer = oxygenAsNumber * co2AsNumber;
-
+            var answer = oxygen * co2;
             Console.WriteLine(answer);
             answer.ShouldBe(5410338);
         }
