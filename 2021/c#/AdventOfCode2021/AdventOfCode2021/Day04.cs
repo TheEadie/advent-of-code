@@ -13,26 +13,9 @@ namespace AdventOfCode2021
         public void Part1()
         {
             var (calls, boards) = ParseInput();
-            var score = 0;
+            var winningBoards = PlayBingo(calls, boards);
 
-            foreach (var call in calls)
-            {
-                foreach (var board in boards)
-                {
-                    board.Mark(call);
-                    if (board.HasWon())
-                    {
-                        score = board.GetScore();
-                        break;
-                    }
-                }
-
-                if (score != 0)
-                {
-                    score *= call;
-                    break;
-                }
-            }
+            var score = winningBoards.First().Item2;
             
             Console.WriteLine(score);
             score.ShouldBe(35711);
@@ -43,35 +26,35 @@ namespace AdventOfCode2021
         public void Part2()
         {
             var (calls, boards) = ParseInput();
-            var score = 0;
+            var winningBoards = PlayBingo(calls, boards);
+
+            var score = winningBoards.Last().Item2;
+            Console.WriteLine(score);
+            score.ShouldBe(5586);
+        }
+
+        private static IEnumerable<(BingoBoard, int)> PlayBingo(IEnumerable<int> calls, ICollection<BingoBoard> boards)
+        {
+            var winningBoards = new List<(BingoBoard, int)>();
 
             foreach (var call in calls)
             {
-                var winningBoards = new List<BingoBoard>();
                 foreach (var board in boards)
                 {
                     board.Mark(call);
                     if (board.HasWon())
                     {
-                        winningBoards.Add(board);
-                        score = board.GetScore();
+                        winningBoards.Add((board, board.GetScore() * call));
                     }
                 }
 
                 foreach (var winningBoard in winningBoards)
                 {
-                    boards.Remove(winningBoard);    
-                }
-                
-                if (boards.Count == 0)
-                {
-                    score *= call;
-                    break;
+                    boards.Remove(winningBoard.Item1);
                 }
             }
-            
-            Console.WriteLine(score);
-            score.ShouldBe(5586);
+
+            return winningBoards;
         }
 
         private static (int[], List<BingoBoard>) ParseInput()
@@ -109,8 +92,8 @@ namespace AdventOfCode2021
         private readonly int[,] _board;
         private readonly bool[,] _marked;
 
-        private int _x;
-        private int _y;
+        private readonly int _x;
+        private readonly int _y;
         
         public BingoBoard(int x, int y, IEnumerable<IEnumerable<int>> values)
         {
