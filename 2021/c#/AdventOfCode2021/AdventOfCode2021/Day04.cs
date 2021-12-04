@@ -42,10 +42,39 @@ namespace AdventOfCode2021
         [Test]
         public void Part2()
         {
+            var (calls, boards) = ParseInput();
+            var score = 0;
+
+            foreach (var call in calls)
+            {
+                var winningBoards = new List<BingoBoard>();
+                foreach (var board in boards)
+                {
+                    board.Mark(call);
+                    if (board.HasWon())
+                    {
+                        winningBoards.Add(board);
+                        score = board.GetScore();
+                    }
+                }
+
+                foreach (var winningBoard in winningBoards)
+                {
+                    boards.Remove(winningBoard);    
+                }
+                
+                if (boards.Count == 0)
+                {
+                    score *= call;
+                    break;
+                }
+            }
             
+            Console.WriteLine(score);
+            score.ShouldBe(5586);
         }
 
-        private static (int[], BingoBoard[]) ParseInput()
+        private static (int[], List<BingoBoard>) ParseInput()
         {
             var lines = File.ReadAllLines("Day04.txt");
             var calls = lines[0].Split(',').Select(int.Parse).ToArray();
@@ -65,7 +94,7 @@ namespace AdventOfCode2021
                 }
             }
 
-            return (calls, boards.ToArray());
+            return (calls, boards);
         }
 
         private static BingoBoard ParseBoard(IEnumerable<string> input)
