@@ -12,11 +12,17 @@ namespace AdventOfCode2021
         [Test]
         public void Part1()
         {
-            var ventLines = ParseInput();
-            var ventsToUse = ventLines.Where(x => x.Start.X == x.End.X || x.Start.Y == x.End.Y);
-            var coordinates = ventsToUse.SelectMany(x => x.GetCoordinatesOnLine());
-            var grouped = coordinates.GroupBy(x => x).Select(group => new {Coordinate = group.Key, Count = group.Count()});
-            var answer = grouped.Count(x => x.Count > 1);
+            var answer = ParseInput()
+                .Where(x => x.Start.X == x.End.X || x.Start.Y == x.End.Y)
+                .SelectMany(x => x.GetCoordinatesOnLine())
+                .GroupBy(x => x)
+                .Select(group 
+                    => new
+                    {
+                        Coordinate = group.Key, 
+                        Count = group.Count()
+                    })
+                .Count(x => x.Count > 1);
             
             Console.WriteLine(answer);
             answer.ShouldBe(5145);
@@ -25,10 +31,16 @@ namespace AdventOfCode2021
         [Test]
         public void Part2()
         {
-            var ventLines = ParseInput();
-            var coordinates = ventLines.SelectMany(x => x.GetCoordinatesOnLine());
-            var grouped = coordinates.GroupBy(x => x).Select(group => new {Coordinate = group.Key, Count = group.Count()});
-            var answer = grouped.Count(x => x.Count > 1);
+            var answer = ParseInput()
+                .SelectMany(x => x.GetCoordinatesOnLine())
+                .GroupBy(x => x)
+                .Select(group 
+                    => new
+                    {
+                        Coordinate = group.Key, 
+                        Count = group.Count()
+                    })
+                .Count(x => x.Count > 1);
             
             Console.WriteLine(answer);
             answer.ShouldBe(16518);
@@ -70,34 +82,17 @@ namespace AdventOfCode2021
                 var yDiff = End.Y - Start.Y;
                 var xMove = xDiff == 0 ? 0 : xDiff > 0 ? 1 : -1;
                 var yMove = yDiff == 0 ? 0 : yDiff > 0 ? 1 : -1;
-
-                if (xDiff != 0 && yDiff != 0)
-                {
-                    var coordinates = new List<Coordinate>();
-                    var current = new Coordinate(Start.X, Start.Y);
-                    while (current != End)
-                    {
-                        coordinates.Add(current);
-                        current = new Coordinate(current.X + xMove, current.Y + yMove);
-                    }
-
-                    coordinates.Add(current);
-                    return coordinates;
-                }
-
-                if (xDiff != 0)
-                {
-                    var start = (Start.X < End.X) ? Start.X : End.X;
-                    return Enumerable.Range(start, Math.Abs(xDiff) + 1).Select(x => new Coordinate(x, Start.Y));
-                }
                 
-                if (yDiff != 0)
+                var coordinates = new List<Coordinate>();
+                var current = new Coordinate(Start.X, Start.Y);
+                while (current != End)
                 {
-                    var start = (Start.Y < End.Y) ? Start.Y : End.Y;
-                    return Enumerable.Range(start, Math.Abs(yDiff) + 1).Select(y => new Coordinate(Start.X, y));
+                    coordinates.Add(current);
+                    current = new Coordinate(current.X + xMove, current.Y + yMove);
                 }
 
-                return Array.Empty<Coordinate>();
+                coordinates.Add(current);
+                return coordinates;
             }
         }
 
