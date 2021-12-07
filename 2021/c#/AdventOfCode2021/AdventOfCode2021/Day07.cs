@@ -35,13 +35,7 @@ namespace AdventOfCode2021
 
         private static int GetFuelUse(int distance)
         {
-            var total = 0;
-            for (var i = 1; i <= distance; i++)
-            {
-                total += i;
-            }
-
-            return total;
+            return Enumerable.Range(1, distance).Sum();
         }
 
         private static List<int> ParseInput()
