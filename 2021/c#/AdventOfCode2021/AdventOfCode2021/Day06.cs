@@ -49,8 +49,7 @@ namespace AdventOfCode2021
                 countOfFish[8] = temp;
             }
 
-            return countOfFish[0] + countOfFish[1] + countOfFish[2] + countOfFish[3] + countOfFish[4] +
-                   countOfFish[5] + countOfFish[6] + countOfFish[7] + countOfFish[8];
+            return countOfFish.Sum();
         }
 
         private static List<int> ParseInput()
