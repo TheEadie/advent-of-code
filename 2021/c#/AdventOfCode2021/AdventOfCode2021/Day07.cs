@@ -26,8 +26,10 @@ namespace AdventOfCode2021
         {
             var numbers = ParseInput();
 
-            var mean = numbers.Sum() / numbers.Count;
-            var total = numbers.Sum(number => GetFuelUse(Math.Abs(number - mean)));
+            var mean = numbers.Sum() / (decimal) numbers.Count;
+            var candidates = new[] {(int)Math.Floor(mean), (int)Math.Ceiling(mean)};
+
+            var total = candidates.Min(x => numbers.Sum(number => GetFuelUse(Math.Abs(number - x))));
 
             Console.WriteLine(total);
             total.ShouldBe(87640209);
@@ -35,7 +37,7 @@ namespace AdventOfCode2021
 
         private static int GetFuelUse(int distance)
         {
-            return Enumerable.Range(1, distance).Sum();
+            return distance * (distance + 1) / 2;
         }
 
         private static List<int> ParseInput()
