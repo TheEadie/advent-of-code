@@ -12,43 +12,22 @@ namespace AdventOfCode2021
         [Test]
         public void Part1()
         {
-            var fishes = ParseInput();
+            var answer = Run(ParseInput(), 80);
 
-            for (var i = 0; i < 80; i++)
-            {
-                var newList = new List<int>();
-                foreach (var fish in fishes)
-                {
-                    if (fish == 0)
-                    {
-                        newList.Add(6);
-                        newList.Add(8);
-                    }
-                    else
-                    {
-                        newList.Add(fish - 1);
-                    }
-                }
-
-                fishes = newList;
-            }
-
-            Console.WriteLine(fishes.Count);
-            fishes.Count.ShouldBe(362346);
+            Console.WriteLine(answer);
+            answer.ShouldBe(362346);
         }
 
         [Test]
         public void Part2()
         {
-            var fishes = ParseInput();
-
-            var answer = Run(fishes);
+            var answer = Run(ParseInput(), 256);
 
             Console.WriteLine(answer);
-            answer.ShouldBe(26_984_457_539);
+            answer.ShouldBe(1639643057051);
         }
 
-        private static long Run(IReadOnlyCollection<int> fish)
+        private static long Run(IReadOnlyCollection<int> fish, int days)
         {
             var countOfFish = new long[9];
             for (var i = 0; i <= 8; i++)
@@ -56,7 +35,7 @@ namespace AdventOfCode2021
                 countOfFish[i] = fish.Count(x => x == i);
             }
 
-            for (var i = 0; i < 256; i++)
+            for (var i = 0; i < days; i++)
             {
                 var temp = countOfFish[0];
                 countOfFish[0] = countOfFish[1];
