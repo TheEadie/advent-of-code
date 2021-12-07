@@ -16,14 +16,8 @@ namespace AdventOfCode2021
                 .Where(x => x.Start.X == x.End.X || x.Start.Y == x.End.Y)
                 .SelectMany(x => x.GetCoordinatesOnLine())
                 .GroupBy(x => x)
-                .Select(group 
-                    => new
-                    {
-                        Coordinate = group.Key, 
-                        Count = group.Count()
-                    })
-                .Count(x => x.Count > 1);
-            
+                .Count(x => x.Count() > 1);
+
             Console.WriteLine(answer);
             answer.ShouldBe(5145);
         }
@@ -34,26 +28,20 @@ namespace AdventOfCode2021
             var answer = ParseInput()
                 .SelectMany(x => x.GetCoordinatesOnLine())
                 .GroupBy(x => x)
-                .Select(group 
-                    => new
-                    {
-                        Coordinate = group.Key, 
-                        Count = group.Count()
-                    })
-                .Count(x => x.Count > 1);
-            
+                .Count(x => x.Count() > 1);
+
             Console.WriteLine(answer);
             answer.ShouldBe(16518);
         }
 
-        private static List<VentLine> ParseInput()
+        private static IEnumerable<Line> ParseInput()
         {
             var lines = File.ReadAllLines("Day05.txt");
             var parseOne = lines.Select(x => x.Split(" -> ")).Select(ParseVentLine);
             return parseOne.ToList();
         }
 
-        private static VentLine ParseVentLine(string[] values)
+        private static Line ParseVentLine(string[] values)
         {
             var firstCoordinates = values[0].Split(',');
             var firstX = int.Parse(firstCoordinates[0]);
@@ -62,15 +50,15 @@ namespace AdventOfCode2021
             var secondX = int.Parse(secondCoordinates[0]);
             var secondY = int.Parse(secondCoordinates[1]);
 
-            return new VentLine(new Coordinate(firstX, firstY), new Coordinate(secondX, secondY));
+            return new Line(new Coordinate(firstX, firstY), new Coordinate(secondX, secondY));
         }
 
-        private class VentLine
+        private class Line
         {
             public Coordinate Start { get; }
             public Coordinate End { get; }
-            
-            public VentLine(Coordinate start, Coordinate end)
+
+            public Line(Coordinate start, Coordinate end)
             {
                 Start = start;
                 End = end;
@@ -82,7 +70,7 @@ namespace AdventOfCode2021
                 var yDiff = End.Y - Start.Y;
                 var xMove = xDiff == 0 ? 0 : xDiff > 0 ? 1 : -1;
                 var yMove = yDiff == 0 ? 0 : yDiff > 0 ? 1 : -1;
-                
+
                 var coordinates = new List<Coordinate>();
                 var current = new Coordinate(Start.X, Start.Y);
                 while (current != End)
