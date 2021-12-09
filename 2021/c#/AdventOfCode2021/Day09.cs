@@ -54,7 +54,7 @@ namespace AdventOfCode2021
                     if (minPoint)
                     {
                         var coordinate = new Coordinate(x, y);
-                        var neighboursInBasin = NeighboursInBasin(coordinate, heightMap);
+                        var neighboursInBasin = GetNeighboursInBasin(coordinate, heightMap);
                         basins.Add(coordinate, neighboursInBasin.Count());
                     }
                 }
@@ -70,6 +70,8 @@ namespace AdventOfCode2021
 
         private static bool IsLowest(int x, int y, int[,] heightMap)
         {
+            //var testCoordinates = GetNeighbours(input, heightMap);
+
             var lowest = true;
 
             if (x > 0)
@@ -85,10 +87,19 @@ namespace AdventOfCode2021
 
         }
 
-        private static IEnumerable<Coordinate> NeighboursInBasin(Coordinate input, int[,] heightMap)
+        private static IEnumerable<Coordinate> GetNeighboursInBasin(Coordinate input, int[,] heightMap)
         {
-            var inBasin = new List<Coordinate>{input};
-            var neighbours = new List<Coordinate>();
+            return GetNeighbours(input, heightMap)
+                .Where(testCoordinate => heightMap[testCoordinate.X, testCoordinate.Y] > heightMap[input.X, input.Y] &&
+                                         heightMap[testCoordinate.X, testCoordinate.Y] != 9)
+                .SelectMany(x => GetNeighboursInBasin(x, heightMap))
+                .Append(input)
+                .Distinct();
+
+        }
+
+        private static IEnumerable<Coordinate> GetNeighbours(Coordinate input, int[,] heightMap)
+        {
             var testCoordinates = new List<Coordinate>();
 
             if (input.X > 0)
@@ -99,15 +110,7 @@ namespace AdventOfCode2021
                 testCoordinates.Add(new Coordinate(input.X, input.Y - 1));
             if (input.Y < heightMap.GetLength(1) - 1)
                 testCoordinates.Add(new Coordinate(input.X, input.Y + 1));
-
-            neighbours.AddRange(testCoordinates.Where(testCoordinate =>
-                heightMap[testCoordinate.X, testCoordinate.Y] > heightMap[input.X, input.Y] &&
-                heightMap[testCoordinate.X, testCoordinate.Y] != 9));
-
-            inBasin.AddRange(neighbours.SelectMany(x => NeighboursInBasin(x, heightMap)));
-
-            return inBasin.Distinct().ToList();
-
+            return testCoordinates;
         }
 
         private static int[,] ParseInput()
