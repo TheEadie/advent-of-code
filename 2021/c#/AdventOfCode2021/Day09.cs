@@ -24,7 +24,7 @@ namespace AdventOfCode2021
             {
                 for (var y = 0; y < sizeY; y++)
                 {
-                    var minPoint = IsLowest(x, y, heightMap);
+                    var minPoint = IsLowest(new Coordinate(x, y), heightMap);
                     if (minPoint)
                     {
                         answer += heightMap[x, y] + 1;
@@ -44,47 +44,35 @@ namespace AdventOfCode2021
             var sizeX = heightMap.GetLength(0);
             var sizeY = heightMap.GetLength(1);
 
-            var basins = new Dictionary<Coordinate, int>();
+            var basins = new List<int>();
 
             for (var x = 0; x < sizeX; x++)
             {
                 for (var y = 0; y < sizeY; y++)
                 {
-                    var minPoint = IsLowest(x, y, heightMap);
+                    var coordinate = new Coordinate(x, y);
+                    var minPoint = IsLowest(coordinate, heightMap);
                     if (minPoint)
                     {
-                        var coordinate = new Coordinate(x, y);
-                        var neighboursInBasin = GetNeighboursInBasin(coordinate, heightMap);
-                        basins.Add(coordinate, neighboursInBasin.Count());
+                        basins.Add(GetNeighboursInBasin(coordinate, heightMap).Count());
                     }
                 }
             }
 
-            var topThree = basins.OrderByDescending(x => x.Value).Take(3);
-            var answer = topThree.Aggregate(1, (a, x) => a * x.Value);
+            var answer = basins
+                .OrderByDescending(x => x)
+                .Take(3)
+                .Aggregate((a, x) => a * x);
 
             Console.WriteLine(answer);
             answer.ShouldBe(891684);
 
         }
 
-        private static bool IsLowest(int x, int y, int[,] heightMap)
+        private static bool IsLowest(Coordinate input, int[,] heightMap)
         {
-            //var testCoordinates = GetNeighbours(input, heightMap);
-
-            var lowest = true;
-
-            if (x > 0)
-                lowest = heightMap[x - 1, y] > heightMap[x, y];
-            if (x < heightMap.GetLength(0) - 1)
-                lowest = lowest && heightMap[x + 1, y] > heightMap[x, y];
-            if (y > 0)
-                lowest = lowest && heightMap[x, y - 1] > heightMap[x, y];
-            if (y < heightMap.GetLength(1) - 1)
-                lowest = lowest && heightMap[x, y + 1] > heightMap[x, y];
-
-            return lowest;
-
+            return GetNeighbours(input, heightMap)
+                .All(x => heightMap[input.X, input.Y] < heightMap[x.X, x.Y]);
         }
 
         private static IEnumerable<Coordinate> GetNeighboursInBasin(Coordinate input, int[,] heightMap)
