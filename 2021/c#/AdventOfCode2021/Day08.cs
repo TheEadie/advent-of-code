@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -13,8 +12,9 @@ namespace AdventOfCode2021
         [Test]
         public void Part1()
         {
-            var notes = ParseInput();
-            var answer = notes.SelectMany(x => x.Result).Count(x => new List<int>{ 2, 3, 4, 7 }.Contains(x.Length));
+            var answer = ParseInput()
+                .SelectMany(x => x.Result)
+                .Count(x => x.Length is 2 or 3 or 4 or 7);
 
             Console.WriteLine(answer);
             answer.ShouldBe(397);
@@ -23,9 +23,7 @@ namespace AdventOfCode2021
         [Test]
         public void Part2()
         {
-            var notes = ParseInput();
-
-            var answer = notes.Sum(GetSignal);
+            var answer = ParseInput().Sum(GetSignal);
 
             Console.WriteLine(answer);
             answer.ShouldBe(1027422);
@@ -36,26 +34,20 @@ namespace AdventOfCode2021
         {
             var observed = note.Observed.ToList();
 
-            // 1 = length 2
-            // 2 = length 5, unique letter
-            // 3 = length 5, letters in 1
-            // 4 = length 4
-            // 5 = length 5, remaining length 5
-            // 7 = length 3
-            // 0 = length 6, unique letter from set excluding 1 and 7
-            // 9 = length 6, all in 4
-            // 6 = length 6, remaining length 6
-
             var one = observed.Single(x => x.Length == 2);
-            var two = GetOnlyStringWithOneLetterMissing(observed);
-            var three = observed.Single(x => x.Length == 5 && one.All(x.Contains));
-            var four = observed.Single(x => x.Length == 4);
-            var five = observed.Except(new List<string> {two, three}).Single(x => x.Length == 5);
             var seven = observed.Single(x => x.Length == 3);
+            var four = observed.Single(x => x.Length == 4);
             var eight = observed.Single(x => x.Length == 7);
+
+            var fourArm = four.Except(one);
+
+            var three = observed.Single(x => x.Length == 5 && one.All(x.Contains));
+            var five = observed.Single(x => x.Length == 5 && fourArm.All(x.Contains));
+            var two = observed.Except(new List<string> {three, five}).Single(x => x.Length == 5);
+
             var nine = observed.Single(x => x.Length == 6 && four.All(x.Contains));
-            var zero = observed.Except(new List<string> {nine}).Single(x => x.Length == 6 && one.All(x.Contains));
-            var six = observed.Except(new List<string> {nine, zero}).Single(x => x.Length == 6);
+            var six = observed.Except(new List<string> {nine}).Single(x => x.Length == 6 && fourArm.All(x.Contains));
+            var zero = observed.Except(new List<string> {six, nine}).Single(x => x.Length == 6);
 
             var solved = new Dictionary<string, string>
             {
@@ -76,23 +68,7 @@ namespace AdventOfCode2021
             return int.Parse(signalText);
         }
 
-        private static string GetOnlyStringWithOneLetterMissing(IEnumerable<string> input)
-        {
-            var letters = new List<char>() {'a', 'b', 'c', 'd', 'e', 'f', 'g'};
-
-            foreach (var letter in letters)
-            {
-                var found = input.Where(x => !x.Contains(letter)).ToList();
-                if (found.Count == 1)
-                {
-                    return found.First();
-                }
-            }
-
-            return "failed";
-        }
-
-        private static List<Note> ParseInput()
+        private static IEnumerable<Note> ParseInput()
         {
             var lines = File.ReadAllLines("Day08.txt");
             return lines.Select(x => x.Split(" | ")).Select(x =>
