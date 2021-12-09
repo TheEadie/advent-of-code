@@ -55,20 +55,20 @@ namespace AdventOfCode2021
                     {
                         var coordinate = new Coordinate(x, y);
                         var neighboursInBasin = NeighboursInBasin(coordinate, heightMap);
-                        basins.Add(coordinate, neighboursInBasin.Count);
+                        basins.Add(coordinate, neighboursInBasin.Count());
                     }
                 }
             }
 
-            var topThree = basins.OrderByDescending(x => x.Value).Take(3).ToList();
-            var answer = topThree[0].Value * topThree[1].Value * topThree[2].Value;
+            var topThree = basins.OrderByDescending(x => x.Value).Take(3);
+            var answer = topThree.Aggregate(1, (a, x) => a * x.Value);
 
             Console.WriteLine(answer);
             answer.ShouldBe(891684);
 
         }
 
-        private bool IsLowest(int x, int y, int[,] heightMap)
+        private static bool IsLowest(int x, int y, int[,] heightMap)
         {
             var lowest = true;
 
@@ -85,7 +85,7 @@ namespace AdventOfCode2021
 
         }
 
-        private List<Coordinate> NeighboursInBasin(Coordinate input, int[,] heightMap)
+        private static IEnumerable<Coordinate> NeighboursInBasin(Coordinate input, int[,] heightMap)
         {
             var inBasin = new List<Coordinate>{input};
             var neighbours = new List<Coordinate>();
@@ -104,12 +104,7 @@ namespace AdventOfCode2021
                 heightMap[testCoordinate.X, testCoordinate.Y] > heightMap[input.X, input.Y] &&
                 heightMap[testCoordinate.X, testCoordinate.Y] != 9));
 
-            foreach (var coordinate in neighbours)
-            {
-                var neighboursInBasin = NeighboursInBasin(coordinate, heightMap);
-                inBasin.AddRange(neighboursInBasin);
-            }
-
+            inBasin.AddRange(neighbours.SelectMany(x => NeighboursInBasin(x, heightMap)));
 
             return inBasin.Distinct().ToList();
 
