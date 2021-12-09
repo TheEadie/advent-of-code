@@ -78,8 +78,6 @@ namespace AdventOfCode2021
 
         private record Note(IEnumerable<string> Observed, IEnumerable<string> Result);
 
-        private record Signal(string Value);
-
         private static string SortString(string input)
         {
             var characters = input.ToArray();
