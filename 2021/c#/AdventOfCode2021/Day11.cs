@@ -14,14 +14,7 @@ namespace AdventOfCode2021
         [Test]
         public void Part1()
         {
-            var octopuses = ParseInput();
-            var answer = 0;
-
-            for (var i = 0; i < 100; i++)
-            {
-                answer += Run(octopuses);
-            }
-
+            var answer = Run(ParseInput()).Take(100).Sum();
             Console.WriteLine(answer);
             answer.ShouldBe(1757);
         }
@@ -29,60 +22,52 @@ namespace AdventOfCode2021
         [Test]
         public void Part2()
         {
-            var octopuses = ParseInput();
-            var answer = 0;
-
-            while(true)
-            {
-                answer++;
-                if (Run(octopuses) == 100)
-                {
-                    break;
-                }
-            }
-
+            var answer = Run(ParseInput()).TakeWhile(x => x != 100).Count() + 1;
             Console.WriteLine(answer);
             answer.ShouldBe(422);
         }
 
-        private static int Run(Dictionary<Coordinate, int> octopuses)
+        private static IEnumerable<int> Run(Dictionary<Coordinate, int> octopuses)
         {
-            var queue = new Queue<Coordinate>();
-            var done = new List<Coordinate>();
-
-            foreach (var pos in octopuses.Keys)
+            while (true)
             {
-                octopuses[pos]++;
-                if (octopuses[pos] > 9)
+                var queue = new Queue<Coordinate>();
+                var done = new List<Coordinate>();
+
+                foreach (var pos in octopuses.Keys)
                 {
-                    queue.Enqueue(pos);
-                }
-            }
-
-            while (queue.Any())
-            {
-                var pos = queue.Dequeue();
-                if (done.Contains(pos))
-                    continue;
-
-                done.Add(pos);
-
-                foreach (var neighbour in GetNeighbours(pos, octopuses))
-                {
-                    octopuses[neighbour]++;
-                    if (octopuses[neighbour] > 9)
+                    octopuses[pos]++;
+                    if (octopuses[pos] > 9)
                     {
-                        queue.Enqueue(neighbour);
+                        queue.Enqueue(pos);
                     }
                 }
-            }
 
-            foreach (var pos in done)
-            {
-                octopuses[pos] = 0;
-            }
+                while (queue.Any())
+                {
+                    var pos = queue.Dequeue();
+                    if (done.Contains(pos))
+                        continue;
 
-            return done.Count;
+                    done.Add(pos);
+
+                    foreach (var neighbour in GetNeighbours(pos, octopuses))
+                    {
+                        octopuses[neighbour]++;
+                        if (octopuses[neighbour] > 9)
+                        {
+                            queue.Enqueue(neighbour);
+                        }
+                    }
+                }
+
+                foreach (var pos in done)
+                {
+                    octopuses[pos] = 0;
+                }
+
+                yield return done.Count;
+            }
         }
 
         private static IEnumerable<Coordinate> GetNeighbours(Coordinate input, IReadOnlyDictionary<Coordinate, int> map)
