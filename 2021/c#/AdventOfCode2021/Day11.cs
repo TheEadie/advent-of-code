@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using AdventOfCode2021.Utils;
 using NUnit.Framework;
 using Shouldly;
@@ -18,84 +19,70 @@ namespace AdventOfCode2021
 
             for (var i = 0; i < 100; i++)
             {
-                var next = octopuses
-                    .ToDictionary(octopus => 
-                        octopus.Key,
-                        octopus => octopus.Value + 1);
-
-                var flashes = next.Where(x => x.Value > 9).ToList();
-                var done = new List<Coordinate>();
-                var lastLoop = 0;
-                
-                while (flashes.Count != lastLoop)
-                {
-                    lastLoop = flashes.Count;
-                    flashes
-                        .Where(x => !done.Contains(x.Key))
-                        .ToList()
-                        .ForEach(x => GetNeighbours(x.Key, next)
-                        .ToList()
-                        .ForEach(y => next[y]++));
-                    done.AddRange(flashes.Select(x => x.Key));
-
-                    flashes = next.Where(x => x.Value > 9).ToList();
-                }
-                
-                flashes.ForEach(x => next[x.Key] = 0);
-                answer += flashes.Count;
-
-                octopuses = next;
+                answer += Run(octopuses);
             }
 
             Console.WriteLine(answer);
             answer.ShouldBe(1757);
         }
-
+        
         [Test]
         public void Part2()
         {
             var octopuses = ParseInput();
             var answer = 0;
-            
 
             while(true)
             {
-                var next = octopuses
-                    .ToDictionary(octopus => 
-                            octopus.Key,
-                        octopus => octopus.Value + 1);
-
-                var flashes = next.Where(x => x.Value > 9).Select(x => x.Key).ToList();
-                var done = new List<Coordinate>();
-                var lastLoop = 0;
-                
-                while (flashes.Count != lastLoop)
-                {
-                    lastLoop = flashes.Count;
-                    flashes
-                        .Where(x => !done.Contains(x))
-                        .ToList()
-                        .ForEach(x => GetNeighbours(x, next)
-                            .ToList()
-                            .ForEach(y => next[y]++));
-                    done.AddRange(flashes);
-
-                    flashes = next.Where(x => x.Value > 9).Select(x => x.Key).ToList();
-                }
-                
-                flashes.ForEach(x => next[x] = 0);
                 answer++;
-
-                if (flashes.Count == 100)
+                if (Run(octopuses) == 100)
                 {
                     break;
                 }
-
-                octopuses = next;
             }
 
             Console.WriteLine(answer);
             answer.ShouldBe(422);
+        }
+
+        private static int Run(Dictionary<Coordinate, int> octopuses)
+        {
+            var queue = new Queue<Coordinate>();
+            var done = new List<Coordinate>();
+
+            foreach (var pos in octopuses.Keys)
+            {
+                octopuses[pos]++;
+                if (octopuses[pos] > 9)
+                {
+                    queue.Enqueue(pos);
+                }
+            }
+
+            while (queue.Any())
+            {
+                var pos = queue.Dequeue();
+                if (done.Contains(pos))
+                    continue;
+
+                done.Add(pos);
+
+                foreach (var neighbour in GetNeighbours(pos, octopuses))
+                {
+                    octopuses[neighbour]++;
+                    if (octopuses[neighbour] > 9)
+                    {
+                        queue.Enqueue(neighbour);
+                    }
+                }
+            }
+
+            foreach (var pos in done)
+            {
+                octopuses[pos] = 0;
+            }
+
+            return done.Count;
         }
 
         private static IEnumerable<Coordinate> GetNeighbours(Coordinate input, IReadOnlyDictionary<Coordinate, int> map)
