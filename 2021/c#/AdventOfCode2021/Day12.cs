@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using AdventOfCode2021.Utils;
 using NUnit.Framework;
 using Shouldly;
 
@@ -19,7 +18,7 @@ namespace AdventOfCode2021
 
             var answer = paths.Count();
             Console.WriteLine(answer);
-
+            answer.ShouldBe(3802);
         }
 
         private IEnumerable<IEnumerable<string>> GetPaths(string next, Dictionary<string, IList<string>> graph, IList<string> pathSoFar)
@@ -47,6 +46,54 @@ namespace AdventOfCode2021
         [Test]
         public void Part2()
         {
+            var graph = ParseInput();
+            var paths = GetPathsPart2("start", graph, new List<string> {"start"});
+
+            var answer = paths.Count();
+            Console.WriteLine(answer);
+            answer.ShouldBe(99448);
+        }
+        
+        private IEnumerable<IEnumerable<string>> GetPathsPart2(string next, Dictionary<string, IList<string>> graph, IList<string> pathSoFar)
+        {
+            var paths = new List<IEnumerable<string>>();
+
+            if (next == "end")
+                return new List<IEnumerable<string>>() { pathSoFar };
+
+            foreach (var node in graph[next])
+            {
+                if (InvalidMove(node, pathSoFar))
+                {
+                    continue;
+                }
+                var route = new List<string>();
+                route.AddRange(pathSoFar);
+                route.Add(node);
+                paths.AddRange(GetPathsPart2(node, graph, route));
+            }
+
+            return paths;
+        }
+
+        private bool InvalidMove(string node, IList<string> pathSoFar)
+        {
+            if (node == "start")
+                return true;
+            
+            var visitedTwoSmallCaves = pathSoFar
+                .Where(x => x == x.ToLower())
+                .GroupBy(x => x)
+                .SingleOrDefault(x => x.Count() == 2);
+
+            if (visitedTwoSmallCaves is not null)
+            {
+                if (visitedTwoSmallCaves.Key == node)
+                    return true;
+                return pathSoFar.Where(x => x == x.ToLower()).Contains(node);
+            }
+
+            return false;
 
         }
 
