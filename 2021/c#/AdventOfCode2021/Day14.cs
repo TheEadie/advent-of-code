@@ -43,23 +43,17 @@ namespace AdventOfCode2021
 
         private static Dictionary<char, long> CountElements(string template, IDictionary<string, char> rules, int iterations)
         {
-            var initialPairCount = new Dictionary<string, long>();
-
-            for (var i = 0; i < template.Length - 1; i++)
-            {
-                var ab = template.Substring(i, 2);
-                initialPairCount[ab] = initialPairCount.GetValueOrDefault(ab) + 1;
-            }
+            var initialPairCount = template
+                .Zip(template.Skip(1), (a,b) => new string($"{a}{b}"))
+                .GroupBy(x => x)
+                .ToDictionary(x => x.Key, x => (long)x.Count());
 
             var sequence = Run(initialPairCount, rules).Take(iterations).Last();
 
-            var elementCounts = new Dictionary<char, long>();
-
-            foreach (var molecule in sequence)
-            {
-                var element = molecule.Key[0];
-                elementCounts[element] = elementCounts.GetValueOrDefault(element) + molecule.Value;
-            }
+            var elementCounts = sequence
+                .Select(x => new { element = x.Key[0], count = x.Value })
+                .GroupBy(x => x.element)
+                .ToDictionary(x => x.Key, x => x.Sum(y => y.count));
 
             elementCounts[template.Last()] = elementCounts.GetValueOrDefault(template.Last()) + 1;
             return elementCounts;
