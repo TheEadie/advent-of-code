@@ -18,46 +18,22 @@ namespace AdventOfCode2021
             var start = riskPlane.First().Key;
             var goal = riskPlane.Last().Key;
 
-            var queue = new PriorityQueue<Coordinate, int>();
-
-            var gScore = new Dictionary<Coordinate, int>();
-            gScore[start] = 0;
-
-            var cameFrom = new Dictionary<Coordinate, Coordinate>();
-
-            var totalPath = new List<Coordinate> { goal };
-
-            queue.Enqueue(start, DistanceToGoal(start, goal));
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-
-                if (current == goal)
-                {
-                    while (cameFrom.ContainsKey(current))
-                    {
-                        current = cameFrom[current];
-                        totalPath = totalPath.Prepend(current).ToList();
-                    }
-                    break;
-                }
-
-                foreach (var neighbour in GetNeighbours(current, riskPlane))
-                {
-                    var tentativeGScore = gScore[current] + riskPlane[neighbour];
-                    if (!gScore.ContainsKey(neighbour) || tentativeGScore < gScore[neighbour])
-                    {
-                        cameFrom[neighbour] = current;
-                        gScore[neighbour] = tentativeGScore;
-                        queue.Enqueue(neighbour, tentativeGScore + DistanceToGoal(neighbour, goal));
-                    }
-                }
-            }
-
-            var answer = gScore[goal];
+            var answer = Run(start, goal, riskPlane);
             Console.WriteLine(answer);
             answer.ShouldBe(373);
+        }
+
+        [Test]
+        public void Part2()
+        {
+            var riskPlane = RepeatMap(ParseInput());
+
+            var start = riskPlane.First().Key;
+            var goal = riskPlane.Last().Key;
+
+            var answer = Run(start, goal, riskPlane);
+            Console.WriteLine(answer);
+            answer.ShouldBe(2868);
         }
 
         private int DistanceToGoal(Coordinate current, Coordinate goal)
@@ -78,10 +54,53 @@ namespace AdventOfCode2021
             return testCoordinates.Where(map.ContainsKey);
         }
 
-        [Test]
-        public void Part2()
+        private int Run(Coordinate start, Coordinate goal, Dictionary<Coordinate, int> riskPlane)
         {
-            var input = ParseInput();
+            var queue = new PriorityQueue<Coordinate, int>();
+
+            var cameFrom = new Dictionary<Coordinate, Coordinate>();
+            var costSoFar = new Dictionary<Coordinate, int>
+            {
+                [start] = 0
+            };
+
+            var totalPath = new List<Coordinate> { goal };
+
+            queue.Enqueue(start, DistanceToGoal(start, goal));
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+
+                if (current == goal)
+                {
+                    while (cameFrom.ContainsKey(current))
+                    {
+                        current = cameFrom[current];
+                        totalPath = totalPath.Prepend(current).ToList();
+                    }
+
+                    break;
+                }
+
+                foreach (var neighbour in GetNeighbours(current, riskPlane))
+                {
+                    var tentativeGScore = costSoFar[current] + riskPlane[neighbour];
+                    if (!costSoFar.ContainsKey(neighbour) || tentativeGScore < costSoFar[neighbour])
+                    {
+                        cameFrom[neighbour] = current;
+                        costSoFar[neighbour] = tentativeGScore;
+                        queue.Enqueue(neighbour, tentativeGScore + DistanceToGoal(neighbour, goal));
+                    }
+                }
+            }
+
+            var answer = costSoFar[goal];
+            return answer;
+        }
+
+        private static Dictionary<Coordinate, int> RepeatMap(Dictionary<Coordinate, int> input)
+        {
             var riskPlane = new Dictionary<Coordinate, int>();
 
             var width = input.MaxBy(x => x.Key.X).Key.X + 1;
@@ -106,49 +125,7 @@ namespace AdventOfCode2021
                 }
             }
 
-            var start = riskPlane.First().Key;
-            var goal = riskPlane.Last().Key;
-
-            var queue = new PriorityQueue<Coordinate, int>();
-
-            var gScore = new Dictionary<Coordinate, int>();
-            gScore[start] = 0;
-
-            var cameFrom = new Dictionary<Coordinate, Coordinate>();
-
-            var totalPath = new List<Coordinate> { goal };
-
-            queue.Enqueue(start, DistanceToGoal(start, goal));
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-
-                if (current == goal)
-                {
-                    while (cameFrom.ContainsKey(current))
-                    {
-                        current = cameFrom[current];
-                        totalPath = totalPath.Prepend(current).ToList();
-                    }
-                    break;
-                }
-
-                foreach (var neighbour in GetNeighbours(current, riskPlane))
-                {
-                    var tentativeGScore = gScore[current] + riskPlane[neighbour];
-                    if (!gScore.ContainsKey(neighbour) || tentativeGScore < gScore[neighbour])
-                    {
-                        cameFrom[neighbour] = current;
-                        gScore[neighbour] = tentativeGScore;
-                        queue.Enqueue(neighbour, tentativeGScore + DistanceToGoal(neighbour, goal));
-                    }
-                }
-            }
-
-            var answer = gScore[goal];
-            Console.WriteLine(answer);
-            answer.ShouldBe(373);
+            return riskPlane;
         }
 
         private static Dictionary<Coordinate, int> ParseInput()
