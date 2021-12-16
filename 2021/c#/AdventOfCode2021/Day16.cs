@@ -13,9 +13,7 @@ namespace AdventOfCode2021
         public void Part1()
         {
             var binary = ParseInput();
-
-            var pointer = 0;
-            var packets = ParseBinary(binary.ToArray(), ref pointer, 1);
+            var packets = ParseBinary(binary.ToArray());
 
             var answer = AddVersions(packets);
 
@@ -27,8 +25,7 @@ namespace AdventOfCode2021
         public void Part2()
         {
             var binary = ParseInput();
-            var pointer = 0;
-            var packets = ParseBinary(binary.ToArray(), ref pointer, 1);
+            var packets = ParseBinary(binary.ToArray());
 
             var answer = Process(packets.First());
 
@@ -60,9 +57,12 @@ namespace AdventOfCode2021
             };
         }
 
-        private IEnumerable<Packet> ParseBinary(char[] binary, int pointer)
+        private IEnumerable<Packet> ParseBinary(char[] binary)
         {
-            while(pointer < binary.Length)
+            const int headerSize = 6;
+            var pointer = 0;
+
+            while(pointer < binary.Length - headerSize)
             {
                 yield return GetPacket(binary, ref pointer);
             }
@@ -88,20 +88,7 @@ namespace AdventOfCode2021
             pointer += 3;
 
             var version = Convert.ToInt32(new string(versionBits), 2);
-            var typeInt = Convert.ToInt32(new string(typeBits), 2);
-            var type = typeInt switch
-            {
-                0 => PacketType.Sum,
-                1 => PacketType.Product,
-                2 => PacketType.Minimum,
-                3 => PacketType.Maximum,
-                4 => PacketType.Literal,
-                5 => PacketType.GreaterThan,
-                6 => PacketType.LessThan,
-                7 => PacketType.EqualTo,
-                _ => throw new ArgumentException()
-            };
-
+            var type = (PacketType)Convert.ToInt32(new string(typeBits), 2);
 
             long? value = null;
             var subPackets = new List<Packet>();
@@ -129,7 +116,7 @@ namespace AdventOfCode2021
                     var lengthBits = binary[pointer..(pointer + 15)];
                     pointer += 15;
                     var length = Convert.ToInt32(new string(lengthBits), 2);
-                    subPackets.AddRange(ParseBinary(binary[pointer..(pointer + length)], 0));
+                    subPackets.AddRange(ParseBinary(binary[pointer..(pointer + length)]));
                     pointer += length;
                 }
                 else // 11 bits - number of sub-packets
