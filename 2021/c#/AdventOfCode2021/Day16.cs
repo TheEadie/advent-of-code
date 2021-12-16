@@ -15,7 +15,6 @@ namespace AdventOfCode2021
             var binary = ParseInput();
 
             var pointer = 0;
-
             var packets = ParseBinary(binary.ToArray(), ref pointer, 1);
 
             var answer = AddVersions(packets);
@@ -24,9 +23,41 @@ namespace AdventOfCode2021
             answer.ShouldBe(996);
         }
 
+        [Test]
+        public void Part2()
+        {
+            var binary = ParseInput();
+            var pointer = 0;
+            var packets = ParseBinary(binary.ToArray(), ref pointer, 1);
+
+            var answer = Process(packets.First());
+
+            Console.WriteLine(answer);
+            answer.ShouldBe(96257984154);
+        }
+
         private static int AddVersions(IEnumerable<Packet> packets)
         {
             return packets.Sum(packet => packet.Version + AddVersions(packet.SubPackets));
+        }
+
+        private static long Process(Packet packet)
+        {
+            var first = packet.SubPackets.ElementAtOrDefault(0);
+            var second = packet.SubPackets.ElementAtOrDefault(1);
+
+            return packet.Type switch
+            {
+                PacketType.Sum => packet.SubPackets.Sum(Process),
+                PacketType.Product => packet.SubPackets.Select(Process).Aggregate((a, x) => a * x),
+                PacketType.Minimum => packet.SubPackets.Min(Process),
+                PacketType.Maximum => packet.SubPackets.Max(Process),
+                PacketType.Literal => packet.Value!.Value,
+                PacketType.GreaterThan => (Process(first) > Process(second)) ? 1 : 0,
+                PacketType.LessThan => (Process(first) < Process(second)) ? 1 : 0,
+                PacketType.EqualTo => (Process(first) == Process(second)) ? 1 : 0,
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
         private IEnumerable<Packet> ParseBinary(char[] binary, int pointer)
@@ -58,61 +89,59 @@ namespace AdventOfCode2021
 
             var version = Convert.ToInt32(new string(versionBits), 2);
             var typeInt = Convert.ToInt32(new string(typeBits), 2);
-            var type = (typeInt == 4) ? PacketType.Literal : PacketType.Operator;
+            var type = typeInt switch
+            {
+                0 => PacketType.Sum,
+                1 => PacketType.Product,
+                2 => PacketType.Minimum,
+                3 => PacketType.Maximum,
+                4 => PacketType.Literal,
+                5 => PacketType.GreaterThan,
+                6 => PacketType.LessThan,
+                7 => PacketType.EqualTo,
+                _ => throw new ArgumentException()
+            };
 
 
             long? value = null;
             var subPackets = new List<Packet>();
 
-            switch (type)
+            if (type == PacketType.Literal)
             {
-                case PacketType.Literal:
+                var bits = new List<char>();
+                var process = true;
+                while (process)
+                {
+                    process = binary[pointer] == '1';
+                    bits.AddRange(binary[(pointer + 1)..(pointer + 5)]);
+                    pointer += 5;
+                }
 
-                    var bits = new List<char>();
-                    var process = true;
-                    while (process)
-                    {
-                        process = binary[pointer] == '1';
-                        bits.AddRange(binary[(pointer + 1)..(pointer + 5)]);
-                        pointer += 5;
-                    }
+                value = Convert.ToInt64(new string(bits.ToArray()), 2);
+            }
+            else
+            {
+                var lengthType = binary[pointer];
+                pointer++;
 
-                    value = Convert.ToInt64(new string(bits.ToArray()), 2);
-
-                    break;
-                case PacketType.Operator:
-
-                    var lengthType = binary[pointer];
-                    pointer++;
-
-                    if (lengthType == '0') // 15 bits - total size of sub-packets
-                    {
-                        var lengthBits = binary[pointer..(pointer + 15)];
-                        pointer += 15;
-                        var length = Convert.ToInt32(new string(lengthBits), 2);
-                        subPackets.AddRange(ParseBinary(binary[pointer..(pointer + length)], 0));
-                        pointer += length;
-                    }
-                    else // 11 bits - number of sub-packets
-                    {
-                        var numberBits = binary[pointer..(pointer + 11)];
-                        pointer += 11;
-                        var number = Convert.ToInt32(new string(numberBits), 2);
-                        subPackets.AddRange(ParseBinary(binary, ref pointer, number));
-                    }
-
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                if (lengthType == '0') // 15 bits - total size of sub-packets
+                {
+                    var lengthBits = binary[pointer..(pointer + 15)];
+                    pointer += 15;
+                    var length = Convert.ToInt32(new string(lengthBits), 2);
+                    subPackets.AddRange(ParseBinary(binary[pointer..(pointer + length)], 0));
+                    pointer += length;
+                }
+                else // 11 bits - number of sub-packets
+                {
+                    var numberBits = binary[pointer..(pointer + 11)];
+                    pointer += 11;
+                    var number = Convert.ToInt32(new string(numberBits), 2);
+                    subPackets.AddRange(ParseBinary(binary, ref pointer, number));
+                }
             }
 
             return new Packet(version, type, value, subPackets);
-        }
-
-        [Test]
-        public void Part2()
-        {
-
         }
 
 
@@ -133,6 +162,6 @@ namespace AdventOfCode2021
 
         private record Packet(int Version, PacketType Type, long? Value, IEnumerable<Packet> SubPackets);
 
-        private enum PacketType { Literal, Operator }
+        private enum PacketType { Sum, Product, Minimum, Maximum, Literal, GreaterThan, LessThan, EqualTo }
     }
 }
