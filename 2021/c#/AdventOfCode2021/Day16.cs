@@ -13,7 +13,7 @@ namespace AdventOfCode2021
         public void Part1()
         {
             var binary = ParseInput();
-            var packets = ParseBinary(binary.ToArray());
+            var packets = ParseBinary(binary);
 
             var answer = AddVersions(packets);
 
@@ -25,7 +25,7 @@ namespace AdventOfCode2021
         public void Part2()
         {
             var binary = ParseInput();
-            var packets = ParseBinary(binary.ToArray());
+            var packets = ParseBinary(binary);
 
             var answer = Process(packets.First());
 
@@ -57,35 +57,30 @@ namespace AdventOfCode2021
             };
         }
 
-        private IEnumerable<Packet> ParseBinary(char[] binary)
+        private IEnumerable<Packet> ParseBinary(BinaryStream binary)
         {
-            const int headerSize = 6;
-            var pointer = 0;
-
-            while(pointer < binary.Length - headerSize)
+            while(binary.MorePackets())
             {
-                yield return GetPacket(binary, ref pointer);
+                yield return GetPacket(binary);
             }
         }
 
-        private IEnumerable<Packet> ParseBinary(char[] binary, ref int pointer, int numberOfPackets)
+        private IEnumerable<Packet> ParseBinary(BinaryStream binary, int numberOfPackets)
         {
             var packets = new List<Packet>();
 
             for (var i = 0; i < numberOfPackets; i++)
             {
-                packets.Add(GetPacket(binary, ref pointer));
+                packets.Add(GetPacket(binary));
             }
 
             return packets;
         }
 
-        private Packet GetPacket(char[] binary, ref int pointer)
+        private Packet GetPacket(BinaryStream binary)
         {
-            var versionBits = binary[pointer..(pointer + 3)];
-            pointer += 3;
-            var typeBits = binary[(pointer)..(pointer + 3)];
-            pointer += 3;
+            var versionBits = binary.Grab(3);
+            var typeBits = binary.Grab(3);
 
             var version = Convert.ToInt32(new string(versionBits), 2);
             var type = (PacketType)Convert.ToInt32(new string(typeBits), 2);
@@ -99,32 +94,27 @@ namespace AdventOfCode2021
                 var process = true;
                 while (process)
                 {
-                    process = binary[pointer] == '1';
-                    bits.AddRange(binary[(pointer + 1)..(pointer + 5)]);
-                    pointer += 5;
+                    process = binary.GrabNext() == '1';
+                    bits.AddRange(binary.Grab(4));
                 }
 
                 value = Convert.ToInt64(new string(bits.ToArray()), 2);
             }
             else
             {
-                var lengthType = binary[pointer];
-                pointer++;
+                var lengthType = binary.GrabNext();
 
                 if (lengthType == '0') // 15 bits - total size of sub-packets
                 {
-                    var lengthBits = binary[pointer..(pointer + 15)];
-                    pointer += 15;
+                    var lengthBits = binary.Grab(15);
                     var length = Convert.ToInt32(new string(lengthBits), 2);
-                    subPackets.AddRange(ParseBinary(binary[pointer..(pointer + length)]));
-                    pointer += length;
+                    subPackets.AddRange(ParseBinary(new BinaryStream(binary.Grab(length))));
                 }
                 else // 11 bits - number of sub-packets
                 {
-                    var numberBits = binary[pointer..(pointer + 11)];
-                    pointer += 11;
+                    var numberBits = binary.Grab(11);
                     var number = Convert.ToInt32(new string(numberBits), 2);
-                    subPackets.AddRange(ParseBinary(binary, ref pointer, number));
+                    subPackets.AddRange(ParseBinary(binary, number));
                 }
             }
 
@@ -132,7 +122,7 @@ namespace AdventOfCode2021
         }
 
 
-        private static IEnumerable<char> ParseInput()
+        private static BinaryStream ParseInput()
         {
             var lines = File.ReadAllLines("Day16.txt");
 
@@ -144,11 +134,43 @@ namespace AdventOfCode2021
                 )
             );
 
-            return binaryString.ToCharArray();
+            return new BinaryStream(binaryString.ToCharArray());
         }
 
         private record Packet(int Version, PacketType Type, long? Value, IEnumerable<Packet> SubPackets);
 
         private enum PacketType { Sum, Product, Minimum, Maximum, Literal, GreaterThan, LessThan, EqualTo }
+
+        private class BinaryStream
+        {
+            private readonly char[] _bits;
+            private int _pointer;
+
+            public BinaryStream(char[] content)
+            {
+                _bits = content;
+                _pointer = 0;
+            }
+
+            public char[] Grab(int numberOfBits)
+            {
+                var bits = _bits[_pointer..(_pointer + numberOfBits)];
+                _pointer += numberOfBits;
+                return bits;
+            }
+
+            public char GrabNext()
+            {
+                var bit = _bits[_pointer];
+                _pointer += 1;
+                return bit;
+            }
+
+            public bool MorePackets()
+            {
+                const int headerSize = 6;
+                return _pointer < _bits.Length - headerSize;
+            }
+        }
     }
 }
