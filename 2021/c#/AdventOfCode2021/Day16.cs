@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using NUnit.Framework;
 using Shouldly;
 
@@ -59,10 +60,12 @@ namespace AdventOfCode2021
 
         private IEnumerable<Packet> ParseBinary(BinaryStream binary)
         {
+            var packets = new List<Packet>();
             while(binary.MorePackets())
             {
-                yield return GetPacket(binary);
+                packets.Add(GetPacket(binary));
             }
+            return packets;
         }
 
         private IEnumerable<Packet> ParseBinary(BinaryStream binary, int numberOfPackets)
@@ -79,14 +82,8 @@ namespace AdventOfCode2021
 
         private Packet GetPacket(BinaryStream binary)
         {
-            var versionBits = binary.Grab(3);
-            var typeBits = binary.Grab(3);
-
-            var version = Convert.ToInt32(new string(versionBits), 2);
-            var type = (PacketType)Convert.ToInt32(new string(typeBits), 2);
-
-            long? value = null;
-            var subPackets = new List<Packet>();
+            var version = ToInt(binary.Grab(3));
+            var type = (PacketType)ToInt(binary.Grab(3));
 
             if (type == PacketType.Literal)
             {
@@ -98,7 +95,7 @@ namespace AdventOfCode2021
                     bits.AddRange(binary.Grab(4));
                 }
 
-                value = Convert.ToInt64(new string(bits.ToArray()), 2);
+                return new Packet(version, type, ToLong(bits), new List<Packet>());
             }
             else
             {
@@ -106,21 +103,21 @@ namespace AdventOfCode2021
 
                 if (lengthType == '0') // 15 bits - total size of sub-packets
                 {
-                    var lengthBits = binary.Grab(15);
-                    var length = Convert.ToInt32(new string(lengthBits), 2);
-                    subPackets.AddRange(ParseBinary(new BinaryStream(binary.Grab(length))));
+                    var length = ToInt(binary.Grab(15));
+                    var subPackets = ParseBinary(new BinaryStream(binary.Grab(length)));
+                    return new Packet(version, type, null, subPackets);
                 }
                 else // 11 bits - number of sub-packets
                 {
-                    var numberBits = binary.Grab(11);
-                    var number = Convert.ToInt32(new string(numberBits), 2);
-                    subPackets.AddRange(ParseBinary(binary, number));
+                    var number = ToInt(binary.Grab(11));
+                    var subPackets = ParseBinary(binary, number);
+                    return new Packet(version, type, null, subPackets);
                 }
             }
-
-            return new Packet(version, type, value, subPackets);
         }
 
+        private static int ToInt(IEnumerable<char> binary) => Convert.ToInt32(new string(binary.ToArray()), 2);
+        private static long ToLong(IEnumerable<char> binary) => Convert.ToInt64(new string(binary.ToArray()), 2);
 
         private static BinaryStream ParseInput()
         {
