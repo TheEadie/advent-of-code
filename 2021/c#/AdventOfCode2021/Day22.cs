@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using NUnit.Framework;
 using Shouldly;
 
@@ -95,7 +93,7 @@ namespace AdventOfCode2021
                    Math.Max(cubes.Min(x => x.End.Z) + 1L - cubes.Max(x => x.Start.Z), 0);
         }
 
-        public Cube GetIntersection(Cube a, Cube b)
+        private Cube GetIntersection(Cube a, Cube b)
         {
             var minX = Math.Max(a.Start.X, b.Start.X);
             var maxX = Math.Min(a.End.X, b.End.X);
@@ -111,11 +109,13 @@ namespace AdventOfCode2021
         {
             return (cube.End.X + 1L - cube.Start.X) * (cube.End.Y + 1L - cube.Start.Y) * (cube.End.Z + 1L - cube.Start.Z);
         }
+
+        private record Command(Cube Cube, bool On);
+
+        private record Cube(Coordinate3D Start, Coordinate3D End);
+
+        private record Coordinate3D(int X, int Y, int Z);
     }
 
-    public record Command(Cube Cube, bool On);
 
-    public record Cube(Coordinate3D Start, Coordinate3D End);
-
-    public record Coordinate3D(int X, int Y, int Z);
 }
