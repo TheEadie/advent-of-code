@@ -35,7 +35,7 @@ namespace AdventOfCode2021
             var answer = HowManyCubesOn(commands);
 
             Console.WriteLine(answer);
-            answer.ShouldBe(615700);
+            answer.ShouldBe(1236463892941356);
         }
 
         private long HowManyCubesOn(List<Command> commands)
