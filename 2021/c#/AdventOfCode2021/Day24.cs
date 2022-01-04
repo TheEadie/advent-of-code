@@ -12,82 +12,82 @@ namespace AdventOfCode2021
         [Test]
         public void Part1()
         {
-            const long input = 92967699949891;
             var commands = ParseInput();
-
-            var result = Run(input, commands);
-            Console.WriteLine(result);
+            var answer = SolveMax(commands);
+            var result = Run(answer, commands);
+            Console.WriteLine(answer);
             result.ShouldBe(0);
+            answer.ShouldBe(92967699949891);
         }
 
         [Test]
         public void Part2()
         {
-            const long input = 91411143612181;
             var commands = ParseInput();
-
-            var result = Run(input, commands);
-            Console.WriteLine(result);
+            var answer = SolveMin(commands);
+            var result = Run(answer, commands);
+            Console.WriteLine(answer);
             result.ShouldBe(0);
+            answer.ShouldBe(91411143612181);
         }
 
+        private long SolveMax(IList<ICommand> commands)
+        {
+            var stack = new Stack<(int, int)>();
+            var max = new int[14];
 
-        // Block 1
-        // w = Read();
-        // if (w != stack.Peak() + 11)
-        //     stack.Push(w + 3)
-        // Block 2
-        // w = Read();
-        // if (w != stack.Peak() + 14)
-        //     stack.Push(w + 7)
-        // Block 3
-        // w = Read();
-        // if (w != stack.Peak() + 13)
-        //     stack.Push(w + 6)
-        // Block 4
-        // w = Read();
-        // if (w != stack.Pop() - 4)
-        //     stack.Push(w + 6)
-        // Block 5
-        // w = Read();
-        // if (w != stack.Peak() + 11)
-        //     stack.Push(w + 14)
-        // Block 6
-        // w = Read();
-        // if (w != stack.Peak() + 10)
-        //     stack.Push(w + 7)
-        // Block 7
-        // w = Read();
-        // if (w != stack.Pop() - 4)
-        //     stack.Push(w + 9)
-        // Block 8
-        // w = Read();
-        // if (w != stack.Pop() - 12)
-        //     stack.Push(w + 9)
-        // Block 9
-        // w = Read();
-        // if (w != stack.Peak() + 10)
-        //     stack.Push(w + 6)
-        // Block 10
-        // w = Read();
-        // if (w != stack.Pop() - 11)
-        //     stack.Push(w + 4)
-        // Block 11
-        // w = Read();
-        // if (w != stack.Peak() + 12)
-        //     stack.Push(w)
-        // Block 12
-        // w = Read();
-        // if (w != stack.Pop() - 1)
-        //     stack.Push(w + 7)
-        // Block 13
-        // w = Read();
-        // if (w != stack.Pop())
-        //     stack.Push(w + 12)
-        // Block 14
-        // w = Read();
-        // if (w != stack.Pop() - 11)
-        //     stack.Push(w + 11)
+            for (var position = 0; position < 14; position++)
+            {
+                var digitCommands = commands.Skip(position * 18).Take(18).ToList();
+                var pop = ((Div)digitCommands.ElementAt(4)).B.Number != 1;
+                var conditionAdd = ((Add)digitCommands.ElementAt(5)).B.Number;
+                var pushAdd = ((Add)digitCommands.ElementAt(15)).B.Number;
+
+                if (pop)
+                {
+                    var prev = stack.Pop();
+                    var expression = prev.Item2 + conditionAdd;
+                    max[position] = expression > 0 ? 9 : 9 + expression;
+                    max[prev.Item1] = expression > 0 ? 9 - expression : 9;
+                }
+                else
+                {
+                    stack.Push((position, pushAdd));
+                }
+            }
+
+            return long.Parse(string.Join("", max.SelectMany(x => x.ToString())));
+
+        }
+
+        private long SolveMin(IList<ICommand> commands)
+        {
+            var stack = new Stack<(int, int)>();
+            var max = new int[14];
+
+            for (var position = 0; position < 14; position++)
+            {
+                var digitCommands = commands.Skip(position * 18).Take(18).ToList();
+                var pop = ((Div)digitCommands.ElementAt(4)).B.Number != 1;
+                var conditionAdd = ((Add)digitCommands.ElementAt(5)).B.Number;
+                var pushAdd = ((Add)digitCommands.ElementAt(15)).B.Number;
+
+                if (pop)
+                {
+                    var prev = stack.Pop();
+                    var expression = prev.Item2 + conditionAdd;
+                    max[position] = expression > 0 ? 1 + expression : 1;
+                    max[prev.Item1] = expression > 0 ? 1 : 1 - expression;
+                }
+                else
+                {
+                    stack.Push((position, pushAdd));
+                }
+            }
+
+            return long.Parse(string.Join("", max.SelectMany(x => x.ToString())));
+
+        }
 
         private static int Run(long digit, List<ICommand> commands)
         {
@@ -190,36 +190,36 @@ namespace AdventOfCode2021
         private class Add : ICommand
         {
             private readonly RegisterLetter _a;
-            private readonly RegisterOrNumber _b;
+            public RegisterOrNumber B { get; }
 
 
             public Add(RegisterLetter a, RegisterOrNumber b)
             {
                 _a = a;
-                _b = b;
+                B = b;
             }
 
             public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input)
             {
-                registers[_a] += _b.IsRegister ? registers[_b.Register] : _b.Number;
+                registers[_a] += B.IsRegister ? registers[B.Register] : B.Number;
             }
         }
 
         private class Div : ICommand
         {
             private readonly RegisterLetter _a;
-            private readonly RegisterOrNumber _b;
+            public RegisterOrNumber B { get; }
 
 
             public Div(RegisterLetter a, RegisterOrNumber b)
             {
                 _a = a;
-                _b = b;
+                B = b;
             }
 
             public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input)
             {
-                registers[_a] /= _b.IsRegister ? registers[_b.Register] : _b.Number;
+                registers[_a] /= B.IsRegister ? registers[B.Register] : B.Number;
             }
         }
 
