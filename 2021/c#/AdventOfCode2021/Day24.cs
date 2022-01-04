@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using Shouldly;
 
 namespace AdventOfCode2021
 {
@@ -11,9 +12,86 @@ namespace AdventOfCode2021
         [Test]
         public void Part1()
         {
+            const long input = 92967699949891;
             var commands = ParseInput();
 
-            var modelNumber = "99999999999999";
+            var result = Run(input, commands);
+            Console.WriteLine(result);
+            result.ShouldBe(0);
+        }
+
+        [Test]
+        public void Part2()
+        {
+            const long input = 91411143612181;
+            var commands = ParseInput();
+
+            var result = Run(input, commands);
+            Console.WriteLine(result);
+            result.ShouldBe(0);
+        }
+
+
+        // Block 1
+        // w = Read();
+        // if (w != stack.Peak() + 11)
+        //     stack.Push(w + 3)
+        // Block 2
+        // w = Read();
+        // if (w != stack.Peak() + 14)
+        //     stack.Push(w + 7)
+        // Block 3
+        // w = Read();
+        // if (w != stack.Peak() + 13)
+        //     stack.Push(w + 6)
+        // Block 4
+        // w = Read();
+        // if (w != stack.Pop() - 4)
+        //     stack.Push(w + 6)
+        // Block 5
+        // w = Read();
+        // if (w != stack.Peak() + 11)
+        //     stack.Push(w + 14)
+        // Block 6
+        // w = Read();
+        // if (w != stack.Peak() + 10)
+        //     stack.Push(w + 7)
+        // Block 7
+        // w = Read();
+        // if (w != stack.Pop() - 4)
+        //     stack.Push(w + 9)
+        // Block 8
+        // w = Read();
+        // if (w != stack.Pop() - 12)
+        //     stack.Push(w + 9)
+        // Block 9
+        // w = Read();
+        // if (w != stack.Peak() + 10)
+        //     stack.Push(w + 6)
+        // Block 10
+        // w = Read();
+        // if (w != stack.Pop() - 11)
+        //     stack.Push(w + 4)
+        // Block 11
+        // w = Read();
+        // if (w != stack.Peak() + 12)
+        //     stack.Push(w)
+        // Block 12
+        // w = Read();
+        // if (w != stack.Pop() - 1)
+        //     stack.Push(w + 7)
+        // Block 13
+        // w = Read();
+        // if (w != stack.Pop())
+        //     stack.Push(w + 12)
+        // Block 14
+        // w = Read();
+        // if (w != stack.Pop() - 11)
+        //     stack.Push(w + 11)
+
+        private static int Run(long digit, List<ICommand> commands)
+        {
+            var modelNumber = digit.ToString();
 
             var registers = new Dictionary<RegisterLetter, int>
             {
@@ -33,15 +111,7 @@ namespace AdventOfCode2021
                 command.Run(registers, input);
             }
 
-            foreach (var register in registers)
-            {
-                Console.WriteLine($"{register.Key} : {register.Value}");
-            }
-        }
-
-        [Test]
-        public void Part2()
-        {
+            return registers[RegisterLetter.z];
         }
 
         private List<ICommand> ParseInput()
