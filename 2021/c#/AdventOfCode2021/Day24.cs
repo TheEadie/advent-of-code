@@ -12,81 +12,67 @@ namespace AdventOfCode2021
         [Test]
         public void Part1()
         {
+            var stack = new Stack<Block>();
+            var max = new int[14];
+
+            var blocks = ParseBlocks();
+
+            foreach (var block in blocks)
+            {
+                if (block.Pop)
+                {
+                    var prev = stack.Pop();
+                    var expression = prev.PushAdd + block.ConditionAdd;
+                    max[block.Number] = expression > 0 ? 9 : 9 + expression;
+                    max[prev.Number] = expression > 0 ? 9 - expression : 9;
+                }
+                else
+                {
+                    stack.Push(block);
+                }
+            }
+
+            var answer = long.Parse(string.Join("", max.Select(x => x.ToString())));
+
             var commands = ParseInput();
-            var answer = SolveMax(commands);
             var result = Run(answer, commands);
-            Console.WriteLine(answer);
             result.ShouldBe(0);
+
+            Console.WriteLine(answer);
             answer.ShouldBe(92967699949891);
         }
 
         [Test]
         public void Part2()
         {
+            var stack = new Stack<Block>();
+            var max = new int[14];
+
+            var blocks = ParseBlocks();
+
+            foreach (var block in blocks)
+            {
+                if (block.Pop)
+                {
+                    var prev = stack.Pop();
+                    var expression = prev.PushAdd + block.ConditionAdd;
+                    max[block.Number] = expression > 0 ? 1 + expression : 1;
+                    max[prev.Number] = expression > 0 ? 1 : 1 - expression;
+                }
+                else
+                {
+                    stack.Push(block);
+                }
+            }
+
+            var answer = long.Parse(string.Join("", max.Select(x => x.ToString())));
+
             var commands = ParseInput();
-            var answer = SolveMin(commands);
             var result = Run(answer, commands);
-            Console.WriteLine(answer);
             result.ShouldBe(0);
+
+            Console.WriteLine(answer);
             answer.ShouldBe(91411143612181);
-        }
-
-        private long SolveMax(IList<ICommand> commands)
-        {
-            var stack = new Stack<(int, int)>();
-            var max = new int[14];
-
-            for (var position = 0; position < 14; position++)
-            {
-                var digitCommands = commands.Skip(position * 18).Take(18).ToList();
-                var pop = ((Div)digitCommands.ElementAt(4)).B.Number != 1;
-                var conditionAdd = ((Add)digitCommands.ElementAt(5)).B.Number;
-                var pushAdd = ((Add)digitCommands.ElementAt(15)).B.Number;
-
-                if (pop)
-                {
-                    var prev = stack.Pop();
-                    var expression = prev.Item2 + conditionAdd;
-                    max[position] = expression > 0 ? 9 : 9 + expression;
-                    max[prev.Item1] = expression > 0 ? 9 - expression : 9;
-                }
-                else
-                {
-                    stack.Push((position, pushAdd));
-                }
-            }
-
-            return long.Parse(string.Join("", max.SelectMany(x => x.ToString())));
-
-        }
-
-        private long SolveMin(IList<ICommand> commands)
-        {
-            var stack = new Stack<(int, int)>();
-            var max = new int[14];
-
-            for (var position = 0; position < 14; position++)
-            {
-                var digitCommands = commands.Skip(position * 18).Take(18).ToList();
-                var pop = ((Div)digitCommands.ElementAt(4)).B.Number != 1;
-                var conditionAdd = ((Add)digitCommands.ElementAt(5)).B.Number;
-                var pushAdd = ((Add)digitCommands.ElementAt(15)).B.Number;
-
-                if (pop)
-                {
-                    var prev = stack.Pop();
-                    var expression = prev.Item2 + conditionAdd;
-                    max[position] = expression > 0 ? 1 + expression : 1;
-                    max[prev.Item1] = expression > 0 ? 1 : 1 - expression;
-                }
-                else
-                {
-                    stack.Push((position, pushAdd));
-                }
-            }
-
-            return long.Parse(string.Join("", max.SelectMany(x => x.ToString())));
-
         }
 
         private static int Run(long digit, List<ICommand> commands)
@@ -114,10 +100,26 @@ namespace AdventOfCode2021
             return registers[RegisterLetter.z];
         }
 
+        private IEnumerable<Block> ParseBlocks()
+        {
+            var lines = File.ReadAllLines("Day24.txt");
+
+            for (var i = 0; i < 14; i++)
+            {
+                var blockLines = lines.Skip(i * 18).Take(18).ToList();
+                var pop = blockLines[4].Split(' ')[2];
+                var conditionAdd = blockLines[5].Split(' ')[2];
+                var pushAdd = blockLines[15].Split(' ')[2];
+                yield return new Block(i, pop != "1", int.Parse(conditionAdd), int.Parse(pushAdd));
+            }
+        }
+
         private List<ICommand> ParseInput()
         {
             return File.ReadAllLines("Day24.txt").Select(ParseCommand).ToList();
         }
+
+        private record Block(int Number, bool Pop, int ConditionAdd, int PushAdd);
 
         private ICommand ParseCommand(string input)
         {
@@ -139,7 +141,7 @@ namespace AdventOfCode2021
 
         private RegisterOrNumber ParseRegisterOrNumber(string input)
         {
-            var isRegister = Enum.TryParse<RegisterLetter>(input, out var register);
+            Enum.TryParse<RegisterLetter>(input, out var register);
             var isNumber = int.TryParse(input, out var number);
 
             return new RegisterOrNumber(!isNumber, register, number);
@@ -190,36 +192,36 @@ namespace AdventOfCode2021
         private class Add : ICommand
         {
             private readonly RegisterLetter _a;
-            public RegisterOrNumber B { get; }
+            private readonly RegisterOrNumber _b;
 
 
             public Add(RegisterLetter a, RegisterOrNumber b)
             {
                 _a = a;
-                B = b;
+                _b = b;
             }
 
             public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input)
             {
-                registers[_a] += B.IsRegister ? registers[B.Register] : B.Number;
+                registers[_a] += _b.IsRegister ? registers[_b.Register] : _b.Number;
             }
         }
 
         private class Div : ICommand
         {
             private readonly RegisterLetter _a;
-            public RegisterOrNumber B { get; }
+            private readonly RegisterOrNumber _b;
 
 
             public Div(RegisterLetter a, RegisterOrNumber b)
             {
                 _a = a;
-                B = b;
+                _b = b;
             }
 
             public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input)
             {
-                registers[_a] /= B.IsRegister ? registers[B.Register] : B.Number;
+                registers[_a] /= _b.IsRegister ? registers[_b.Register] : _b.Number;
             }
         }
 
