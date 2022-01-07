@@ -12,6 +12,11 @@ namespace AdventOfCode2021.Utils
             _bits = binaryString.ToCharArray();
         }
 
+        public Binary(char[] binaryCharArray)
+        {
+            _bits = binaryCharArray;
+        }
+
         public int Length => _bits.Length;
 
         public char GetBit(int position) => _bits[position];
