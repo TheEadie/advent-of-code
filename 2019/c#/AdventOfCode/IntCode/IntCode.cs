@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace AdventOfCode.IntCode;
 
@@ -10,12 +9,12 @@ public class IntCode
     
     public int[] Memory { get; }
     public Queue<int> Inputs { get; }
-    public List<int> Output { get; }
+    public Queue<int> Output { get; }
 
     public IntCode(int[] program)
     {
         Inputs = new Queue<int>();
-        Output = new List<int>();
+        Output = new Queue<int>();
         Memory = (int[]) program.Clone();
     }
 
@@ -94,14 +93,20 @@ public class IntCode
     private void ReadInput(ParamMode modeA)
     {
         var a = Memory[_pc + 1];
+        while(Inputs.Count == 0)
+        {
+            // Wait for input
+        }
+        
         Memory[a] = Inputs.Dequeue();
+
         _pc += 2;
     }
 
     private void WriteOutput(ParamMode modeA)
     {
         var a = GetValue(modeA, Memory[_pc + 1]);
-        Output.Add(a);
+        Output.Enqueue(a);
         _pc += 2;
     }
 
