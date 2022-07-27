@@ -13,7 +13,7 @@ namespace AdventOfCode
         {
             var program = File.ReadAllLines("day05.txt")[0]
                 .Split(',')
-                .Select(int.Parse)
+                .Select(long.Parse)
                 .ToArray();
 
             var emulator = new IntCode.IntCode(program);
@@ -36,7 +36,7 @@ namespace AdventOfCode
         {
             var program = File.ReadAllLines("day05.txt")[0]
                 .Split(',')
-                .Select(int.Parse)
+                .Select(long.Parse)
                 .ToArray();
 
             var emulator = new IntCode.IntCode(program);

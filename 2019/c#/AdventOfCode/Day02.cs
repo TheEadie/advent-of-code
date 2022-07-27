@@ -13,7 +13,7 @@ namespace AdventOfCode
         {
             var program = File.ReadAllLines("day02.txt")[0]
                 .Split(',')
-                .Select(int.Parse)
+                .Select(long.Parse)
                 .ToArray();
 
             program[1] = 12;
@@ -30,7 +30,7 @@ namespace AdventOfCode
         [Test]
         public void Part2()
         {
-            (int noun, int verb) FindResult(int[] program, int result)
+            (int noun, int verb) FindResult(long[] program, int result)
             {
                 for (var n = 0; n < 100; n++)
                 {
@@ -52,7 +52,7 @@ namespace AdventOfCode
 
             var program = File.ReadAllLines("day02.txt")[0]
                 .Split(',')
-                .Select(int.Parse)
+                .Select(long.Parse)
                 .ToArray();
             
             var (noun, verb) = FindResult(program, 19690720);

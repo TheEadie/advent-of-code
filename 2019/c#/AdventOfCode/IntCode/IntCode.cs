@@ -5,17 +5,19 @@ namespace AdventOfCode.IntCode;
 
 public class IntCode
 {
-    private int _pc;
+    private long _pc;
+    private long _relativeBase;
     
-    public int[] Memory { get; }
-    public Queue<int> Inputs { get; }
-    public Queue<int> Output { get; }
+    public long[] Memory { get; }
+    public Queue<long> Inputs { get; }
+    public Queue<long> Output { get; }
 
-    public IntCode(int[] program)
+    public IntCode(long[] program)
     {
-        Inputs = new Queue<int>();
-        Output = new Queue<int>();
-        Memory = (int[]) program.Clone();
+        Inputs = new Queue<long>();
+        Output = new Queue<long>();
+        Memory = new long[4096];
+        program.CopyTo(Memory, 0);
     }
 
     public void Run()
@@ -55,6 +57,9 @@ public class IntCode
                 case 8:
                     Equals(modeA, modeB, modeC);
                     break;
+                case 9:
+                    AdjustRelativeBase(modeA);
+                    break;
                 default:
                     throw new Exception($"Unknown op code {opCode}");
             }
@@ -64,19 +69,37 @@ public class IntCode
     private enum ParamMode
     {
         Position,
-        Immediate
+        Immediate,
+        Relative
     }
 
-    private int GetValue(ParamMode mode, int location)
+    private long GetValue(ParamMode mode, long location)
     {
-        return mode == ParamMode.Position ? Memory[location] : location;
+        return mode switch
+        {
+            ParamMode.Position => Memory[location],
+            ParamMode.Immediate => location,
+            ParamMode.Relative => Memory[location + _relativeBase],
+            _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+        };
+    }
+    
+    private long GetWriteAddress(ParamMode mode, long location)
+    {
+        return mode switch
+        {
+            ParamMode.Position => location,
+            ParamMode.Immediate => location,
+            ParamMode.Relative => location + _relativeBase,
+            _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+        };
     }
 
     private void Add(ParamMode modeA, ParamMode modeB, ParamMode modeC)
     {
         var a = GetValue(modeA, Memory[_pc + 1]);
         var b = GetValue(modeB, Memory[_pc + 2]);
-        var c = Memory[_pc + 3];
+        var c = GetWriteAddress(modeC, Memory[_pc + 3]);
         Memory[c] = a + b;
         _pc += 4;
     }
@@ -85,14 +108,14 @@ public class IntCode
     {
         var a = GetValue(modeA, Memory[_pc + 1]);
         var b = GetValue(modeB, Memory[_pc + 2]);
-        var c = Memory[_pc + 3];
+        var c = GetWriteAddress(modeC, Memory[_pc + 3]);
         Memory[c] = a * b;
         _pc += 4;
     }
 
     private void ReadInput(ParamMode modeA)
     {
-        var a = Memory[_pc + 1];
+        var a = GetWriteAddress(modeA, Memory[_pc + 1]);
         while(Inputs.Count == 0)
         {
             // Wait for input
@@ -124,7 +147,7 @@ public class IntCode
             _pc += 3;
         }
     }
-    
+
     private void JumpIfFalse(ParamMode modeA, ParamMode modeB)
     {
         var a = GetValue(modeA, Memory[_pc + 1]);
@@ -139,24 +162,31 @@ public class IntCode
             _pc += 3;
         }
     }
-    
+
     private void LessThan(ParamMode modeA, ParamMode modeB, ParamMode modeC)
     {
         var a = GetValue(modeA, Memory[_pc + 1]);
         var b = GetValue(modeB, Memory[_pc + 2]);
-        var c = Memory[_pc + 3];
+        var c = GetWriteAddress(modeC, Memory[_pc + 3]);
 
         Memory[c] = a < b ? 1 : 0;
         _pc += 4;
     }
-    
+
     private void Equals(ParamMode modeA, ParamMode modeB, ParamMode modeC)
     {
         var a = GetValue(modeA, Memory[_pc + 1]);
         var b = GetValue(modeB, Memory[_pc + 2]);
-        var c = Memory[_pc + 3];
+        var c = GetWriteAddress(modeC, Memory[_pc + 3]);
 
         Memory[c] = a == b ? 1 : 0;
         _pc += 4;
+    }
+
+    private void AdjustRelativeBase(ParamMode modeA)
+    {
+        var a = GetValue(modeA, Memory[_pc + 1]);
+        _relativeBase += a;
+        _pc += 2;
     }
 }

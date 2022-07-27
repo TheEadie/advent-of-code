@@ -16,7 +16,7 @@ namespace AdventOfCode
         {
             var program = (await File.ReadAllLinesAsync("day07.txt"))[0]
                 .Split(',')
-                .Select(int.Parse)
+                .Select(long.Parse)
                 .ToArray();
 
             var inputs = new List<int> {0, 1, 2, 3, 4};
@@ -28,7 +28,7 @@ namespace AdventOfCode
             answer.ShouldBe(212460);
         }
         
-        private static Task<int> GetOutputPart1(int[] program, int[] inputs)
+        private static Task<long> GetOutputPart1(long[] program, int[] inputs)
         {
             var ampA = new IntCode.IntCode(program);
             var ampB = new IntCode.IntCode(program);
@@ -78,7 +78,7 @@ namespace AdventOfCode
         {
             var program = (await File.ReadAllLinesAsync("day07.txt"))[0]
                 .Split(',')
-                .Select(int.Parse)
+                .Select(long.Parse)
                 .ToArray();
 
             var inputs = new List<int> {5, 6, 7, 8, 9};
@@ -90,7 +90,7 @@ namespace AdventOfCode
             answer.ShouldBe(21844737);
         }
         
-        private static Task<int> GetOutputPart2(int[] program, int[] inputs)
+        private static Task<long> GetOutputPart2(long[] program, int[] inputs)
         {
             var ampA = new IntCode.IntCode(program);
             var ampB = new IntCode.IntCode(program);
