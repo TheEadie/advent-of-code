@@ -57,14 +57,14 @@ namespace AdventOfCode
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    if (ampA.Output.Count > 0)
-                        ampB.Inputs.Enqueue(ampA.Output.Dequeue());
-                    if (ampB.Output.Count > 0)
-                        ampC.Inputs.Enqueue(ampB.Output.Dequeue());
-                    if (ampC.Output.Count > 0)
-                        ampD.Inputs.Enqueue(ampC.Output.Dequeue());
-                    if (ampD.Output.Count > 0)
-                        ampE.Inputs.Enqueue(ampD.Output.Dequeue());
+                    if (!ampA.Output.IsEmpty)
+                        ampB.Inputs.Enqueue(ampA.WaitForOutput());
+                    if (!ampB.Output.IsEmpty)
+                        ampC.Inputs.Enqueue(ampB.WaitForOutput());
+                    if (!ampC.Output.IsEmpty)
+                        ampD.Inputs.Enqueue(ampC.WaitForOutput());
+                    if (!ampD.Output.IsEmpty)
+                        ampE.Inputs.Enqueue(ampD.WaitForOutput());
                 }
             }
 
@@ -119,16 +119,16 @@ namespace AdventOfCode
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    if (ampA.Output.Count > 0)
-                        ampB.Inputs.Enqueue(ampA.Output.Dequeue());
-                    if (ampB.Output.Count > 0)
-                        ampC.Inputs.Enqueue(ampB.Output.Dequeue());
-                    if (ampC.Output.Count > 0)
-                        ampD.Inputs.Enqueue(ampC.Output.Dequeue());
-                    if (ampD.Output.Count > 0)
-                        ampE.Inputs.Enqueue(ampD.Output.Dequeue());
-                    if (ampE.Output.Count > 0) 
-                        ampA.Inputs.Enqueue(ampE.Output.Dequeue());
+                    if (!ampA.Output.IsEmpty)
+                        ampB.Inputs.Enqueue(ampA.WaitForOutput());
+                    if (!ampB.Output.IsEmpty)
+                        ampC.Inputs.Enqueue(ampB.WaitForOutput());
+                    if (!ampC.Output.IsEmpty)
+                        ampD.Inputs.Enqueue(ampC.WaitForOutput());
+                    if (!ampD.Output.IsEmpty)
+                        ampE.Inputs.Enqueue(ampD.WaitForOutput());
+                    if (!ampE.Output.IsEmpty)
+                        ampA.Inputs.Enqueue(ampE.WaitForOutput());
                 }
             }
 

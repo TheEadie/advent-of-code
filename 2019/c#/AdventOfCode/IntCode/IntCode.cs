@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace AdventOfCode.IntCode;
 
@@ -9,13 +9,13 @@ public class IntCode
     private long _relativeBase;
     
     public long[] Memory { get; }
-    public Queue<long> Inputs { get; }
-    public Queue<long> Output { get; }
+    public ConcurrentQueue<long> Inputs { get; }
+    public ConcurrentQueue<long> Output { get; }
 
     public IntCode(long[] program)
     {
-        Inputs = new Queue<long>();
-        Output = new Queue<long>();
+        Inputs = new ConcurrentQueue<long>();
+        Output = new ConcurrentQueue<long>();
         Memory = new long[4096];
         program.CopyTo(Memory, 0);
     }
@@ -64,6 +64,17 @@ public class IntCode
                     throw new Exception($"Unknown op code {opCode}");
             }
         }
+    }
+
+    public long WaitForOutput()
+    {
+        while(Output.Count == 0)
+        {
+            // Wait for output
+        }
+
+        Output.TryDequeue(out var output);
+        return output;
     }
 
     private enum ParamMode
@@ -120,8 +131,9 @@ public class IntCode
         {
             // Wait for input
         }
-        
-        Memory[a] = Inputs.Dequeue();
+
+        Inputs.TryDequeue(out var input);
+        Memory[a] = input;
 
         _pc += 2;
     }
