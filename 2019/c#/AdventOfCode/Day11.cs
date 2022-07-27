@@ -20,7 +20,7 @@ namespace AdventOfCode
                 .ToArray();
 
             var emulator = new IntCode.IntCode(program);
-            var emulatorTask = Task.Run(() => emulator.Run(), CancellationToken.None);
+            var emulatorTask = emulator.RunAsync(CancellationToken.None);
             
             var panels = new Dictionary<Coordinate, int>();
             var robot = new Robot();
@@ -45,7 +45,7 @@ namespace AdventOfCode
                 .ToArray();
 
             var emulator = new IntCode.IntCode(program);
-            var emulatorTask = Task.Run(() => emulator.Run(), CancellationToken.None);
+            var emulatorTask = emulator.RunAsync(CancellationToken.None);
             
             var panels = new Dictionary<Coordinate, int> {{new Coordinate(0, 0), 1}};
             var robot = new Robot();

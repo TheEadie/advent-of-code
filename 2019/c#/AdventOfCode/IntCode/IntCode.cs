@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AdventOfCode.IntCode;
 
@@ -20,7 +22,9 @@ public class IntCode
         program.CopyTo(Memory, 0);
     }
 
-    public void Run()
+    public Task RunAsync(CancellationToken cancellationToken) => Task.Run(Run, cancellationToken);
+
+    private void Run()
     {
         _pc = 0;
 
@@ -100,7 +104,6 @@ public class IntCode
         return mode switch
         {
             ParamMode.Position => location,
-            ParamMode.Immediate => location,
             ParamMode.Relative => location + _relativeBase,
             _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
         };

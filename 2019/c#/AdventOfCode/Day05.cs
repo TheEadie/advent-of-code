@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Shouldly;
 
@@ -9,9 +11,9 @@ namespace AdventOfCode
     public class Day05
     {
         [Test]
-        public void Part1()
+        public async Task Part1()
         {
-            var program = File.ReadAllLines("day05.txt")[0]
+            var program = (await File.ReadAllLinesAsync("day05.txt"))[0]
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
@@ -20,7 +22,7 @@ namespace AdventOfCode
             
             emulator.Inputs.Enqueue(1);
 
-            emulator.Run();
+            await emulator.RunAsync(CancellationToken.None);
 
             foreach (var value in emulator.Output)
             {
@@ -32,9 +34,9 @@ namespace AdventOfCode
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var program = File.ReadAllLines("day05.txt")[0]
+            var program = (await File.ReadAllLinesAsync("day05.txt"))[0]
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
@@ -43,7 +45,7 @@ namespace AdventOfCode
             
             emulator.Inputs.Enqueue(5);
 
-            emulator.Run();
+            await emulator.RunAsync(CancellationToken.None);
 
             foreach (var value in emulator.Output)
             {

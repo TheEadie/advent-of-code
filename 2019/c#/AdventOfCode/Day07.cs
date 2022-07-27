@@ -43,19 +43,19 @@ namespace AdventOfCode
             ampE.Inputs.Enqueue(inputs[4]);
             
             ampA.Inputs.Enqueue(0);
-            var ampATask = Task.Run(() => ampA.Run());
-            var ampBTask = Task.Run(() => ampB.Run());
-            var ampCTask = Task.Run(() => ampC.Run());
-            var ampDTask = Task.Run(() => ampD.Run());
-            var ampETask = Task.Run(() => ampE.Run());
-
-
+            
             var cancellationSource = new CancellationTokenSource();
-            var wiresTask = Task.Run(() => WireUp(cancellationSource.Token), cancellationSource.Token);
-
-            void WireUp(CancellationToken cancellationToken)
+            var token = cancellationSource.Token;
+            
+            var ampATask = ampA.RunAsync(token);
+            var ampBTask = ampB.RunAsync(token);
+            var ampCTask = ampC.RunAsync(token);
+            var ampDTask = ampD.RunAsync(token);
+            var ampETask = ampE.RunAsync(token);
+            
+            Task.Run(() =>
             {
-                while (!cancellationToken.IsCancellationRequested)
+                while (!token.IsCancellationRequested)
                 {
                     if (!ampA.Output.IsEmpty)
                         ampB.Inputs.Enqueue(ampA.WaitForOutput());
@@ -66,11 +66,11 @@ namespace AdventOfCode
                     if (!ampD.Output.IsEmpty)
                         ampE.Inputs.Enqueue(ampD.WaitForOutput());
                 }
-            }
+            }, token);
 
             Task.WaitAll(ampATask, ampBTask, ampCTask, ampDTask, ampETask);
             cancellationSource.Cancel();
-            return Task.FromResult(ampE.Output.First());
+            return Task.FromResult(ampE.WaitForOutput());
         }
 
         [Test]
@@ -105,19 +105,19 @@ namespace AdventOfCode
             ampE.Inputs.Enqueue(inputs[4]);
             
             ampA.Inputs.Enqueue(0);
-            var ampATask = Task.Run(() => ampA.Run());
-            var ampBTask = Task.Run(() => ampB.Run());
-            var ampCTask = Task.Run(() => ampC.Run());
-            var ampDTask = Task.Run(() => ampD.Run());
-            var ampETask = Task.Run(() => ampE.Run());
-
-
+            
             var cancellationSource = new CancellationTokenSource();
-            var wiresTask = Task.Run(() => WireUp(cancellationSource.Token), cancellationSource.Token);
-
-            void WireUp(CancellationToken cancellationToken)
+            var token = cancellationSource.Token;
+            
+            var ampATask = ampA.RunAsync(token);
+            var ampBTask = ampB.RunAsync(token);
+            var ampCTask = ampC.RunAsync(token);
+            var ampDTask = ampD.RunAsync(token);
+            var ampETask = ampE.RunAsync(token);
+            
+            Task.Run(() =>
             {
-                while (!cancellationToken.IsCancellationRequested)
+                while (!token.IsCancellationRequested)
                 {
                     if (!ampA.Output.IsEmpty)
                         ampB.Inputs.Enqueue(ampA.WaitForOutput());
@@ -127,10 +127,12 @@ namespace AdventOfCode
                         ampD.Inputs.Enqueue(ampC.WaitForOutput());
                     if (!ampD.Output.IsEmpty)
                         ampE.Inputs.Enqueue(ampD.WaitForOutput());
+                    if (!ampD.Output.IsEmpty)
+                        ampE.Inputs.Enqueue(ampD.WaitForOutput());
                     if (!ampE.Output.IsEmpty)
                         ampA.Inputs.Enqueue(ampE.WaitForOutput());
                 }
-            }
+            }, token);
 
             Task.WaitAll(ampATask, ampBTask, ampCTask, ampDTask, ampETask);
             cancellationSource.Cancel();

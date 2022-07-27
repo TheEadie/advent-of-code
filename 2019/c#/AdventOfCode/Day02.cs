@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Shouldly;
 
@@ -9,9 +11,9 @@ namespace AdventOfCode
     public class Day02
     {
         [Test]
-        public void Part1()
+        public async Task Part1()
         {
-            var program = File.ReadAllLines("day02.txt")[0]
+            var program = (await File.ReadAllLinesAsync("day02.txt"))[0]
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
@@ -20,7 +22,7 @@ namespace AdventOfCode
             program[2] = 2;
             
             var emulator = new IntCode.IntCode(program);
-            emulator.Run();
+            await emulator.RunAsync(CancellationToken.None);
             var answer = emulator.Memory[0];
 
             Console.WriteLine(answer);
@@ -28,9 +30,9 @@ namespace AdventOfCode
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            (int noun, int verb) FindResult(long[] program, int result)
+            async Task<(int noun, int verb)> FindResult(long[] program, int result)
             {
                 for (var n = 0; n < 100; n++)
                 {
@@ -39,7 +41,7 @@ namespace AdventOfCode
                         program[1] = n;
                         program[2] = v;
                         var emulator = new IntCode.IntCode(program);
-                        emulator.Run();
+                        await emulator.RunAsync(CancellationToken.None);
                         var output = emulator.Memory[0];
 
                         if (output == result)
@@ -50,12 +52,12 @@ namespace AdventOfCode
                 throw new Exception($"No inputs found that result in {result}");
             }
 
-            var program = File.ReadAllLines("day02.txt")[0]
+            var program = (await File.ReadAllLinesAsync("day02.txt"))[0]
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
             
-            var (noun, verb) = FindResult(program, 19690720);
+            var (noun, verb) = await FindResult(program, 19690720);
 
             var answer = 100 * noun + verb;
             Console.WriteLine(answer);

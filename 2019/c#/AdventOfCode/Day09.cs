@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -22,7 +21,7 @@ namespace AdventOfCode
             var emulator = new IntCode.IntCode(program);
             emulator.Inputs.Enqueue(1);
 
-            emulator.Run();
+            await emulator.RunAsync(CancellationToken.None);
 
             foreach (var output in emulator.Output)
             {
@@ -44,7 +43,7 @@ namespace AdventOfCode
             var emulator = new IntCode.IntCode(program);
             emulator.Inputs.Enqueue(2);
 
-            emulator.Run();
+            await emulator.RunAsync(CancellationToken.None);
 
             foreach (var output in emulator.Output)
             {
