@@ -14,11 +14,11 @@ public class IntCode
     public ConcurrentQueue<long> Inputs { get; }
     public ConcurrentQueue<long> Output { get; }
 
-    public IntCode(long[] program)
+    public IntCode(long[] program, int memorySpace = 4096)
     {
         Inputs = new ConcurrentQueue<long>();
         Output = new ConcurrentQueue<long>();
-        Memory = new long[4096];
+        Memory = new long[memorySpace];
         program.CopyTo(Memory, 0);
     }
 
