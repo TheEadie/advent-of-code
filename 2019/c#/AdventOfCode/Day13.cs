@@ -83,7 +83,7 @@ namespace AdventOfCode
                     
                     emulator.Inputs.Enqueue(move);
 
-                    await Task.Delay(1);
+                    await Task.Delay(1, token);
                 }
             }, token);
 
