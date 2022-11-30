@@ -19,9 +19,9 @@ namespace AdventOfCode
             var pathOneCoordinates = GetPathCoordinates(pathOne);
             var pathTwoCoordinates = GetPathCoordinates(pathTwo);
             
-            var overlap = pathOneCoordinates.Intersect(pathTwoCoordinates);
+            var overlap = pathOneCoordinates.Keys.Intersect(pathTwoCoordinates.Keys);
 
-            var answer =overlap.Select(x => Math.Abs(x.X) + Math.Abs(x.Y)).Min();
+            var answer = overlap.Select(x => Math.Abs(x.X) + Math.Abs(x.Y)).Min();
 
             Console.WriteLine(answer);
             answer.ShouldBe(245);
@@ -30,53 +30,79 @@ namespace AdventOfCode
         [Test]
         public void Part2()
         {
+            var instructions = File.ReadAllLines("day03.txt");
+            var pathOne = instructions[0].Split(',');
+            var pathTwo = instructions[1].Split(',');
+
+            var pathOneCoordinates = GetPathCoordinates(pathOne);
+            var pathTwoCoordinates = GetPathCoordinates(pathTwo);
+            
+            var overlap = pathOneCoordinates.Keys.Intersect(pathTwoCoordinates.Keys);
+
+            var answer = overlap.Select(x => pathOneCoordinates[x] + pathTwoCoordinates[x]).Min();
+
+            Console.WriteLine(answer);
+            answer.ShouldBe(48262);
         }
 
-        private IEnumerable<Coordinate> GetPathCoordinates(IEnumerable<string> pathOne)
+        private IDictionary<Coordinate, int> GetPathCoordinates(IEnumerable<string> pathOne)
         {
-            var pathCoordinates = new List<Coordinate>();
+            var pathCoordinates = new Dictionary<Coordinate, int>();
             var current = new Coordinate(0, 0);
+            var currentDistance = 0;
             foreach (var line in pathOne)
             {
-                var (next, lineCoordinates) = GetLineCoordinates(line, current);
-                pathCoordinates.AddRange(lineCoordinates);
-                current = next;
+                (current, currentDistance) = GetLineCoordinates(line, current, currentDistance, pathCoordinates);
             }
-
             return pathCoordinates;
         }
 
-        private (Coordinate, IEnumerable<Coordinate>) GetLineCoordinates(string input, Coordinate current)
+        private (Coordinate, int) GetLineCoordinates(string input, Coordinate current, int currentDistance, IDictionary<Coordinate, int> map)
         {
             var length = int.Parse(input[1..]);
-            var coordinates = new List<Coordinate>();
             
             switch (input[0])
             {
                 case 'U':
                     for (var i = 1; i < length; i++)
                     {
-                        coordinates.Add(current with {Y = current.Y + i});
+                        var up = current with {Y = current.Y + i};
+                        if (!map.ContainsKey(up))
+                        {
+                            map.Add(up, currentDistance + i);
+                        }
                     }
-                    return (current with {Y = current.Y + length}, coordinates);
+                    return (current with {Y = current.Y + length}, currentDistance + length);
                 case 'D':
                     for (var i = 1; i < length; i++)
                     {
-                        coordinates.Add(current with {Y = current.Y - i});
+                        var down = current with {Y = current.Y - i};
+                        if (!map.ContainsKey(down))
+                        {
+                            map.Add(down, currentDistance + i);
+                        }
                     }
-                    return (current with {Y = current.Y - length}, coordinates);
+                    return (current with {Y = current.Y - length}, currentDistance + length);
                 case 'R':
                     for (var i = 1; i < length; i++)
                     {
-                        coordinates.Add(current with {X = current.X + i});
+                        var right = current with {X = current.X + i};
+                        if (!map.ContainsKey(right))
+                        {
+                            map.Add(right, currentDistance + i);
+                        }
                     }
-                    return (current with {X = current.X + length}, coordinates);
+                    return (current with {X = current.X + length}, currentDistance + length);
                 case 'L':
                     for (var i = 1; i < length; i++)
                     {
-                        coordinates.Add(current with {X = current.X - i});
+                        var left = current with {X = current.X - i};
+                        if (!map.ContainsKey(left))
+                        {
+                            map.Add(left, currentDistance + i);
+                        }
                     }
-                    return (current with {X = current.X - length}, coordinates);
+                    return (current with {X = current.X - length}, currentDistance + length);
                 default:
                     throw new ArgumentException($"Unknown direction {input[0]}");
             }
