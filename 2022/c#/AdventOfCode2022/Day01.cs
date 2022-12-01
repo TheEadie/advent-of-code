@@ -31,12 +31,14 @@ public class Day01
 
     private static IEnumerable<Elf> ParseInput(string input)
     {
+        Elf ParseElf(string elfString) => new(
+            elfString.Split(Environment.NewLine)
+                .Select(int.Parse)
+                .ToList());
+        
         return input
             .Split(Environment.NewLine + Environment.NewLine)
-            .Select(x => 
-                new Elf(x.Split(Environment.NewLine)
-                    .Select(int.Parse)
-                    .ToList()));
+            .Select(ParseElf);
     }
 
     private record Elf(IReadOnlyCollection<int> Calories);
