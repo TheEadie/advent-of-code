@@ -6,7 +6,7 @@ public class Day01
     [TestCase("data/01 - Puzzle Input.txt", 69795, TestName = "Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
-        var elves = ParseInput(File.ReadAllLines(inputFile));
+        var elves = ParseInput(File.ReadAllText(inputFile));
 
         var answer = elves.Max(x => x.Calories.Sum());
         
@@ -18,7 +18,7 @@ public class Day01
     [TestCase("data/01 - Puzzle Input.txt", 208437, TestName = "Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
-        var elves = ParseInput(File.ReadAllLines(inputFile));
+        var elves = ParseInput(File.ReadAllText(inputFile));
 
         var answer = elves.OrderByDescending(x => x.Calories.Sum())
             .Take(3)
@@ -29,40 +29,15 @@ public class Day01
         answer.ShouldBe(expected);
     }
 
-    private static IEnumerable<Elf> ParseInput(IEnumerable<string> input)
+    private static IEnumerable<Elf> ParseInput(string input)
     {
-        var builder = new ElfBuilder();
-        var elves = new List<Elf>();
-
-        foreach (var line in input)
-        {
-            if (string.IsNullOrEmpty(line))
-            {
-                elves.Add(builder.Build());
-                builder = new ElfBuilder();
-            }
-            else
-            {
-                builder.Add(int.Parse(line));
-            }
-        }
-        
-        // Add the last elf
-        elves.Add(builder.Build());
-        return elves;
+        return input
+            .Split(Environment.NewLine + Environment.NewLine)
+            .Select(x => 
+                new Elf(x.Split(Environment.NewLine)
+                    .Select(int.Parse)
+                    .ToList()));
     }
 
     private record Elf(IReadOnlyCollection<int> Calories);
-
-    private class ElfBuilder
-    {
-        private readonly List<int> _calories = new();
-
-        public void Add(int calorie)
-        {
-            _calories.Add(calorie);
-        }
-
-        public Elf Build() => new(_calories);
-    }
 }
