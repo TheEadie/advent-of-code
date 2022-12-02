@@ -6,7 +6,21 @@ public class Day02
     [TestCase("data/02 - Puzzle Input.txt", 13009, TestName = "Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
-        var strategies = ParseInputPartOne(File.ReadAllText(inputFile));
+        var strategies = File.ReadAllText(inputFile)
+            .Split(Environment.NewLine)
+            .Select(inputString => inputString switch
+            {
+                "A X" => new Round(Hand.Rock, Hand.Rock),
+                "B X" => new Round(Hand.Paper, Hand.Rock),
+                "C X" => new Round(Hand.Scissors, Hand.Rock),
+                "A Y" => new Round(Hand.Rock, Hand.Paper),
+                "B Y" => new Round(Hand.Paper, Hand.Paper),
+                "C Y" => new Round(Hand.Scissors, Hand.Paper),
+                "A Z" => new Round(Hand.Rock, Hand.Scissors),
+                "B Z" => new Round(Hand.Paper, Hand.Scissors),
+                "C Z" => new Round(Hand.Scissors, Hand.Scissors),
+                _ => throw new ArgumentException("Unknown input")
+            });
 
         var answer = strategies.Select(ScoreRound).Sum();
 
@@ -18,7 +32,21 @@ public class Day02
     [TestCase("data/02 - Puzzle Input.txt", 10398, TestName = "Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
-        var strategies = ParseInputPartTwo(File.ReadAllText(inputFile));
+        var strategies = File.ReadAllText(inputFile)
+            .Split(Environment.NewLine)
+            .Select(inputString => inputString switch
+            {
+                "A X" => new Round(Hand.Rock, Hand.Scissors),
+                "B X" => new Round(Hand.Paper, Hand.Rock),
+                "C X" => new Round(Hand.Scissors, Hand.Paper),
+                "A Y" => new Round(Hand.Rock, Hand.Rock),
+                "B Y" => new Round(Hand.Paper, Hand.Paper),
+                "C Y" => new Round(Hand.Scissors, Hand.Scissors),
+                "A Z" => new Round(Hand.Rock, Hand.Paper),
+                "B Z" => new Round(Hand.Paper, Hand.Scissors),
+                "C Z" => new Round(Hand.Scissors, Hand.Rock),
+                _ => throw new ArgumentException("Unknown input")
+            });
 
         var answer = strategies.Select(ScoreRound).Sum();
 
@@ -49,54 +77,6 @@ public class Day02
         }
 
         return score;
-    }
-
-    private static IEnumerable<Round> ParseInputPartOne(string input)
-    {
-        Round ParseStrategy(string inputString)
-        {
-            return inputString switch
-            {
-                "A X" => new Round(Hand.Rock, Hand.Rock),
-                "B X" => new Round(Hand.Paper, Hand.Rock),
-                "C X" => new Round(Hand.Scissors, Hand.Rock),
-                "A Y" => new Round(Hand.Rock, Hand.Paper),
-                "B Y" => new Round(Hand.Paper, Hand.Paper),
-                "C Y" => new Round(Hand.Scissors, Hand.Paper),
-                "A Z" => new Round(Hand.Rock, Hand.Scissors),
-                "B Z" => new Round(Hand.Paper, Hand.Scissors),
-                "C Z" => new Round(Hand.Scissors, Hand.Scissors),
-                _ => throw new ArgumentException("Unknown input")
-            };
-        }
-        
-        return input
-            .Split(Environment.NewLine)
-            .Select(ParseStrategy);
-    }
-    
-    private static IEnumerable<Round> ParseInputPartTwo(string input)
-    {
-        Round ParseStrategy(string inputString)
-        {
-            return inputString switch
-            {
-                "A X" => new Round(Hand.Rock, Hand.Scissors),
-                "B X" => new Round(Hand.Paper, Hand.Rock),
-                "C X" => new Round(Hand.Scissors, Hand.Paper),
-                "A Y" => new Round(Hand.Rock, Hand.Rock),
-                "B Y" => new Round(Hand.Paper, Hand.Paper),
-                "C Y" => new Round(Hand.Scissors, Hand.Scissors),
-                "A Z" => new Round(Hand.Rock, Hand.Paper),
-                "B Z" => new Round(Hand.Paper, Hand.Scissors),
-                "C Z" => new Round(Hand.Scissors, Hand.Rock),
-                _ => throw new ArgumentException("Unknown input")
-            };
-        }
-
-        return input
-            .Split(Environment.NewLine)
-            .Select(ParseStrategy);
     }
 
     private record Round(Hand Opponent, Hand Us);
