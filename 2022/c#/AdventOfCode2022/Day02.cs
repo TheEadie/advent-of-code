@@ -6,9 +6,8 @@ public class Day02
     [TestCase("data/02 - Puzzle Input.txt", 13009, TestName = "Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
-        var strategies = File.ReadAllText(inputFile)
-            .Split(Environment.NewLine)
-            .Select(inputString => inputString switch
+        var strategies = File.ReadAllLines(inputFile)
+            .Select(x => x switch
             {
                 "A X" => new Round(Hand.Rock, Hand.Rock),
                 "B X" => new Round(Hand.Paper, Hand.Rock),
@@ -19,7 +18,7 @@ public class Day02
                 "A Z" => new Round(Hand.Rock, Hand.Scissors),
                 "B Z" => new Round(Hand.Paper, Hand.Scissors),
                 "C Z" => new Round(Hand.Scissors, Hand.Scissors),
-                _ => throw new ArgumentException("Unknown input")
+                _ => throw new ArgumentOutOfRangeException()
             });
 
         var answer = strategies.Select(ScoreRound).Sum();
@@ -32,9 +31,8 @@ public class Day02
     [TestCase("data/02 - Puzzle Input.txt", 10398, TestName = "Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
-        var strategies = File.ReadAllText(inputFile)
-            .Split(Environment.NewLine)
-            .Select(inputString => inputString switch
+        var strategies = File.ReadAllLines(inputFile)
+            .Select(x => x switch
             {
                 "A X" => new Round(Hand.Rock, Hand.Scissors),
                 "B X" => new Round(Hand.Paper, Hand.Rock),
@@ -45,7 +43,7 @@ public class Day02
                 "A Z" => new Round(Hand.Rock, Hand.Paper),
                 "B Z" => new Round(Hand.Paper, Hand.Scissors),
                 "C Z" => new Round(Hand.Scissors, Hand.Rock),
-                _ => throw new ArgumentException("Unknown input")
+                _ => throw new ArgumentOutOfRangeException()
             });
 
         var answer = strategies.Select(ScoreRound).Sum();
