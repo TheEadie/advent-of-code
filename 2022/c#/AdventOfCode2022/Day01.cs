@@ -9,11 +9,11 @@ public class Day01
         var elves = ParseInput(File.ReadAllText(inputFile));
 
         var answer = elves.Max(x => x.Calories.Sum());
-        
+
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
-    
+
     [TestCase("data/01 - Sample.txt", 45000, TestName = "Sample")]
     [TestCase("data/01 - Puzzle Input.txt", 208437, TestName = "Puzzle Input")]
     public void Part2(string inputFile, int expected)
@@ -24,18 +24,18 @@ public class Day01
             .Take(3)
             .SelectMany(x => x.Calories)
             .Sum();
-        
+
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
 
     private static IEnumerable<Elf> ParseInput(string input)
     {
-        Elf ParseElf(string elfString) => new(
+        static Elf ParseElf(string elfString) => new(
             elfString.Split(Environment.NewLine)
                 .Select(int.Parse)
                 .ToList());
-        
+
         return input
             .Split(Environment.NewLine + Environment.NewLine)
             .Select(ParseElf);

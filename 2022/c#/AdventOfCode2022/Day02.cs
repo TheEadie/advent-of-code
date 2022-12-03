@@ -18,7 +18,7 @@ public class Day02
                 "A Z" => new Round(Hand.Rock, Hand.Scissors),
                 "B Z" => new Round(Hand.Paper, Hand.Scissors),
                 "C Z" => new Round(Hand.Scissors, Hand.Scissors),
-                _ => throw new ArgumentOutOfRangeException()
+                _ => throw new ArgumentOutOfRangeException($"Unknown input: {x}")
             });
 
         var answer = strategies.Select(ScoreRound).Sum();
@@ -26,7 +26,7 @@ public class Day02
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
-    
+
     [TestCase("data/02 - Sample.txt", 12, TestName = "Sample")]
     [TestCase("data/02 - Puzzle Input.txt", 10398, TestName = "Puzzle Input")]
     public void Part2(string inputFile, int expected)
@@ -43,7 +43,7 @@ public class Day02
                 "A Z" => new Round(Hand.Rock, Hand.Paper),
                 "B Z" => new Round(Hand.Paper, Hand.Scissors),
                 "C Z" => new Round(Hand.Scissors, Hand.Rock),
-                _ => throw new ArgumentOutOfRangeException()
+                _ => throw new ArgumentOutOfRangeException($"Unknown input: {x}")
             });
 
         var answer = strategies.Select(ScoreRound).Sum();
@@ -61,15 +61,15 @@ public class Day02
             Hand.Rock => 1,
             Hand.Paper => 2,
             Hand.Scissors => 3,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException($"Unknown Hand: {round.Us}")
         };
 
         if (round.Opponent == round.Us)
             score += 3;
-        
-        if (round.Us == Hand.Rock && round.Opponent == Hand.Scissors ||
-            round.Us == Hand.Scissors && round.Opponent == Hand.Paper ||
-            round.Us == Hand.Paper && round.Opponent == Hand.Rock)
+
+        if ((round.Us == Hand.Rock && round.Opponent == Hand.Scissors) ||
+            (round.Us == Hand.Scissors && round.Opponent == Hand.Paper) ||
+            (round.Us == Hand.Paper && round.Opponent == Hand.Rock))
         {
             score += 6;
         }
@@ -78,7 +78,7 @@ public class Day02
     }
 
     private record Round(Hand Opponent, Hand Us);
-    
+
     private enum Hand
     {
         Rock,
