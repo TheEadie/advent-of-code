@@ -8,12 +8,12 @@ public class Day08
     {
         var input = ParseInput(File.ReadAllText(inputFile));
 
-        var answer = input.Coordinates.Count(x =>
-            FindTreesUp(input, x.Key).All(i => i < x.Value) ||
-            FindTreesDown(input, x.Key).All(i => i < x.Value) ||
-            FindTreesLeft(input, x.Key).All(i => i < x.Value) ||
-            FindTreesRight(input, x.Key).All(i => i < x.Value));
-                     
+        var answer = input.Count(x =>
+            MoveAlongVector(input, x.Key, Vector.Up).All(i => i < x.Value) ||
+            MoveAlongVector(input, x.Key, Vector.Down).All(i => i < x.Value) ||
+            MoveAlongVector(input, x.Key, Vector.Left).All(i => i < x.Value) ||
+            MoveAlongVector(input, x.Key, Vector.Right).All(i => i < x.Value));
+
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
@@ -24,51 +24,28 @@ public class Day08
     {
         var input = ParseInput(File.ReadAllText(inputFile));
 
-        var scores = input.Coordinates.Select(x =>
-            FindTreesUp(input, x.Key).TakeUntil(i => i >= x.Value).Count() *
-            FindTreesDown(input, x.Key).TakeUntil(i => i >= x.Value).Count() *
-            FindTreesLeft(input, x.Key).TakeUntil(i => i >= x.Value).Count() *
-            FindTreesRight(input, x.Key).TakeUntil(i => i >= x.Value).Count());
-
-        var answer = scores.Max();
+        var answer = input.Max(x =>
+            MoveAlongVector(input, x.Key, Vector.Up).TakeUntil(i => i >= x.Value).Count() *
+            MoveAlongVector(input, x.Key, Vector.Down).TakeUntil(i => i >= x.Value).Count() *
+            MoveAlongVector(input, x.Key, Vector.Left).TakeUntil(i => i >= x.Value).Count() *
+            MoveAlongVector(input, x.Key, Vector.Right).TakeUntil(i => i >= x.Value).Count());
 
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
-    
-    private static IEnumerable<int> FindTreesUp(Grid input, Coordinate coordinate)
+
+    private static IEnumerable<int> MoveAlongVector(IDictionary<Coordinate, int> input, Coordinate coordinate, Vector step)
     {
-        for (var i = coordinate.Y - 1; i >= 0; i--)
+        var next = new Coordinate(coordinate.X + step.X, coordinate.Y + step.Y);
+
+        while (input.ContainsKey(next))
         {
-            yield return input.Coordinates[ coordinate with { Y = i }];
-        }
-    }
-    
-    private static IEnumerable<int> FindTreesDown(Grid input, Coordinate coordinate)
-    {
-        for (var i = coordinate.Y + 1; i < input.Height; i++)
-        {
-            yield return input.Coordinates[ coordinate with { Y = i }];
-        }
-    }
-    
-    private static IEnumerable<int> FindTreesLeft(Grid input, Coordinate coordinate)
-    {
-        for (var i = coordinate.X - 1; i >= 0; i--)
-        {
-            yield return input.Coordinates[ coordinate with { X = i }];
-        }
-    }
-    
-    private static IEnumerable<int> FindTreesRight(Grid input, Coordinate coordinate)
-    {
-        for (var i = coordinate.X + 1; i < input.Width; i++)
-        {
-            yield return input.Coordinates[ coordinate with { X = i}];
+            yield return input[next];
+            next = new Coordinate(next.X + step.X, next.Y + step.Y);
         }
     }
 
-    private static Grid ParseInput(string input)
+    private static IDictionary<Coordinate, int> ParseInput(string input)
     {
         var lines = input.Split("\n");
 
@@ -78,7 +55,7 @@ public class Day08
         foreach (var line in lines)
         {
             var x = 0;
-            foreach (var tree in line.ToCharArray())
+            foreach (var tree in line)
             {
                 treeField.Add(new Coordinate(x, y), int.Parse(tree.ToString()));
                 x++;
@@ -86,20 +63,26 @@ public class Day08
             y++;
         }
 
-        return new Grid(treeField, 
-            treeField.Max(x => x.Key.X) + 1, 
-            treeField.Max(x => x.Key.Y) + 1);
+        return treeField;
     }
 
     private record Coordinate(int X, int Y);
 
-    private record Grid(IDictionary<Coordinate, int> Coordinates, int Width, int Height);
+    private record Vector(int X, int Y)
+    {
+        public static Vector Up => new(0, -1);
+        public static Vector Down => new(0, 1);
+        public static Vector Left => new(-1, 0);
+        public static Vector Right => new(1, 0);
+    }
 }
 
 public static partial class LinqExtensions
 {
-    public static IEnumerable<T> TakeUntil<T>(this IEnumerable<T> data, Func<T, bool> predicate) {
-        foreach (var item in data) {
+    public static IEnumerable<T> TakeUntil<T>(this IEnumerable<T> data, Func<T, bool> predicate)
+    {
+        foreach (var item in data)
+        {
             yield return item;
             if (predicate(item))
                 break;
