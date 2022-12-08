@@ -31,7 +31,7 @@ public class Day06
     }
 }
 
-public static class LinqExtensions
+public static partial class LinqExtensions
 {
     public static IEnumerable<IEnumerable<T>> Window<T>(this IEnumerable<T> source, int size)
     {

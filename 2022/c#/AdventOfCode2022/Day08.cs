@@ -14,10 +14,10 @@ public class Day08
         {
             for (var y = 0; y < input.GetLength(1); y++)
             {
-                if (ClearViewUp(input, x, y) ||
-                    ClearViewDown(input, x, y) ||
-                    ClearViewLeft(input, x, y) ||
-                    ClearViewRight(input, x, y))
+                if (FindTreesUp(input, x, y).All(i => i < input[x, y]) ||
+                    FindTreesDown(input, x, y).All(i => i < input[x, y]) ||
+                    FindTreesLeft(input, x, y).All(i => i < input[x, y]) ||
+                    FindTreesRight(input, x, y).All(i => i < input[x, y]))
                 {
                     answer++;
                 }
@@ -28,64 +28,8 @@ public class Day08
         answer.ShouldBe(expected);
     }
 
-    private static bool ClearViewUp(int[,] input, int x, int y)
-    {
-        var tree = input[x, y];
-        for (var i = 1; i <= y; i++)
-        {
-            if (input[x, y - i] >= tree)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-    
-    private static bool ClearViewDown(int[,] input, int x, int y)
-    {
-        var tree = input[x, y];
-        for (var i = 1; i < input.GetLength(1) - y; i++)
-        {
-            if (input[x, y + i] >= tree)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-    
-    private static bool ClearViewLeft(int[,] input, int x, int y)
-    {
-        var tree = input[x, y];
-        for (var i = 1; i <= x; i++)
-        {
-            if (input[x - i, y] >= tree)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-    
-    private static bool ClearViewRight(int[,] input, int x, int y)
-    {
-        var tree = input[x, y];
-        for (var i = 1; i < input.GetLength(0) - x; i++)
-        {
-            if (input[x + i, y] >= tree)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    [TestCase("data/08 - Sample.txt", 8, TestName = "Sample")]
-    [TestCase("data/08 - Puzzle Input.txt", 671160, TestName = "Puzzle Input")]
+    [TestCase("data/08 - Sample.txt", 8, TestName = "Part 2 -Sample")]
+    [TestCase("data/08 - Puzzle Input.txt", 671160, TestName = "Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var input = ParseInput(File.ReadAllText(inputFile));
@@ -96,10 +40,10 @@ public class Day08
         {
             for (var y = 0; y < input.GetLength(1); y++)
             {
-                scores.Add(TreesUp(input, x, y) *
-                           TreesDown(input, x, y) *
-                           TreesLeft(input, x, y) *
-                           TreesRight(input, x, y));
+                scores.Add(FindTreesUp(input, x, y).TakeUntil(i => i >= input[x, y]).Count() *
+                           FindTreesDown(input, x, y).TakeUntil(i => i >= input[x, y]).Count() *
+                           FindTreesLeft(input, x, y).TakeUntil(i => i >= input[x, y]).Count() *
+                           FindTreesRight(input, x, y).TakeUntil(i => i >= input[x, y]).Count());
             }
         }
         
@@ -109,71 +53,39 @@ public class Day08
         answer.ShouldBe(expected);
     }
     
-    private static int TreesUp(int[,] input, int x, int y)
+    private static IEnumerable<int> FindTreesUp(int[,] input, int x, int y)
     {
-        var tree = input[x, y];
-        var treesSeen = 0;
         for (var i = 1; i <= y; i++)
         {
-            treesSeen++;
-            if (input[x, y - i] >= tree)
-            {
-                return treesSeen;
-            }
+            yield return input[x, y - i];
         }
-
-        return treesSeen;
     }
     
-    private static int TreesDown(int[,] input, int x, int y)
+    private static IEnumerable<int> FindTreesDown(int[,] input, int x, int y)
     {
-        var tree = input[x, y];
-        var treesSeen = 0;
         for (var i = 1; i < input.GetLength(1) - y; i++)
         {
-            treesSeen++;
-            if (input[x, y + i] >= tree)
-            {
-                return treesSeen;
-            }
+            yield return input[x, y + i];
         }
-
-        return treesSeen;
     }
     
-    private static int TreesLeft(int[,] input, int x, int y)
+    private static IEnumerable<int> FindTreesLeft(int[,] input, int x, int y)
     {
-        var tree = input[x, y];
-        var treesSeen = 0;
         for (var i = 1; i <= x; i++)
         {
-            treesSeen++;
-            if (input[x - i, y] >= tree)
-            {
-                return treesSeen;
-            }
+            yield return input[x - i, y];
         }
-
-        return treesSeen;
     }
     
-    private static int TreesRight(int[,] input, int x, int y)
+    private static IEnumerable<int> FindTreesRight(int[,] input, int x, int y)
     {
-        var tree = input[x, y];
-        var treesSeen = 0;
         for (var i = 1; i < input.GetLength(0) - x; i++)
         {
-            treesSeen++;
-            if (input[x + i, y] >= tree)
-            {
-                return treesSeen;
-            }
+            yield return input[x + i, y];
         }
-
-        return treesSeen;
     }
-    
-    private int[,] ParseInput(string input)
+
+    private static int[,] ParseInput(string input)
     {
         var lines = input.Split("\n");
 
@@ -192,5 +104,16 @@ public class Day08
         }
 
         return treeField;
+    }
+}
+
+public static partial class LinqExtensions
+{
+    public static IEnumerable<T> TakeUntil<T>(this IEnumerable<T> data, Func<T, bool> predicate) {
+        foreach (var item in data) {
+            yield return item;
+            if (predicate(item))
+                break;
+        }
     }
 }
