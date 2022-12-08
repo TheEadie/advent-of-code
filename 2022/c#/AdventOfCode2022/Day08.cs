@@ -8,22 +8,12 @@ public class Day08
     {
         var input = ParseInput(File.ReadAllText(inputFile));
 
-        var answer = 0;
-
-        for (var x = 0; x < input.GetLength(0); x++)
-        {
-            for (var y = 0; y < input.GetLength(1); y++)
-            {
-                if (FindTreesUp(input, x, y).All(i => i < input[x, y]) ||
-                    FindTreesDown(input, x, y).All(i => i < input[x, y]) ||
-                    FindTreesLeft(input, x, y).All(i => i < input[x, y]) ||
-                    FindTreesRight(input, x, y).All(i => i < input[x, y]))
-                {
-                    answer++;
-                }
-            }
-        }
-
+        var answer = input.Coordinates.Count(x =>
+            FindTreesUp(input, x.Key).All(i => i < x.Value) ||
+            FindTreesDown(input, x.Key).All(i => i < x.Value) ||
+            FindTreesLeft(input, x.Key).All(i => i < x.Value) ||
+            FindTreesRight(input, x.Key).All(i => i < x.Value));
+                     
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
@@ -34,62 +24,55 @@ public class Day08
     {
         var input = ParseInput(File.ReadAllText(inputFile));
 
-        var scores = new List<int>();
+        var scores = input.Coordinates.Select(x =>
+            FindTreesUp(input, x.Key).TakeUntil(i => i >= x.Value).Count() *
+            FindTreesDown(input, x.Key).TakeUntil(i => i >= x.Value).Count() *
+            FindTreesLeft(input, x.Key).TakeUntil(i => i >= x.Value).Count() *
+            FindTreesRight(input, x.Key).TakeUntil(i => i >= x.Value).Count());
 
-        for (var x = 0; x < input.GetLength(0); x++)
-        {
-            for (var y = 0; y < input.GetLength(1); y++)
-            {
-                scores.Add(FindTreesUp(input, x, y).TakeUntil(i => i >= input[x, y]).Count() *
-                           FindTreesDown(input, x, y).TakeUntil(i => i >= input[x, y]).Count() *
-                           FindTreesLeft(input, x, y).TakeUntil(i => i >= input[x, y]).Count() *
-                           FindTreesRight(input, x, y).TakeUntil(i => i >= input[x, y]).Count());
-            }
-        }
-        
         var answer = scores.Max();
 
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
     
-    private static IEnumerable<int> FindTreesUp(int[,] input, int x, int y)
+    private static IEnumerable<int> FindTreesUp(Grid input, Coordinate coordinate)
     {
-        for (var i = 1; i <= y; i++)
+        for (var i = coordinate.Y - 1; i >= 0; i--)
         {
-            yield return input[x, y - i];
+            yield return input.Coordinates[ coordinate with { Y = i }];
         }
     }
     
-    private static IEnumerable<int> FindTreesDown(int[,] input, int x, int y)
+    private static IEnumerable<int> FindTreesDown(Grid input, Coordinate coordinate)
     {
-        for (var i = 1; i < input.GetLength(1) - y; i++)
+        for (var i = coordinate.Y + 1; i < input.Height; i++)
         {
-            yield return input[x, y + i];
+            yield return input.Coordinates[ coordinate with { Y = i }];
         }
     }
     
-    private static IEnumerable<int> FindTreesLeft(int[,] input, int x, int y)
+    private static IEnumerable<int> FindTreesLeft(Grid input, Coordinate coordinate)
     {
-        for (var i = 1; i <= x; i++)
+        for (var i = coordinate.X - 1; i >= 0; i--)
         {
-            yield return input[x - i, y];
+            yield return input.Coordinates[ coordinate with { X = i }];
         }
     }
     
-    private static IEnumerable<int> FindTreesRight(int[,] input, int x, int y)
+    private static IEnumerable<int> FindTreesRight(Grid input, Coordinate coordinate)
     {
-        for (var i = 1; i < input.GetLength(0) - x; i++)
+        for (var i = coordinate.X + 1; i < input.Width; i++)
         {
-            yield return input[x + i, y];
+            yield return input.Coordinates[ coordinate with { X = i}];
         }
     }
 
-    private static int[,] ParseInput(string input)
+    private static Grid ParseInput(string input)
     {
         var lines = input.Split("\n");
 
-        var treeField = new int[lines[0].Length, lines.Length];
+        var treeField = new Dictionary<Coordinate, int>();
         var y = 0;
 
         foreach (var line in lines)
@@ -97,14 +80,20 @@ public class Day08
             var x = 0;
             foreach (var tree in line.ToCharArray())
             {
-                treeField[x, y] = int.Parse(tree.ToString());
+                treeField.Add(new Coordinate(x, y), int.Parse(tree.ToString()));
                 x++;
             }
             y++;
         }
 
-        return treeField;
+        return new Grid(treeField, 
+            treeField.Max(x => x.Key.X) + 1, 
+            treeField.Max(x => x.Key.Y) + 1);
     }
+
+    private record Coordinate(int X, int Y);
+
+    private record Grid(IDictionary<Coordinate, int> Coordinates, int Width, int Height);
 }
 
 public static partial class LinqExtensions
