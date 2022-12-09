@@ -6,19 +6,16 @@ public class Day09
     [TestCase("data/09 - Puzzle Input.txt", 5735, TestName = "Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
-        var input = ParseInput(File.ReadAllText(inputFile));
+        var start = new Rope(new Coordinate(0, 0), Enumerable.Repeat(new Coordinate(0, 0), 1));
 
-        var start = new Rope(new Coordinate(0, 0), new [] {new Coordinate(0, 0)});
-        var positions = new List<Rope>();
-
-        var _ = input.Aggregate(start, (rope, vector) =>
-        {
-            var next = Move(rope, vector);
-            positions.Add(next);
-            return next;
-        });
-
-        var answer = positions.DistinctBy(x => x.Tail.Last()).Count();
+        var answer = ParseInput(File.ReadAllText(inputFile))
+            .Aggregate(new List<Rope> {start},
+                (ropes, vector) =>
+                {
+                    ropes.Add(Move(ropes.Last(), vector));
+                    return ropes;
+                })
+            .DistinctBy(x => x.Tail.Last()).Count();
 
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
@@ -29,31 +26,16 @@ public class Day09
     [TestCase("data/09 - Puzzle Input.txt", 2478, TestName = "Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
-        var input = ParseInput(File.ReadAllText(inputFile));
+        var start = new Rope(new Coordinate(0, 0), Enumerable.Repeat(new Coordinate(0,0), 9));
 
-        var start = new Rope(new Coordinate(0, 0),
-            new []
-            {
-                new Coordinate(0, 0),
-                new Coordinate(0, 0),
-                new Coordinate(0, 0),
-                new Coordinate(0, 0),
-                new Coordinate(0, 0),
-                new Coordinate(0, 0),
-                new Coordinate(0, 0),
-                new Coordinate(0, 0),
-                new Coordinate(0, 0)
-            });
-        var positions = new List<Rope>();
-
-        var _ = input.Aggregate(start, (rope, vector) =>
-        {
-            var next = Move(rope, vector);
-            positions.Add(next);
-            return next;
-        });
-
-        var answer = positions.DistinctBy(x => x.Tail.Last()).Count();
+        var answer = ParseInput(File.ReadAllText(inputFile))
+            .Aggregate(new List<Rope> {start},
+                (ropes, vector) =>
+                {
+                    ropes.Add(Move(ropes.Last(), vector));
+                    return ropes;
+                })
+            .DistinctBy(x => x.Tail.Last()).Count();
 
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
