@@ -47,54 +47,37 @@ public class Day09
         var knots = new List<Coordinate>();
         var prevKnot = newHead;
 
-        foreach (var t in rope.Tail)
+        foreach (var currentTail in rope.Tail)
         {
-            var diff = new Vector(
-                Math.Clamp(prevKnot.X - t.X, -1, 1),
-                Math.Clamp(prevKnot.Y - t.Y, -1, 1));
+            var diff = new Vector(prevKnot.X - currentTail.X, prevKnot.Y - currentTail.Y);
 
-            var newKnot = new Coordinate(t.X + diff.X, t.Y + diff.Y);
-            if (newKnot == prevKnot)
-            {
-                newKnot = t;
-            }
+            var newKnot = Math.Abs(diff.X) > 1 || Math.Abs(diff.Y) > 1 ? 
+                new Coordinate(currentTail.X + Math.Clamp(diff.X, -1, 1), 
+                    currentTail.Y + Math.Clamp(diff.Y, -1, 1)) :
+                currentTail;
             
             knots.Add(newKnot);
+
             prevKnot = newKnot;
         }
 
         return new Rope(newHead, knots);
     }
 
-    private IEnumerable<Vector> ParseInput(string input)
+    private static IEnumerable<Vector> ParseInput(string input)
     {
-        IEnumerable<Vector> ParseLine(string line)
-        {
-            var parts = line.Split(" ");
-            var times = int.Parse(parts[1]);
-
-            for (var i = 0; i < times; i++)
-            {
-                switch (parts[0])
+        return input.Split("\n")
+            .SelectMany(line => 
+                Enumerable.Repeat(line[0], int.Parse(line[2..]))
+            .Select(x => 
+                x switch
                 {
-                    case "U":
-                        yield return new Vector(0, -1);
-                        break;
-                    case "D":
-                        yield return new Vector(0, 1);
-                        break;
-                    case "L":
-                        yield return new Vector(-1, 0);
-                        break;
-                    case "R":
-                        yield return new Vector(1, 0);
-                        break;
-                }
-            }
-        }
-        
-        return input.Split("\n").SelectMany(ParseLine);
-        
+                    'U' => new Vector(0, -1),
+                    'D' => new Vector(0, 1),
+                    'L' => new Vector(-1, 0),
+                    'R' => new Vector(1, 0),
+                    _ => throw new ArgumentOutOfRangeException()
+                }));
     }
 
     private record Rope(Coordinate Head, IEnumerable<Coordinate> Tail);
