@@ -30,14 +30,3 @@ public class Day06
         answer.ShouldBe(expected);
     }
 }
-
-public static partial class LinqExtensions
-{
-    public static IEnumerable<IEnumerable<T>> Window<T>(this IEnumerable<T> source, int size)
-    {
-        for (var i = 0; i < source.Count(); i++)
-        {
-            yield return source.Skip(i).Take(size);
-        }
-    }
-}

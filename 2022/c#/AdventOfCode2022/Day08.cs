@@ -76,16 +76,3 @@ public class Day08
         public static Vector Right => new(1, 0);
     }
 }
-
-public static partial class LinqExtensions
-{
-    public static IEnumerable<T> TakeUntil<T>(this IEnumerable<T> data, Func<T, bool> predicate)
-    {
-        foreach (var item in data)
-        {
-            yield return item;
-            if (predicate(item))
-                break;
-        }
-    }
-}
