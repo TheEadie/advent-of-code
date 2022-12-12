@@ -8,14 +8,14 @@ public class Day12
     {
         var (start, goal, map) = ParseInput(File.ReadAllText(inputFile));
 
-        var (answer, path) = 
-            AStar(start, goal, map, 
-                GetNeighbours, 
-                (_,_,_) => 1, 
+        var (answer, path) =
+            PathFinding.AStar(start, goal,
+                (n) => GetNeighbours(n, map),
+                (_, _) => 1,
                 DistanceToGoal);
 
         Console.WriteLine(answer);
-        
+
         answer.ShouldBe(expected);
     }
 
@@ -26,17 +26,17 @@ public class Day12
         var (start, goal, map) = ParseInput(File.ReadAllText(inputFile));
 
         var answer = map.Where(x => x.Value == 0)
-            .Select(x => 
-                AStar(x.Key, goal, map, 
-                    GetNeighbours, 
-                    (_,_,_) => 1, 
+            .Select(x =>
+                PathFinding.AStar(x.Key, goal,
+                    (n) => GetNeighbours(n, map),
+                    (_, _) => 1,
                     DistanceToGoal))
             .Min(x => x.Item1);
 
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
-    
+
     private static (Coordinate, Coordinate, Dictionary<Coordinate, int>) ParseInput(string input)
     {
         var map = new Dictionary<Coordinate, int>();
@@ -73,7 +73,7 @@ public class Day12
 
         return (start, goal, map);
     }
-    
+
     private int DistanceToGoal(Coordinate current, Coordinate goal)
     {
         return (goal.X - current.X) + (goal.Y - current.Y);
@@ -95,56 +95,4 @@ public class Day12
     }
 
     private record Coordinate(int X, int Y);
-
-    private static (int, IEnumerable<TNode> path) AStar<TNode, TValue>(
-        TNode start, 
-        TNode goal, 
-        IReadOnlyDictionary<TNode, TValue> map,
-        Func<TNode, IReadOnlyDictionary<TNode, TValue>, IEnumerable<TNode>> getNeighbours,
-        Func<TNode, TNode, IReadOnlyDictionary<TNode, TValue>, int> getCost,
-        Func<TNode, TNode, int> getDistance)
-    where TNode : IEquatable<TNode>
-    {
-        var queue = new PriorityQueue<TNode, int>();
-
-        var cameFrom = new Dictionary<TNode, TNode>();
-        var costSoFar = new Dictionary<TNode, int>
-        {
-            [start] = 0
-        };
-
-        var totalPath = new List<TNode> { goal };
-
-        queue.Enqueue(start, getDistance(start, goal));
-
-        while (queue.Count > 0)
-        {
-            var current = queue.Dequeue();
-
-            if (EqualityComparer<TNode>.Default.Equals(current, goal))
-            {
-                break;
-            }
-
-            foreach (var neighbour in getNeighbours(current, map))
-            {
-                var tentativeGScore = costSoFar[current] + getCost(current, neighbour, map);
-                if (!costSoFar.ContainsKey(neighbour) || tentativeGScore < costSoFar[neighbour])
-                {
-                    cameFrom[neighbour] = current;
-                    costSoFar[neighbour] = tentativeGScore;
-                    queue.Enqueue(neighbour, tentativeGScore + getDistance(neighbour, goal));
-                }
-            }
-        }
-
-        var track = goal;
-        while (cameFrom.ContainsKey(track))
-        {
-            track = cameFrom[track];
-            totalPath = totalPath.Prepend(track).ToList();
-        }
-
-        return costSoFar.ContainsKey(goal) ? (costSoFar[goal], totalPath) : (int.MaxValue, totalPath);
-    }
 }
