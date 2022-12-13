@@ -8,20 +8,11 @@ public class Day13
     [TestCase("data/13 - Puzzle Input.txt", 6428, TestName = "Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
-        var input = ParseInput(File.ReadAllText(inputFile));
-        var indices = new List<int>();
-        var index = 0;
-        
-        foreach (var (one, two) in input)
-        {
-            index++;
-            if (IsInCorrectOrder(one, two)!.Value)
-            {
-                indices.Add(index);
-            }
-        }
-        
-        var answer = indices.Sum();
+        var answer = ParseInput(File.ReadAllText(inputFile))
+            .Select((x, i) => new {index = i, left = x.Item1, right = x.Item2})
+            .Where(x => new ElementComparer().Compare(x.left, x.right) < 0)
+            .Select(x => x.index + 1)
+            .Sum();
 
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
@@ -35,6 +26,7 @@ public class Day13
             .Where(x => !string.IsNullOrEmpty(x))
             .Select(ParseLine)
             .ToList();
+        
         input.Add(new Element(new List<Element> {new(2)}));
         input.Add(new Element(new List<Element> {new(6)}));
 
