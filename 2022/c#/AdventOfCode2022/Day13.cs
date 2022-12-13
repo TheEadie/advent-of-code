@@ -1,5 +1,3 @@
-using System.Collections;
-
 namespace AdventOfCode2022;
 
 public class Day13
@@ -8,8 +6,13 @@ public class Day13
     [TestCase("data/13 - Puzzle Input.txt", 6428, TestName = "Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
-        var answer = ParseInput(File.ReadAllText(inputFile))
-            .Select((x, i) => new {index = i, left = x.Item1, right = x.Item2})
+        var answer = File.ReadAllText(inputFile)
+            .Split("\n\n")
+            .Select((pair, i) =>
+            {
+                var lines = pair.Split("\n");
+                return new {index = i, left = ParseElement(lines[0]), right = ParseElement(lines[1])};
+            })
             .Where(x => new ElementComparer().Compare(x.left, x.right) < 0)
             .Select(x => x.index + 1)
             .Sum();
@@ -22,131 +25,28 @@ public class Day13
     [TestCase("data/13 - Puzzle Input.txt", 22464, TestName = "Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
+        var two = new Element(new List<Element> {new(2)});
+        var six = new Element(new List<Element> {new(6)});
+
         var input = File.ReadAllLines(inputFile)
             .Where(x => !string.IsNullOrEmpty(x))
-            .Select(ParseLine)
+            .Select(ParseElement)
+            .Append(two)
+            .Append(six)
+            .ToList()
+            .Order(new ElementComparer())
             .ToList();
-        
-        input.Add(new Element(new List<Element> {new(2)}));
-        input.Add(new Element(new List<Element> {new(6)}));
 
-        input.Sort(new ElementComparer());
+        var indexOfTwo = input.TakeWhile(x => new ElementComparer().Compare(x, two) != 0).Count() + 1;
+        var indexOfSix = input.TakeWhile(x => new ElementComparer().Compare(x, six) != 0).Count() + 1;
 
-        var index1 = input.TakeWhile(x =>
-        {
-            if (!x.IsList()) return true;
-            var elementOne = x.GetList().FirstOrDefault();
-            if (elementOne is not null && elementOne.IsNumber())
-            {
-                return elementOne.GetNumber() != 2;
-            }
-            return true;
-        }).Count() + 1;
-        
-        var index2 = input.TakeWhile(x =>
-        {
-            if (!x.IsList()) return true;
-            var elementOne = x.GetList().FirstOrDefault();
-            if (elementOne is not null && elementOne.IsNumber())
-            {
-                return elementOne.GetNumber() != 6;
-            }
-            return true;
-        }).Count() + 1;
-        
-        var answer = index1 * index2;
+        var answer = indexOfTwo * indexOfSix;
 
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
 
-    private class ElementComparer : IComparer<Element>
-    {
-        public int Compare(Element? x, Element? y)
-        {
-            if (IsInCorrectOrder(x, y).Value)
-            {
-                return -1;
-            }
-            else
-            {
-                return 1;
-            }
-        }
-    }
-
-    private static bool? IsInCorrectOrder(Element one, Element two)
-    {
-        if (one.IsNumber() && two.IsNumber())
-        {
-            var inOne = one.GetNumber();
-            var inTwo = two.GetNumber();
-            
-            if (inOne < inTwo)
-                return true;
-            if (inOne > inTwo)
-                return false;
-
-            return null;
-        }
-
-        if (one.IsList() && two.IsList())
-        {
-            var listOne = one.GetList();
-            var listTwo = two.GetList();
-
-            for (var i = 0; i < listOne.Count; i++)
-            {
-                if (i >= listTwo.Count)
-                {
-                    return false;
-                }
-                
-                var inOne = listOne[i];
-                var inTwo = listTwo[i];
-
-                var isInCorrectOrder = IsInCorrectOrder(inOne, inTwo);
-                if (isInCorrectOrder is not null)
-                    return isInCorrectOrder;
-            }
-
-            if (listTwo.Count > listOne.Count)
-            {
-                return true;
-            }
-        }
-
-        if (one.IsNumber() && two.IsList())
-        {
-            var isInCorrectOrder = IsInCorrectOrder(new Element(new List<Element> {one}), two);
-            if (isInCorrectOrder is not null)
-                return isInCorrectOrder;
-        }
-        
-        if (one.IsList() && two.IsNumber())
-        {
-            var isInCorrectOrder = IsInCorrectOrder(one, new Element(new List<Element> {two}));
-            if (isInCorrectOrder is not null)
-                return isInCorrectOrder;
-            
-        }
-
-        return null;
-    }
-
-    private IEnumerable<(Element, Element)> ParseInput(string input)
-    {
-        (Element, Element) ParsePair(string pair)
-        {
-            var lines = pair.Split("\n");
-
-            return (ParseLine(lines[0]), ParseLine(lines[1]));
-        }
-
-        return input.Split("\n\n").Select(ParsePair);
-    }
-
-    private Element ParseLine(string line)
+    private static Element ParseElement(string line)
     {
         var root = new Element(new List<Element>());
         var stack = new Stack<Element>();
@@ -154,36 +54,36 @@ public class Day13
 
         for (var i = 0; i < line.Length; i++)
         {
-            if (line[i] == '[')
+            switch (line[i])
             {
-                var next = new Element(new List<Element>());
-                current.Add(next);
-                stack.Push(current);
-                current = next;
-            }
-            else if (line[i] == ']')
-            {
-                current = stack.Pop();
-            }
-            else
-            {
-                var contents = new string(line[i..].TakeWhile(x => x != ']' && x != '[').ToArray());
-                var numbers = contents?
-                    .Split(",")
-                    .Where(x => !string.IsNullOrEmpty(x))
-                    .Select(int.Parse);
-
-                if (numbers != null)
+                case '[':
                 {
+                    var next = new Element(new List<Element>());
+                    current.Add(next);
+                    stack.Push(current);
+                    current = next;
+                    break;
+                }
+                case ']':
+                    current = stack.Pop();
+                    break;
+                default:
+                {
+                    var contents = new string(line[i..].TakeWhile(x => x != ']' && x != '[').ToArray());
+                    var numbers = contents
+                        .Split(",")
+                        .Where(x => !string.IsNullOrEmpty(x))
+                        .Select(int.Parse);
+
                     foreach (var num in numbers)
                     {
                         current.Add(new Element(num));
                     }
-                }
 
-                i += contents.Length - 1;
+                    i += contents.Length - 1;
+                    break;
+                }
             }
-                
         }
 
         return root.GetList()[0];
@@ -195,23 +95,97 @@ public class Day13
         public Element(int value) : base(value) {}
 
         public bool IsList() => Which == 1;
-        public IList<Element> GetList() => One;
+        public IList<Element> GetList() => IsList() ? One! : throw new ArgumentException();
         public bool IsNumber() => Which == 2;
-        public int GetNumber() => Two;
+        public int GetNumber() => IsNumber() ? Two : throw new ArgumentException();
         
-        public void Add(Element toAdd) => One.Add(toAdd);
+        public void Add(Element toAdd)
+        {
+            if (IsList())
+            {
+                One!.Add(toAdd);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
 
         public override string ToString()
         {
-            switch (Which)
+            return Which switch
             {
-                case 1:
-                    return "[" + string.Join(",", One) + "]";
-                case 2:
-                    return Two.ToString();
+                1 => "[" + string.Join(",", One!) + "]",
+                2 => Two.ToString(),
+                _ => "Error!"
+            };
+        }
+    }
+
+    private class ElementComparer : IComparer<Element>
+    {
+        public int Compare(Element? x, Element? y)
+        {
+            if (x is null || y is null)
+            {
+                throw new NotSupportedException();
+            }
+            
+            if (x.IsNumber() && y.IsNumber())
+            {
+                var inOne = x.GetNumber();
+                var inTwo = y.GetNumber();
+            
+                if (inOne < inTwo)
+                    return -1;
+                if (inOne > inTwo)
+                    return 1;
+
+                return 0;
             }
 
-            return "";
+            if (x.IsList() && y.IsList())
+            {
+                var listOne = x.GetList();
+                var listTwo = y.GetList();
+
+                for (var i = 0; i < listOne.Count; i++)
+                {
+                    if (i >= listTwo.Count)
+                    {
+                        return 1;
+                    }
+                
+                    var inOne = listOne[i];
+                    var inTwo = listTwo[i];
+
+                    var isInCorrectOrder = Compare(inOne, inTwo);
+                    if (isInCorrectOrder != 0)
+                        return isInCorrectOrder;
+                }
+
+                if (listTwo.Count > listOne.Count)
+                {
+                    return -1;
+                }
+            }
+
+            if (x.IsNumber() && y.IsList())
+            {
+                var isInCorrectOrder = Compare(new Element(new List<Element> {x}), y);
+                if (isInCorrectOrder != 0)
+                    return isInCorrectOrder;
+            }
+        
+            if (x.IsList() && y.IsNumber())
+            {
+                var isInCorrectOrder = Compare(x, new Element(new List<Element> {y}));
+                if (isInCorrectOrder != 0)
+                    return isInCorrectOrder;
+            
+            }
+
+            return 0;
         }
     }
 
