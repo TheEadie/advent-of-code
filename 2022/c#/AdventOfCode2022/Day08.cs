@@ -65,14 +65,4 @@ public class Day08
 
         return treeField;
     }
-
-    private record Coordinate(int X, int Y);
-
-    private record Vector(int X, int Y)
-    {
-        public static Vector Up => new(0, -1);
-        public static Vector Down => new(0, 1);
-        public static Vector Left => new(-1, 0);
-        public static Vector Right => new(1, 0);
-    }
 }

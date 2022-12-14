@@ -84,8 +84,4 @@ public class Day09
         public static Rope Create(int length) =>
             new(new Coordinate(0, 0), Enumerable.Repeat(new Coordinate(0, 0), length));
     }
-
-    private record Coordinate(int X, int Y);
-
-    private record Vector(int X, int Y);
 }

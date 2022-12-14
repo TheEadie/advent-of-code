@@ -93,6 +93,4 @@ public class Day12
             .Where(map.ContainsKey)
             .Where(x => map[x] - map[input] <= 1);
     }
-
-    private record Coordinate(int X, int Y);
 }
