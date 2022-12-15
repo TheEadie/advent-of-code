@@ -6,20 +6,20 @@ public class Day15
 {
     [TestCase("data/15 - Sample.txt", 10, 26, TestName = "Sample")]
     [TestCase("data/15 - Puzzle Input.txt", 2_000_000, 5_508_234, TestName = "Puzzle Input")]
-    public void Part1(string inputFile, long y, int expected)
+    public void Part1(string inputFile, int y, int expected)
     {
-        var input = ParseInput(File.ReadAllText(inputFile))
+        var sensors = ParseInput(File.ReadAllText(inputFile))
             .Select(x => new {Sensor = x, Range = GetDistance(x.Position, x.FirstSensor)})
             .ToList();
 
-        var minX = input.Min(x => x.Sensor.Position.X - x.Range);
-        var maxX = input.Max(x => x.Sensor.Position.X + x.Range);
+        var minX = sensors.Min(x => x.Sensor.Position.X - x.Range);
+        var maxX = sensors.Max(x => x.Sensor.Position.X + x.Range);
 
         var found = new List<Coordinate>();
         for (var i = minX; i < maxX; i++)
         {
             var test = new Coordinate(i, y);
-            if (input
+            if (sensors
                 .Any(x => 
                     x.Range >= GetDistance(test, x.Sensor.Position) &&
                     test != x.Sensor.FirstSensor))
@@ -36,12 +36,12 @@ public class Day15
     [TestCase("data/15 - Puzzle Input.txt", 4_000_000, 10_457_634_860_779, TestName = "Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int maxXY, long expected)
     {
-        var input = ParseInput(File.ReadAllText(inputFile))
+        var sensors = ParseInput(File.ReadAllText(inputFile))
             .Select(x => new {Sensor = x, Range = GetDistance(x.Position, x.FirstSensor)})
             .ToList();
 
 
-        var borderCoordinates = input.SelectMany(s =>
+        var borderCoordinates = sensors.SelectMany(s =>
         {
             var border = new List<Coordinate>();
             var yOffset = s.Range + 1;
@@ -49,6 +49,9 @@ public class Day15
             for (var xOffset = 0; xOffset <= s.Range + 1; xOffset++)
             {
                 border.Add(new Coordinate(s.Sensor.Position.X + xOffset, s.Sensor.Position.Y + yOffset));
+                border.Add(new Coordinate(s.Sensor.Position.X + xOffset, s.Sensor.Position.Y - yOffset));
+                border.Add(new Coordinate(s.Sensor.Position.X - xOffset, s.Sensor.Position.Y + yOffset));
+                border.Add(new Coordinate(s.Sensor.Position.X - xOffset, s.Sensor.Position.Y - yOffset));
                 yOffset--;
             }
 
@@ -58,9 +61,9 @@ public class Day15
         var found = borderCoordinates
             .Distinct()
             .Where(x => x.X > 0 && x.X <= maxXY && x.Y > 0 && x.Y <= maxXY)
-            .Single(x => input.All(s => s.Range < GetDistance(x, s.Sensor.Position)));
+            .Single(x => sensors.All(s => s.Range < GetDistance(x, s.Sensor.Position)));
         
-        var answer = found.X * 4_000_000 + found.Y;
+        var answer = (long)found.X * 4_000_000 + found.Y;
 
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
@@ -79,16 +82,13 @@ public class Day15
                 new Coordinate(int.Parse(groups[3].Value), int.Parse(groups[4].Value)));
         }
         
-        return input.Split("\n")
-            .Select(ParseSensor);
+        return input.Split("\n").Select(ParseSensor);
     }
 
-    private static long GetDistance(Coordinate start, Coordinate end)
+    private static int GetDistance(Coordinate start, Coordinate end)
     {
         return Math.Abs(end.X - start.X) + Math.Abs(end.Y - start.Y);
     }
 
     private record Sensor(Coordinate Position, Coordinate FirstSensor);
-
-    private record Coordinate(long X, long Y);
 }
