@@ -61,8 +61,8 @@ public class Day05
 
     private static (Stack<char>[], IEnumerable<Move>) Parse(string input)
     {
-        var sections = input.Split(Environment.NewLine + Environment.NewLine);
-        var stackInput = sections[0].Split(Environment.NewLine).Reverse();
+        var sections = input.Split("\n" + "\n");
+        var stackInput = sections[0].Split("\n").Reverse();
         var noOfStacks = (stackInput.First().Length + 1) / 4;
 
         var stacks = new Stack<char>[noOfStacks];
@@ -82,7 +82,7 @@ public class Day05
         }
 
         var moves = sections[1]
-            .Split(Environment.NewLine)
+            .Split("\n")
             .Select(x => x.Split(' '))
             .Select(x => new Move(int.Parse(x[1]),
                          int.Parse(x[3]),

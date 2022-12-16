@@ -32,12 +32,12 @@ public class Day01
     private static IEnumerable<Elf> ParseInput(string input)
     {
         static Elf ParseElf(string elfString) => new(
-            elfString.Split(Environment.NewLine)
+            elfString.Split("\n")
                 .Select(int.Parse)
                 .ToList());
 
         return input
-            .Split(Environment.NewLine + Environment.NewLine)
+            .Split("\n" + "\n")
             .Select(ParseElf);
     }
 

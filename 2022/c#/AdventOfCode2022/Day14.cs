@@ -1,5 +1,3 @@
-using System.CodeDom;
-
 namespace AdventOfCode2022;
 
 public class Day14
