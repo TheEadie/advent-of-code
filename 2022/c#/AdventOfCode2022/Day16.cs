@@ -44,14 +44,14 @@ public class Day16
             var options = ScoreValves(input, current.CurrentRoom, 30 - current.Minute)
                 .Where(x => !current.OpenValves.Contains(x.Key))
                 .OrderByDescending(x => x.Value.Item1)
+                .Take(branches)
                 .ToList();
 
-            for (var b = 0; b < branches; b++)
+            foreach (var option in options)
             {
                 var nextRoom = current.CurrentRoom;
                 var nextOpenValves = current.OpenValves.ToList();
                 
-                var option = options.ElementAt(b);
                 if (option.Key == current.CurrentRoom)
                 {
                     nextOpenValves.Add(option.Key);
@@ -86,7 +86,8 @@ public class Day16
                 }
                 else
                 {
-                    Console.WriteLine($"Finished: {nextState.Flow} {string.Join(", ", nextState.OpenValves.Select(x => x.Id))}");
+                    Console.WriteLine(
+                        $"Finished: {nextState.Flow} {string.Join(", ", nextState.OpenValves.Select(x => x.Id))}");
                     finished.Add(nextState);
                 }
             }
