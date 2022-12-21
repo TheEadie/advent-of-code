@@ -8,7 +8,6 @@ public class Day21
     {
         var input = ParseInput(File.ReadAllText(inputFile)).ToList();
 
-        Console.WriteLine(PrintTree("root", input));
         var answer = GetMonkeyNumber("root", input);
 
         Console.WriteLine(answer);
@@ -24,64 +23,69 @@ public class Day21
         var root = input.Single(x => x.Id == "root");
         var human = input.Single(x => x.Id == "humn");
 
-        var directionFromRoot = WhichWay(human, root, input);
+        var answer = Solve(human, root, input);
 
-        while (GetDirectionTowardsMonkey(human, root, input) != human.Id)
+        Console.WriteLine(answer);
+        answer.ShouldBe(expected);
+    }
+
+    private static long Solve(Monkey valueToSolve, Monkey equalityPoint, List<Monkey> input)
+    {
+        while (GetDirectionTowardsMonkey(valueToSolve, equalityPoint, input) != valueToSolve.Id)
         {
-            var nextId = GetDirectionTowardsMonkey(human, root, input);
-            var next = input.Single(x => x.Id == nextId);
-            
-            var dir = WhichWay(human, next, input);
-            var value = GetMonkeyNumber(GetOppositeDirectionFromMonkey(human, next, input), input);
+            var directionFromRootToValueToSolve = WhichWay(valueToSolve, equalityPoint, input);
+            var rootMonkeyIdAwayFromValueToSolve = GetOppositeDirectionFromMonkey(valueToSolve, equalityPoint, input);
 
-            switch (next.Operation)
+            var nextMonkeyId = GetDirectionTowardsMonkey(valueToSolve, equalityPoint, input);
+            var nextMonkey = input.Single(x => x.Id == nextMonkeyId);
+
+            var directionToValueToSolve = WhichWay(valueToSolve, nextMonkey, input);
+            var monkeyIdAwayFromValueToSolve = GetOppositeDirectionFromMonkey(valueToSolve, nextMonkey, input);
+            var value = GetMonkeyNumber(monkeyIdAwayFromValueToSolve, input);
+
+            switch (nextMonkey.Operation)
             {
-                case Operation.Sub when dir == Direction.Right:
+                case Operation.Sub when directionToValueToSolve == Direction.Right:
                     // Swap x and the other side
-                    input.Add(new Monkey(next.Id,
-                        next.Operation,
-                        next.Left,
-                        directionFromRoot == Direction.Left ? root.Right : root.Left,
+                    input.Add(new Monkey(nextMonkey.Id,
+                        nextMonkey.Operation,
+                        nextMonkey.Left,
+                        rootMonkeyIdAwayFromValueToSolve,
                         null
                     ));
                     break;
-                case Operation.Div when dir == Direction.Right:
+                case Operation.Div when directionToValueToSolve == Direction.Right:
                     throw new Exception("HELP!");
                     break;
                 default:
-                    input.Add(new Monkey(next.Id,
-                        Invert(next.Operation),
-                        directionFromRoot == Direction.Left ? root.Right : root.Left,
-                        dir == Direction.Left ? next.Right : next.Left,
+                    input.Add(new Monkey(nextMonkey.Id,
+                        Invert(nextMonkey.Operation),
+                        rootMonkeyIdAwayFromValueToSolve,
+                        monkeyIdAwayFromValueToSolve,
                         null
                     ));
                     break;
             }
 
-            var calc = dir == Direction.Left ? next.Right : next.Left;
-            input.Remove(input.Single(x => x.Id == calc));
-            input.Add(new Monkey(calc, Operation.Number, null, null, value));
+            input.Remove(input.Single(x => x.Id == monkeyIdAwayFromValueToSolve));
+            input.Add(new Monkey(monkeyIdAwayFromValueToSolve, Operation.Number, null, null, value));
 
-            if (directionFromRoot == Direction.Left)
+            if (directionFromRootToValueToSolve == Direction.Left)
             {
-                root.Left = dir == Direction.Left ? next.Left : next.Right;
-                root.Right = next.Id;
+                equalityPoint.Left = GetDirectionTowardsMonkey(valueToSolve, nextMonkey, input);
+                equalityPoint.Right = nextMonkey.Id;
             }
             else
             {
-                root.Right = dir == Direction.Left ? next.Left : next.Right;
-                root.Left = next.Id;
+                equalityPoint.Right = GetDirectionTowardsMonkey(valueToSolve, nextMonkey, input);
+                equalityPoint.Left = nextMonkey.Id;
             }
-            
-            input.Remove(next);
-            
-            directionFromRoot = WhichWay(human, root, input);
+
+            input.Remove(nextMonkey);
         }
-        
-        var answer = GetMonkeyNumber(GetOppositeDirectionFromMonkey(human, root, input), input);
-        
-        Console.WriteLine(answer);
-        answer.ShouldBe(expected);
+
+        var answer = GetMonkeyNumber(GetOppositeDirectionFromMonkey(valueToSolve, equalityPoint, input), input);
+        return answer;
     }
 
     private static string GetOppositeDirectionFromMonkey(Monkey toFind, Monkey start, List<Monkey> input)
@@ -100,20 +104,6 @@ public class Day21
         Right
     }
 
-    private string PrintTree(string monkeyId, IList<Monkey> monkeys)
-    {
-        var monkey = monkeys.Single(x => x.Id == monkeyId);
-        return monkey.Operation switch
-        {
-            Operation.Number => monkey.Value!.Value.ToString(),
-            Operation.Add => "(" + PrintTree(monkey.Left!, monkeys) + "+" + PrintTree(monkey.Right!, monkeys) + ")",
-            Operation.Sub => "(" + PrintTree(monkey.Left!, monkeys) + "-" + PrintTree(monkey.Right!, monkeys) + ")",
-            Operation.Mul => "(" + PrintTree(monkey.Left!, monkeys) + "*" + PrintTree(monkey.Right!, monkeys) + ")",
-            Operation.Div => "(" + PrintTree(monkey.Left!, monkeys) + "/" + PrintTree(monkey.Right!, monkeys) + ")",
-            _ => throw new ArgumentOutOfRangeException()
-        };        
-    }
-    
     private static Direction WhichWay(Monkey toFind, Monkey start, List<Monkey> input)
     {
         var toSearch = new Stack<Monkey>();
@@ -145,39 +135,6 @@ public class Day21
         return Direction.Right;
     }
 
-    private Monkey SearchForParent(Monkey human, List<Monkey> input)
-    {
-        var toSearch = new Stack<Monkey>();
-        var parents = new Dictionary<Monkey, Monkey>(); 
-        
-        toSearch.Push(input.Single(x => x.Id == "root"));
-
-        while (toSearch.Any())
-        {
-            var next = toSearch.Pop();
-
-            if (next == human)
-            {
-                return parents[next];
-            }
-
-            if (next.Left is null ||
-                next.Right is null)
-            {
-                continue;
-            }
-            
-            var left = input.Single(x => x.Id == next.Left);
-            var right = input.Single(x => x.Id == next.Right);
-            parents.Add(left, next);
-            parents.Add(right, next);
-            toSearch.Push(left);
-            toSearch.Push(right);
-        }
-
-        return null;
-    }
-
     private static IEnumerable<Monkey> ParseInput(string input)
     {
         var lines = input.Split("\n");
@@ -198,16 +155,16 @@ public class Day21
                 switch (opParts[1])
                 {
                     case "+":
-                        allMonkeys.Add(new (monkeyId, Operation.Add,  opParts[0], opParts[2], null));
+                        allMonkeys.Add(new Monkey(monkeyId, Operation.Add,  opParts[0], opParts[2], null));
                         break;
                     case "-":
-                        allMonkeys.Add(new (monkeyId, Operation.Sub,  opParts[0], opParts[2], null));
+                        allMonkeys.Add(new Monkey(monkeyId, Operation.Sub,  opParts[0], opParts[2], null));
                         break;
                     case "*":
-                        allMonkeys.Add(new (monkeyId, Operation.Mul,  opParts[0], opParts[2], null));
+                        allMonkeys.Add(new Monkey(monkeyId, Operation.Mul,  opParts[0], opParts[2], null));
                         break;
                     case "/":
-                        allMonkeys.Add(new (monkeyId, Operation.Div,  opParts[0], opParts[2], null));
+                        allMonkeys.Add(new Monkey(monkeyId, Operation.Div,  opParts[0], opParts[2], null));
                         break;
                 }
             }
@@ -253,19 +210,19 @@ public class Day21
 
     private class Monkey
     {
-        public string Id { get; init; }
-        public Operation Operation { get; init; }
+        public string Id { get; }
+        public Operation Operation { get; }
         public string? Left { get; set; }
         public string? Right { get; set; }
-        public long? Value { get; set; }
+        public long? Value { get; }
         
         public Monkey(string id, Operation operation, string? left, string? right, long? value)
         {
-            this.Id = id;
-            this.Operation = operation;
-            this.Left = left;
-            this.Right = right;
-            this.Value = value;
+            Id = id;
+            Operation = operation;
+            Left = left;
+            Right = right;
+            Value = value;
         }
 
     }
