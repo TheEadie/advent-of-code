@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace AdventOfCode2022;
 
 public class Day22
@@ -17,7 +15,8 @@ public class Day22
 
         var finalPosition = moves.Aggregate(
             new Position(start, Vector.Right),
-            (current, move) => ProcessMove(move, current, map, GetOutOfBoundsPart1));
+            (current, move) => ProcessMove(move, current, map, 
+                p => GetOutOfBoundsPart1(p, map)));
 
         var answer = 1000 * (finalPosition.Coordinate.Y + 1) +
                      4 * (finalPosition.Coordinate.X + 1) +
@@ -40,7 +39,9 @@ public class Day22
 
         var finalPosition = moves.Aggregate(
             new Position(start, Vector.Right),
-            (current, move) => ProcessMove(move, current, map, GetOutOfBoundsPart2));
+            (current, move) => ProcessMove(move, current, map,
+                p => GetOutOfBoundsPart2(p,
+                    inputFile.Contains("Sample") ? _sampleCubeMappings : _puzzleInputCubeMappings)));
 
         var answer = 1000 * (finalPosition.Coordinate.Y + 1) +
                      4 * (finalPosition.Coordinate.X + 1) +
@@ -70,132 +71,8 @@ public class Day22
         return desired with {Coordinate = next};
     }
 
-    private static Position GetOutOfBoundsPart2(Position desired, IDictionary<Coordinate, bool> map)
+    private static Position GetOutOfBoundsPart2(Position desired, List<(Line, Vector, Line, Vector)> mappings)
     {
-        /*var mappings = new List<(Line, Vector, Line, Vector)>
-        {
-            (new Line(new Coordinate(0, 3), new Coordinate(3, 3)),
-                Vector.Up,
-                new Line(new Coordinate(11, 0), new Coordinate(8, 0)),
-                Vector.Down),
-            (new Line(new Coordinate(11, -1), new Coordinate(8, -1)),
-                Vector.Up,
-                new Line(new Coordinate(0, 4), new Coordinate(3, 4)),
-                Vector.Down),
-            (new Line(new Coordinate(4, 3), new Coordinate(7, 3)),
-                Vector.Up,
-                new Line(new Coordinate(8, 0), new Coordinate(8, 3)),
-                Vector.Right),
-            (new Line(new Coordinate(7, 0), new Coordinate(7, 3)),
-                Vector.Left,
-                new Line(new Coordinate(8, 0), new Coordinate(8, 3)),
-                Vector.Down),
-            (new Line(new Coordinate(12, 0), new Coordinate(12, 3)),
-                Vector.Right,
-                new Line(new Coordinate(15, 11), new Coordinate(15, 8)),
-                Vector.Left),
-            (new Line(new Coordinate(16, 11), new Coordinate(16, 8)),
-                Vector.Right,
-                new Line(new Coordinate(11, 0), new Coordinate(11, 3)),
-                Vector.Left),
-            (new Line(new Coordinate(12, 4), new Coordinate(12, 7)),
-                Vector.Right,
-                new Line(new Coordinate(15, 8), new Coordinate(12, 8)),
-                Vector.Down),
-            (new Line(new Coordinate(15, 7), new Coordinate(12, 7)),
-                Vector.Up,
-                new Line(new Coordinate(11, 4), new Coordinate(11, 7)),
-                Vector.Left),
-            (new Line(new Coordinate(15, 12), new Coordinate(12, 12)),
-                Vector.Down,
-                new Line(new Coordinate(0, 4), new Coordinate(0, 7)),
-                Vector.Right),
-            (new Line(new Coordinate(-1, 4), new Coordinate(-1, 7)),
-                Vector.Left,
-                new Line(new Coordinate(15, 11), new Coordinate(12, 11)),
-                Vector.Up),
-            (new Line(new Coordinate(0, 8), new Coordinate(3, 8)),
-                Vector.Down,
-                new Line(new Coordinate(11, 11), new Coordinate(8, 11)),
-                Vector.Up),
-            (new Line(new Coordinate(11, 12), new Coordinate(8, 12)),
-                Vector.Down,
-                new Line(new Coordinate(0, 7), new Coordinate(3, 7)),
-                Vector.Up),
-            (new Line(new Coordinate(4, 8), new Coordinate(7, 8)),
-                Vector.Down,
-                new Line(new Coordinate(8, 11), new Coordinate(8, 8)),
-                Vector.Right),
-        };*/
-        
-        var mappings = new List<(Line, Vector, Line, Vector)>
-        {
-            (new Line(new Coordinate(49, 0), new Coordinate(49, 49)),
-                Vector.Left,
-                new Line(new Coordinate(0, 149), new Coordinate(0, 100)),
-                Vector.Right),
-            (new Line(new Coordinate(-1, 149), new Coordinate(-1, 100)),
-                Vector.Left,
-                new Line(new Coordinate(50, 0), new Coordinate(50, 49)),
-                Vector.Right),
-            
-            
-            (new Line(new Coordinate(49, 50), new Coordinate(49, 99)),
-                Vector.Left,
-                new Line(new Coordinate(0, 100), new Coordinate(49, 100)),
-                Vector.Down),
-            (new Line(new Coordinate(0, 99), new Coordinate(49, 99)),
-                Vector.Up,
-                new Line(new Coordinate(50, 50), new Coordinate(50, 99)),
-                Vector.Right),
-            
-            
-            (new Line(new Coordinate(50, 150), new Coordinate(50, 199)),
-                Vector.Right,
-                new Line(new Coordinate(50, 149), new Coordinate(99, 149)),
-                Vector.Up),
-            (new Line(new Coordinate(50, 150), new Coordinate(99, 150)),
-                Vector.Down,
-                new Line(new Coordinate(49, 150), new Coordinate(49, 199)),
-                Vector.Left),
-            
-            (new Line(new Coordinate(100, 100), new Coordinate(100, 149)),
-                Vector.Right,
-                new Line(new Coordinate(149, 49), new Coordinate(149, 0)),
-                Vector.Left),
-            (new Line(new Coordinate(150, 49), new Coordinate(150, 0)),
-                Vector.Right,
-                new Line(new Coordinate(99, 100), new Coordinate(99, 149)),
-                Vector.Left),
-            
-            (new Line(new Coordinate(50, -1), new Coordinate(99, -1)),
-                Vector.Up,
-                new Line(new Coordinate(0, 150), new Coordinate(0, 199)),
-                Vector.Right),
-            (new Line(new Coordinate(-1, 150), new Coordinate(-1, 199)),
-                Vector.Left,
-                new Line(new Coordinate(50, 0), new Coordinate(99, 0)),
-                Vector.Down),
-            
-            (new Line(new Coordinate(0, 200), new Coordinate(49, 200)),
-                Vector.Down,
-                new Line(new Coordinate(100, 0), new Coordinate(149, 0)),
-                Vector.Down),
-            (new Line(new Coordinate(100, -1), new Coordinate(149, -1)),
-                Vector.Up,
-                new Line(new Coordinate(0, 199), new Coordinate(49, 199)),
-                Vector.Up),
-            
-            (new Line(new Coordinate(100, 50), new Coordinate(100, 99)),
-                Vector.Right,
-                new Line(new Coordinate(100, 49), new Coordinate(149, 49)),
-                Vector.Up),
-            (new Line(new Coordinate(100, 50), new Coordinate(149, 50)),
-                Vector.Down,
-                new Line(new Coordinate(99, 50), new Coordinate(99, 99)),
-                Vector.Left),
-        };
-
         var mapping = mappings.First(x => 
             x.Item1.GetCoordinatesOnLine().Contains(desired.Coordinate) &&
             x.Item2 == desired.Facing);
@@ -205,11 +82,135 @@ public class Day22
         return new Position(newCoordinate, mapping.Item4);
     }
 
+    private readonly List<(Line, Vector, Line, Vector)> _sampleCubeMappings = new()
+    {
+        (new Line(new Coordinate(0, 3), new Coordinate(3, 3)),
+            Vector.Up,
+            new Line(new Coordinate(11, 0), new Coordinate(8, 0)),
+            Vector.Down),
+        (new Line(new Coordinate(11, -1), new Coordinate(8, -1)),
+            Vector.Up,
+            new Line(new Coordinate(0, 4), new Coordinate(3, 4)),
+            Vector.Down),
+        (new Line(new Coordinate(4, 3), new Coordinate(7, 3)),
+            Vector.Up,
+            new Line(new Coordinate(8, 0), new Coordinate(8, 3)),
+            Vector.Right),
+        (new Line(new Coordinate(7, 0), new Coordinate(7, 3)),
+            Vector.Left,
+            new Line(new Coordinate(8, 0), new Coordinate(8, 3)),
+            Vector.Down),
+        (new Line(new Coordinate(12, 0), new Coordinate(12, 3)),
+            Vector.Right,
+            new Line(new Coordinate(15, 11), new Coordinate(15, 8)),
+            Vector.Left),
+        (new Line(new Coordinate(16, 11), new Coordinate(16, 8)),
+            Vector.Right,
+            new Line(new Coordinate(11, 0), new Coordinate(11, 3)),
+            Vector.Left),
+        (new Line(new Coordinate(12, 4), new Coordinate(12, 7)),
+            Vector.Right,
+            new Line(new Coordinate(15, 8), new Coordinate(12, 8)),
+            Vector.Down),
+        (new Line(new Coordinate(15, 7), new Coordinate(12, 7)),
+            Vector.Up,
+            new Line(new Coordinate(11, 4), new Coordinate(11, 7)),
+            Vector.Left),
+        (new Line(new Coordinate(15, 12), new Coordinate(12, 12)),
+            Vector.Down,
+            new Line(new Coordinate(0, 4), new Coordinate(0, 7)),
+            Vector.Right),
+        (new Line(new Coordinate(-1, 4), new Coordinate(-1, 7)),
+            Vector.Left,
+            new Line(new Coordinate(15, 11), new Coordinate(12, 11)),
+            Vector.Up),
+        (new Line(new Coordinate(0, 8), new Coordinate(3, 8)),
+            Vector.Down,
+            new Line(new Coordinate(11, 11), new Coordinate(8, 11)),
+            Vector.Up),
+        (new Line(new Coordinate(11, 12), new Coordinate(8, 12)),
+            Vector.Down,
+            new Line(new Coordinate(0, 7), new Coordinate(3, 7)),
+            Vector.Up),
+        (new Line(new Coordinate(4, 8), new Coordinate(7, 8)),
+            Vector.Down,
+            new Line(new Coordinate(8, 11), new Coordinate(8, 8)),
+            Vector.Right),
+    };
+
+    private readonly List<(Line, Vector, Line, Vector)> _puzzleInputCubeMappings = new()
+    {
+        (new Line(new Coordinate(49, 0), new Coordinate(49, 49)),
+            Vector.Left,
+            new Line(new Coordinate(0, 149), new Coordinate(0, 100)),
+            Vector.Right),
+        (new Line(new Coordinate(-1, 149), new Coordinate(-1, 100)),
+            Vector.Left,
+            new Line(new Coordinate(50, 0), new Coordinate(50, 49)),
+            Vector.Right),
+
+
+        (new Line(new Coordinate(49, 50), new Coordinate(49, 99)),
+            Vector.Left,
+            new Line(new Coordinate(0, 100), new Coordinate(49, 100)),
+            Vector.Down),
+        (new Line(new Coordinate(0, 99), new Coordinate(49, 99)),
+            Vector.Up,
+            new Line(new Coordinate(50, 50), new Coordinate(50, 99)),
+            Vector.Right),
+
+
+        (new Line(new Coordinate(50, 150), new Coordinate(50, 199)),
+            Vector.Right,
+            new Line(new Coordinate(50, 149), new Coordinate(99, 149)),
+            Vector.Up),
+        (new Line(new Coordinate(50, 150), new Coordinate(99, 150)),
+            Vector.Down,
+            new Line(new Coordinate(49, 150), new Coordinate(49, 199)),
+            Vector.Left),
+
+        (new Line(new Coordinate(100, 100), new Coordinate(100, 149)),
+            Vector.Right,
+            new Line(new Coordinate(149, 49), new Coordinate(149, 0)),
+            Vector.Left),
+        (new Line(new Coordinate(150, 49), new Coordinate(150, 0)),
+            Vector.Right,
+            new Line(new Coordinate(99, 100), new Coordinate(99, 149)),
+            Vector.Left),
+
+        (new Line(new Coordinate(50, -1), new Coordinate(99, -1)),
+            Vector.Up,
+            new Line(new Coordinate(0, 150), new Coordinate(0, 199)),
+            Vector.Right),
+        (new Line(new Coordinate(-1, 150), new Coordinate(-1, 199)),
+            Vector.Left,
+            new Line(new Coordinate(50, 0), new Coordinate(99, 0)),
+            Vector.Down),
+
+        (new Line(new Coordinate(0, 200), new Coordinate(49, 200)),
+            Vector.Down,
+            new Line(new Coordinate(100, 0), new Coordinate(149, 0)),
+            Vector.Down),
+        (new Line(new Coordinate(100, -1), new Coordinate(149, -1)),
+            Vector.Up,
+            new Line(new Coordinate(0, 199), new Coordinate(49, 199)),
+            Vector.Up),
+
+        (new Line(new Coordinate(100, 50), new Coordinate(100, 99)),
+            Vector.Right,
+            new Line(new Coordinate(100, 49), new Coordinate(149, 49)),
+            Vector.Up),
+        (new Line(new Coordinate(100, 50), new Coordinate(149, 50)),
+            Vector.Down,
+            new Line(new Coordinate(99, 50), new Coordinate(99, 99)),
+            Vector.Left),
+    };
+
     private static Position ProcessMove(
         Move move, 
         Position position, 
         IDictionary<Coordinate,bool> map, 
-        Func<Position, IDictionary<Coordinate, bool>, Position> outOfBoundsTransform)
+        Func<Position, Position> outOfBoundsTransform)
     {
         // Move
         for (var i = 0; i < move.Distance; i++)
@@ -220,7 +221,7 @@ public class Day22
 
             if (!map.ContainsKey(next.Coordinate))
             {
-                next = outOfBoundsTransform(next, map);
+                next = outOfBoundsTransform(next);
             }
             
             if (!map[next.Coordinate])
