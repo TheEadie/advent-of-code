@@ -26,11 +26,11 @@ public class Day16
         answer.ShouldBe(expected);
         // 2557 - Too low
     }
-    
+
     private int FindRouteWith2(List<Valve> input, int branches)
     {
         const int time = 26;
-        
+
         var statesToTry = new HashSet<(State, State)>();
         var allStates = new HashSet<(State, State)>();
         var finished = new List<(State, State)>();
@@ -51,7 +51,7 @@ public class Day16
                 .OrderByDescending(x => x.Value.Item1)
                 .Take(branches)
                 .ToList();
-            
+
             var optionsTwo = ScoreValves(input, current.Item2.CurrentRoom, time - current.Item2.Minute)
                 .Where(x => !current.Item1.OpenValves.Concat(current.Item2.OpenValves).Contains(x.Key))
                 .OrderByDescending(x => x.Value.Item1)
@@ -60,12 +60,12 @@ public class Day16
 
             var nextStatesOne = new List<State>();
             var nextStatesTwo = new List<State>();
-            
+
             foreach (var option in optionsOne)
             {
                 var nextRoom = current.Item1.CurrentRoom;
                 var nextOpenValves = current.Item1.OpenValves.ToList();
-                
+
                 if (option.Key == current.Item1.CurrentRoom)
                 {
                     nextOpenValves.Add(option.Key);
@@ -77,12 +77,12 @@ public class Day16
 
                 nextStatesOne.Add(new State(nextRoom, nextOpenValves, nextTime, nextFlowOne, option.Value.Item1));
             }
-            
+
             foreach (var option in optionsTwo)
             {
                 var nextRoom = current.Item2.CurrentRoom;
                 var nextOpenValves = current.Item2.OpenValves.ToList();
-                
+
                 if (option.Key == current.Item2.CurrentRoom)
                 {
                     nextOpenValves.Add(option.Key);
@@ -101,19 +101,19 @@ public class Day16
                 {
                     if (optionOne.CurrentRoom.Id == optionTwo.CurrentRoom.Id)
                         continue;
-                    
+
                     if (nextTime < time)
                     {
-                        if (statesToTry.Any(x => 
+                        if (statesToTry.Any(x =>
                                 x.Item1.Minute == nextTime &&
                                 x.Item1.CurrentRoom.Id == optionOne.CurrentRoom.Id &&
                                 x.Item2.CurrentRoom.Id == optionTwo.CurrentRoom.Id))
                             continue;
-                        
+
                         var otherOptions = statesToTry
                             .Where(x => x.Item1.Minute == nextTime)
                             .ToList();
-                        
+
                         var topOptions = otherOptions
                             .Append((optionOne, optionTwo))
                             .OrderByDescending(x => (x.Item1.Flow + x.Item2.Flow + x.Item1.Potential + x.Item2.Potential))
@@ -138,7 +138,7 @@ public class Day16
                         //Console.WriteLine(
                         //    $"Finished: {totalFlow} Me: {string.Join(", ", optionOne.Item1.OpenValves.Select(x => x.Id))}  " +
                         //    $"Elephant: {string.Join(", ", optionTwo.Item1.OpenValves.Select(x => x.Id))}");
-                        finished.Add((optionOne,optionTwo));
+                        finished.Add((optionOne, optionTwo));
                     }
                 }
             }
@@ -179,7 +179,7 @@ public class Day16
             {
                 var nextRoom = current.CurrentRoom;
                 var nextOpenValves = current.OpenValves.ToList();
-                
+
                 if (option.Key == current.CurrentRoom)
                 {
                     nextOpenValves.Add(option.Key);
@@ -196,7 +196,7 @@ public class Day16
                     var otherOptions = statesToTry
                         .Where(x => x.Minute == nextTime)
                         .ToList();
-                        
+
                     var topOptions = otherOptions
                         .Append(nextState)
                         .OrderByDescending(x => x.Flow)
@@ -245,7 +245,7 @@ public class Day16
 
     private IEnumerable<Valve> ParseInput(string input)
     {
-        Valve ParseValve (string line)
+        Valve ParseValve(string line)
         {
             var regex = new Regex(
                 "^Valve (\\S*) has flow rate=([0-9]+); tunnel[s]? lead[s]? to valve[s]? ([\\S ]*)$");
@@ -253,9 +253,9 @@ public class Day16
 
             return new Valve(groups[1].Value, int.Parse(groups[2].Value), groups[3].Value.Split(", "));
         }
-        
+
         return input.Split("\n").Select(ParseValve);
-        
+
     }
 
     private record State(Valve CurrentRoom, IEnumerable<Valve> OpenValves, int Minute, int Flow, double Potential);

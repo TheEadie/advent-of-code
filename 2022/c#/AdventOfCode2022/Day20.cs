@@ -14,7 +14,7 @@ public class Day20
         var mixed = Mix(input).Take(1).Last();
         var (x, y, z) = GetCoordinates(mixed);
         var answer = x + y + z;
-        
+
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
@@ -31,7 +31,7 @@ public class Day20
         var mixed = Mix(input).Take(10).Last();
         var (x, y, z) = GetCoordinates(mixed);
         var answer = x + y + z;
-        
+
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
@@ -50,7 +50,7 @@ public class Day20
                 var currentPosition = workingSet.IndexOf(value);
 
                 var offset = currentPosition + value.Item1;
-                var newPosition = (int) Mod(offset, length - 1);
+                var newPosition = (int)Mod(offset, length - 1);
 
                 workingSet.RemoveAt(currentPosition);
                 workingSet.Insert(newPosition, value);
@@ -70,7 +70,8 @@ public class Day20
         return (one, two, three);
     }
 
-    private static double Mod(double x, double m) {
+    private static double Mod(double x, double m)
+    {
         return x - m * Math.Floor(x / m);
     }
 }

@@ -11,7 +11,7 @@ public class Day13
             .Select((pair, i) =>
             {
                 var lines = pair.Split("\n");
-                return new {index = i, left = ParseElement(lines[0]), right = ParseElement(lines[1])};
+                return new { index = i, left = ParseElement(lines[0]), right = ParseElement(lines[1]) };
             })
             .Where(x => new ElementComparer().Compare(x.left, x.right) < 0)
             .Select(x => x.index + 1)
@@ -25,8 +25,8 @@ public class Day13
     [TestCase("data/13 - Puzzle Input.txt", 22464, TestName = "Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
-        var two = new Element(new List<Element> {new(2)});
-        var six = new Element(new List<Element> {new(6)});
+        var two = new Element(new List<Element> { new(2) });
+        var six = new Element(new List<Element> { new(6) });
 
         var input = File.ReadAllLines(inputFile)
             .Where(x => !string.IsNullOrEmpty(x))
@@ -57,32 +57,32 @@ public class Day13
             switch (line[i])
             {
                 case '[':
-                {
-                    var next = new Element(new List<Element>());
-                    current.Add(next);
-                    stack.Push(current);
-                    current = next;
-                    break;
-                }
+                    {
+                        var next = new Element(new List<Element>());
+                        current.Add(next);
+                        stack.Push(current);
+                        current = next;
+                        break;
+                    }
                 case ']':
                     current = stack.Pop();
                     break;
                 default:
-                {
-                    var contents = new string(line[i..].TakeWhile(x => x != ']' && x != '[').ToArray());
-                    var numbers = contents
-                        .Split(",")
-                        .Where(x => !string.IsNullOrEmpty(x))
-                        .Select(int.Parse);
-
-                    foreach (var num in numbers)
                     {
-                        current.Add(new Element(num));
-                    }
+                        var contents = new string(line[i..].TakeWhile(x => x != ']' && x != '[').ToArray());
+                        var numbers = contents
+                            .Split(",")
+                            .Where(x => !string.IsNullOrEmpty(x))
+                            .Select(int.Parse);
 
-                    i += contents.Length - 1;
-                    break;
-                }
+                        foreach (var num in numbers)
+                        {
+                            current.Add(new Element(num));
+                        }
+
+                        i += contents.Length - 1;
+                        break;
+                    }
             }
         }
 
@@ -91,14 +91,14 @@ public class Day13
 
     private class Element : OneOf<IList<Element>, int>
     {
-        public Element(IList<Element> list) : base(list) {}
-        public Element(int value) : base(value) {}
+        public Element(IList<Element> list) : base(list) { }
+        public Element(int value) : base(value) { }
 
         public bool IsList() => Which == 1;
         public IList<Element> GetList() => IsList() ? One! : throw new ArgumentException();
         public bool IsNumber() => Which == 2;
         public int GetNumber() => IsNumber() ? Two : throw new ArgumentException();
-        
+
         public void Add(Element toAdd)
         {
             if (IsList())
@@ -130,12 +130,12 @@ public class Day13
             {
                 throw new NotSupportedException();
             }
-            
+
             if (x.IsNumber() && y.IsNumber())
             {
                 var inOne = x.GetNumber();
                 var inTwo = y.GetNumber();
-            
+
                 if (inOne < inTwo)
                     return -1;
                 if (inOne > inTwo)
@@ -155,7 +155,7 @@ public class Day13
                     {
                         return 1;
                     }
-                
+
                     var inOne = listOne[i];
                     var inTwo = listTwo[i];
 
@@ -172,17 +172,17 @@ public class Day13
 
             if (x.IsNumber() && y.IsList())
             {
-                var isInCorrectOrder = Compare(new Element(new List<Element> {x}), y);
+                var isInCorrectOrder = Compare(new Element(new List<Element> { x }), y);
                 if (isInCorrectOrder != 0)
                     return isInCorrectOrder;
             }
-        
+
             if (x.IsList() && y.IsNumber())
             {
-                var isInCorrectOrder = Compare(x, new Element(new List<Element> {y}));
+                var isInCorrectOrder = Compare(x, new Element(new List<Element> { y }));
                 if (isInCorrectOrder != 0)
                     return isInCorrectOrder;
-            
+
             }
 
             return 0;

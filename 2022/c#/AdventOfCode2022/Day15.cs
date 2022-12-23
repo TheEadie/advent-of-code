@@ -16,7 +16,7 @@ public class Day15
         var answer = Enumerable.Range(minX, (maxX - minX))
             .Select(x => new Coordinate(x, y))
             .Count(x => sensors.Any(s => x != s.FirstSensor && s.Distance >= GetDistance(x, s.Position)));
-        
+
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
@@ -30,7 +30,7 @@ public class Day15
             .SelectMany(GetBorder)
             .Where(x => x.X > 0 && x.X <= maxXY && x.Y > 0 && x.Y <= maxXY)
             .First(x => sensors.All(s => s.Distance < GetDistance(x, s.Position)));
-        
+
         var answer = (long)found.X * 4_000_000 + found.Y;
 
         Console.WriteLine(answer);
@@ -53,7 +53,7 @@ public class Day15
 
     private IEnumerable<Sensor> ParseInput(string input)
     {
-        Sensor ParseSensor (string line)
+        Sensor ParseSensor(string line)
         {
             var regex = new Regex(
                 "Sensor at x=([-|0-9]+), y=([-|0-9]+): closest beacon is at x=([-|0-9]+), y=([-|0-9]+)");
@@ -61,10 +61,10 @@ public class Day15
 
             var pos = new Coordinate(int.Parse(groups[1].Value), int.Parse(groups[2].Value));
             var firstBeacon = new Coordinate(int.Parse(groups[3].Value), int.Parse(groups[4].Value));
-            
+
             return new Sensor(pos, firstBeacon, GetDistance(pos, firstBeacon));
         }
-        
+
         return input.Split("\n").Select(ParseSensor);
     }
 

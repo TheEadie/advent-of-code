@@ -34,11 +34,11 @@ public class Day11
         answer.ShouldBe(expected);
     }
 
-    private static IEnumerable<IEnumerable<long>> Inspect(IReadOnlyList<Monkey> monkeys, Func<long,long> worryControl)
+    private static IEnumerable<IEnumerable<long>> Inspect(IReadOnlyList<Monkey> monkeys, Func<long, long> worryControl)
     {
-        var inspected = new long[monkeys.Count]; 
-        
-        while(true)
+        var inspected = new long[monkeys.Count];
+
+        while (true)
         {
             foreach (var monkey in monkeys)
             {
@@ -47,7 +47,7 @@ public class Day11
                 foreach (var item in monkey.Items)
                 {
                     inspected[monkey.Number]++;
-                    
+
                     var newItem = monkey.Operation(item);
                     newItem = worryControl(newItem);
 
@@ -71,9 +71,9 @@ public class Day11
             yield return inspected;
         }
 
-        
+
     }
-    
+
     private Monkey[] ParseInput(string inputFile)
     {
         if (inputFile.Contains("Sample"))
@@ -106,9 +106,9 @@ public class Day11
 
     private record Monkey(
         int Number,
-        List<long> Items, 
-        Func<long, long> Operation, 
-        long Divider, 
+        List<long> Items,
+        Func<long, long> Operation,
+        long Divider,
         int PassToOnTrue,
         int PassToOnFalse);
 }

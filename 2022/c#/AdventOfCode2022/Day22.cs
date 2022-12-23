@@ -15,7 +15,7 @@ public class Day22
 
         var finalPosition = moves.Aggregate(
             new Position(start, Vector.Right),
-            (current, move) => ProcessMove(move, current, map, 
+            (current, move) => ProcessMove(move, current, map,
                 p => GetOutOfBoundsPart1(p, map)));
 
         var answer = 1000 * (finalPosition.Coordinate.Y + 1) +
@@ -50,7 +50,7 @@ public class Day22
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
-    
+
     private static Position GetOutOfBoundsPart1(Position desired, IDictionary<Coordinate, bool> map)
     {
         var next = desired.Coordinate;
@@ -68,12 +68,12 @@ public class Day22
             _ => next
         };
 
-        return desired with {Coordinate = next};
+        return desired with { Coordinate = next };
     }
 
     private static Position GetOutOfBoundsPart2(Position desired, List<(Line, Vector, Line, Vector)> mappings)
     {
-        var mapping = mappings.First(x => 
+        var mapping = mappings.First(x =>
             x.Item1.GetCoordinatesOnLine().Contains(desired.Coordinate) &&
             x.Item2 == desired.Facing);
         var distance = mapping.Item1.GetCoordinatesOnLine().TakeWhile(x => x != desired.Coordinate).Count();
@@ -207,34 +207,37 @@ public class Day22
     };
 
     private static Position ProcessMove(
-        Move move, 
-        Position position, 
-        IDictionary<Coordinate,bool> map, 
+        Move move,
+        Position position,
+        IDictionary<Coordinate, bool> map,
         Func<Position, Position> outOfBoundsTransform)
     {
         // Move
         for (var i = 0; i < move.Distance; i++)
         {
-            var next = position with {Coordinate = 
+            var next = position with
+            {
+                Coordinate =
                 new Coordinate(position.Coordinate.X + position.Facing.X,
-                position.Coordinate.Y + position.Facing.Y)};
+                position.Coordinate.Y + position.Facing.Y)
+            };
 
             if (!map.ContainsKey(next.Coordinate))
             {
                 next = outOfBoundsTransform(next);
             }
-            
+
             if (!map[next.Coordinate])
             {
                 position = next;
             }
         }
-        
+
         // Turn
         position = move.Turn switch
         {
-            Turn.Left => position with {Facing = new Vector(position.Facing.Y, -position.Facing.X)},
-            Turn.Right => position with {Facing = new Vector(-position.Facing.Y, position.Facing.X)},
+            Turn.Left => position with { Facing = new Vector(position.Facing.Y, -position.Facing.X) },
+            Turn.Right => position with { Facing = new Vector(-position.Facing.Y, position.Facing.X) },
             _ => position
         };
 
@@ -282,7 +285,7 @@ public class Day22
             .Select(int.Parse);
 
         var turns = sections[1]
-            .Where(x => !(new[] {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}.Contains(x)))
+            .Where(x => !(new[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' }.Contains(x)))
             .Select(x => x == 'L' ? Turn.Left : Turn.Right)
             .Append(Turn.None);
 

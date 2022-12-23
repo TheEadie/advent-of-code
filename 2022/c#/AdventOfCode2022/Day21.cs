@@ -56,7 +56,6 @@ public class Day21
                     break;
                 case Operation.Div when directionToValueToSolve == Direction.Right:
                     throw new Exception("HELP!");
-                    break;
                 default:
                     input.Add(new Monkey(nextMonkey.Id,
                         Invert(nextMonkey.Operation),
@@ -92,7 +91,7 @@ public class Day21
     {
         return WhichWay(toFind, start, input) == Direction.Left ? start.Right! : start.Left!;
     }
-    
+
     private static string GetDirectionTowardsMonkey(Monkey toFind, Monkey start, List<Monkey> input)
     {
         return WhichWay(toFind, start, input) == Direction.Left ? start.Left! : start.Right!;
@@ -124,7 +123,7 @@ public class Day21
             {
                 continue;
             }
-            
+
             var left = input.Single(x => x.Id == next.Left);
             var right = input.Single(x => x.Id == next.Right);
             toSearch.Push(left);
@@ -148,23 +147,23 @@ public class Day21
             var opParts = op.Split(" ");
             if (opParts.Length == 1)
             {
-                allMonkeys.Add(new (monkeyId, Operation.Number, null, null, long.Parse(opParts[0])));
+                allMonkeys.Add(new(monkeyId, Operation.Number, null, null, long.Parse(opParts[0])));
             }
             else
             {
                 switch (opParts[1])
                 {
                     case "+":
-                        allMonkeys.Add(new Monkey(monkeyId, Operation.Add,  opParts[0], opParts[2], null));
+                        allMonkeys.Add(new Monkey(monkeyId, Operation.Add, opParts[0], opParts[2], null));
                         break;
                     case "-":
-                        allMonkeys.Add(new Monkey(monkeyId, Operation.Sub,  opParts[0], opParts[2], null));
+                        allMonkeys.Add(new Monkey(monkeyId, Operation.Sub, opParts[0], opParts[2], null));
                         break;
                     case "*":
-                        allMonkeys.Add(new Monkey(monkeyId, Operation.Mul,  opParts[0], opParts[2], null));
+                        allMonkeys.Add(new Monkey(monkeyId, Operation.Mul, opParts[0], opParts[2], null));
                         break;
                     case "/":
-                        allMonkeys.Add(new Monkey(monkeyId, Operation.Div,  opParts[0], opParts[2], null));
+                        allMonkeys.Add(new Monkey(monkeyId, Operation.Div, opParts[0], opParts[2], null));
                         break;
                 }
             }
@@ -215,7 +214,7 @@ public class Day21
         public string? Left { get; set; }
         public string? Right { get; set; }
         public long? Value { get; }
-        
+
         public Monkey(string id, Operation operation, string? left, string? right, long? value)
         {
             Id = id;
