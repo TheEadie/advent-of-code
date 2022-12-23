@@ -33,7 +33,7 @@ public class Day23
         answer.ShouldBe(expected);
     }
 
-    private IEnumerable<IEnumerable<Coordinate>> RunStep(HashSet<Coordinate> map)
+    private static IEnumerable<IEnumerable<Coordinate>> RunStep(HashSet<Coordinate> map)
     {
         var vectors = new List<Vector>
         {
@@ -47,7 +47,7 @@ public class Day23
         var previousMap = new HashSet<Coordinate>();
         var nextMap = map;
 
-        while (!nextMap.SequenceEqual(previousMap))
+        while (!nextMap.All(previousMap.Contains))
         {
             previousMap = nextMap;
 
@@ -55,9 +55,7 @@ public class Day23
             
             foreach (var elf in previousMap)
             {
-                var noNeighbours = !GetNeighbours(elf)
-                    .Intersect(previousMap)
-                    .Any();
+                var noNeighbours = !GetNeighbours(elf).Any(previousMap.Contains);
 
                 if (noNeighbours)
                 {
@@ -68,20 +66,13 @@ public class Day23
                 for (var i = 0; i < vectors.Count; i++)
                 {
                     var vector = vectors[(vectorPointer + i) % vectors.Count];
-                    if (!GetNeighboursInDirection(elf, vector)
-                            .Intersect(previousMap)
-                            .Any())
+                    if (!GetNeighboursInDirection(elf, vector).Any(previousMap.Contains))
                     {
                         proposedMoves.Add(elf,
                             new Coordinate(elf.X + vector.X, 
                                     elf.Y + vector.Y));
                         break;
                     }
-                }
-
-                if (!proposedMoves.ContainsKey(elf))
-                {
-                    proposedMoves.Add(elf, elf);
                 }
             }
 
@@ -95,7 +86,7 @@ public class Day23
                 proposedMoves[elf] = elf;
             }
 
-            nextMap = previousMap.Select(elf => proposedMoves[elf]).ToHashSet();
+            nextMap = previousMap.Select(elf => proposedMoves.ContainsKey(elf) ? proposedMoves[elf] : elf).ToHashSet();
 
             //PrintMap(nextMap.ToList());
             
