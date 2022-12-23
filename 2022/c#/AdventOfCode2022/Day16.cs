@@ -20,13 +20,13 @@ public class Day16
     public void Part2(string inputFile, int expected)
     {
         var input = ParseInput(File.ReadAllText(inputFile)).ToList();
-        var answer = FindRouteWith2(input, 5);
+        var answer = 0;//FindRouteWith2(input, 5);
 
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
         // 2557 - Too low
     }
-
+/*
     private int FindRouteWith2(List<Valve> input, int branches)
     {
         const int time = 26;
@@ -153,14 +153,14 @@ public class Day16
         }
 
         return finished.Max(x => x.Item1.Flow + x.Item2.Flow);
-    }
+    }*/
 
     private int FindRoute(List<Valve> input, int branches)
     {
         var statesToTry = new HashSet<State>();
         var finished = new List<State>();
 
-        statesToTry.Add(new State(input.Single(x => x.Id == "AA"), new List<Valve>(), 0, 0, 0));
+        statesToTry.Add(new State("AA", "", 0, 0, 0));
 
         while (statesToTry.Any())
         {
@@ -168,9 +168,16 @@ public class Day16
             statesToTry.Remove(current);
 
             var nextTime = current.Minute + 1;
-            var nextFlow = current.Flow + current.OpenValves.Sum(x => x.FlowRate);
+
+            var openValves = current.OpenValves
+                .Split(",")
+                .Where(x => x != "")
+                .Select(x => input.Single(v => v.Id == x))
+                .ToHashSet();
+            var nextTotalFlow = current.TotalFlow + openValves.Sum(x => x.FlowRate);
+            
             var options = ScoreValves(input, current.CurrentRoom, 30 - current.Minute)
-                .Where(x => !current.OpenValves.Contains(x.Key))
+                .Where(x => !current.OpenValves.Contains(x.Key.Id))
                 .OrderByDescending(x => x.Value.Item1)
                 .Take(branches)
                 .ToList();
@@ -178,18 +185,18 @@ public class Day16
             foreach (var option in options)
             {
                 var nextRoom = current.CurrentRoom;
-                var nextOpenValves = current.OpenValves.ToList();
+                var nextOpenValves = current.OpenValves;
 
-                if (option.Key == current.CurrentRoom)
+                if (option.Key.Id == current.CurrentRoom)
                 {
-                    nextOpenValves.Add(option.Key);
+                    nextOpenValves += "," + option.Key.Id;
                 }
                 else
                 {
                     nextRoom = option.Value.Item2.Skip(1).First();
                 }
 
-                var nextState = new State(nextRoom, nextOpenValves, nextTime, nextFlow, option.Value.Item1);
+                var nextState = new State(nextRoom, nextOpenValves, nextTime, nextTotalFlow, option.Value.Item1);
 
                 if (nextTime < 30)
                 {
@@ -199,7 +206,7 @@ public class Day16
 
                     var topOptions = otherOptions
                         .Append(nextState)
-                        .OrderByDescending(x => x.Flow)
+                        .OrderByDescending(x => x.TotalFlow)
                         .Take(branches);
 
                     foreach (var other in otherOptions)
@@ -215,24 +222,24 @@ public class Day16
                 else
                 {
                     Console.WriteLine(
-                        $"Finished: {nextState.Flow} {string.Join(", ", nextState.OpenValves.Select(x => x.Id))}");
+                        $"Finished: {nextState.TotalFlow} {nextState.OpenValves}");
                     finished.Add(nextState);
                 }
             }
         }
 
-        return finished.Max(x => x.Flow);
+        return finished.Max(x => x.TotalFlow);
     }
 
-    private IDictionary<Valve, (double, IEnumerable<Valve>)> ScoreValves(IList<Valve> valves, Valve currentRoom, int timeLeft)
+    private IDictionary<Valve, (double, IEnumerable<string>)> ScoreValves(IList<Valve> valves, string currentRoom, int timeLeft)
     {
-        var found = new Dictionary<Valve, (double, IEnumerable<Valve>)>();
+        var found = new Dictionary<Valve, (double, IEnumerable<string>)>();
 
         foreach (var valve in valves)
         {
             var (distance, path) = PathFinding.AStar(currentRoom,
-                valve,
-                node => valves.Where(x => x.Tunnels.Contains(node.Id)),
+                valve.Id,
+                node => valves.Where(x => x.Tunnels.Contains(node)).Select(x => x.Id),
                 (_, _) => 1,
                 (_, _) => 0);
 
@@ -258,7 +265,12 @@ public class Day16
 
     }
 
-    private record State(Valve CurrentRoom, IEnumerable<Valve> OpenValves, int Minute, int Flow, double Potential);
+    private record State(
+        string CurrentRoom, 
+        string OpenValves, 
+        int Minute, 
+        int TotalFlow,
+        double Potential);
 
     private record Valve(string Id, int FlowRate, IEnumerable<string> Tunnels);
 }
