@@ -9,10 +9,11 @@ public class Day16
     public void Part1(string inputFile, int expected)
     {
         var input = ParseInput(File.ReadAllText(inputFile)).ToList();
+
         var answer = FindRoute(input);
 
         Console.WriteLine(answer);
-        answer.ShouldBe(expected);
+        answer.TotalFlow.ShouldBe(expected);
     }
 
     //[TestCase("data/16 - Sample.txt", 1707, TestName = "Part 2 - Sample")]
@@ -52,7 +53,7 @@ public class Day16
         return distances;
     }
 
-    private static int FindRoute(List<Valve> input)
+    private static State FindRoute(List<Valve> input)
     {
         var flowRates = input.ToDictionary(k => k.Id, v => v.FlowRate);
         flowRates.Add("", 0);
@@ -64,6 +65,8 @@ public class Day16
 
         var statesToTry = new PriorityQueue<State, int>();
         var statesTried = new HashSet<State>();
+
+        State? found = null;
 
         statesToTry.Enqueue(new State("AA", "", 0, 0), 30 * allOpen);
 
@@ -78,6 +81,7 @@ public class Day16
 
             if (current.Minute >= 30 || options.Count == 0)
             {
+                found = current;
                 break;
             }
 
@@ -102,17 +106,11 @@ public class Day16
             }
         }
 
-        var finishedStates = statesTried
-            .Select(x => x with
-            {
-                Minute = 30,
-                TotalFlow = x.TotalFlow + ((30 - x.Minute) * x.OpenValves.Split(",").Sum(x => flowRates[x]))
-            });
-
-        var lastState = finishedStates.MaxBy(x => x.TotalFlow);
-        Console.WriteLine($"{finishedStates.Count()}");
-        Console.WriteLine($"{lastState}");
-        return lastState!.TotalFlow;
+        return found! with
+        {
+            Minute = 30,
+            TotalFlow = found.TotalFlow + ((30 - found.Minute) * found.OpenValves.Split(",").Sum(x => flowRates[x]))
+        };
     }
 
     private IEnumerable<Valve> ParseInput(string input)
