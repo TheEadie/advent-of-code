@@ -60,22 +60,28 @@ public class Day16
         var distances = GetDistances(input);
         var neighbours = distances.ToDictionary(k => k.Key, v => v.Value.Keys);
 
-        var statesToTry = new Queue<State>();
+        var allOpen = flowRates.Sum(x => x.Value);
+
+        var statesToTry = new PriorityQueue<State, int>();
         var statesTried = new HashSet<State>();
 
-        statesToTry.Enqueue(new State("AA", "", 0, 0));
+        statesToTry.Enqueue(new State("AA", "", 0, 0), 30 * allOpen);
 
-        while (statesToTry.Any())
+        while (statesToTry.Count > 0)
         {
             var current = statesToTry.Dequeue();
-
             statesTried.Add(current);
-
-            var costs = distances[current.CurrentRoom];
 
             var options = neighbours[current.CurrentRoom]
                 .Where(x => !current.OpenValves.Contains(x.Id))
                 .ToList();
+
+            if (current.Minute >= 30 || options.Count == 0)
+            {
+                break;
+            }
+
+            var costs = distances[current.CurrentRoom];
 
             foreach (var option in options)
             {
@@ -85,23 +91,13 @@ public class Day16
 
                 var flow = current.OpenValves.Split(",").Sum(x => flowRates[x]);
                 var nextTotalFlow = current.TotalFlow + (flow * costs[option]);
+                var nextPotential = (30 - nextTime) * allOpen;
 
                 var nextState = new State(nextRoom, nextOpenValves, nextTime, nextTotalFlow);
 
-                if (nextTime < 30)
+                if (!statesTried.Contains(nextState))
                 {
-                    if (!statesTried.Contains(nextState))
-                    {
-                        statesToTry.Enqueue(nextState);
-                    }
-                }
-                else
-                {
-                    statesTried.Add(nextState with
-                    {
-                        Minute = 30,
-                        TotalFlow = current.TotalFlow + ((30 - current.Minute) * flow)
-                    });
+                    statesToTry.Enqueue(nextState, -(nextTotalFlow + nextPotential));
                 }
             }
         }
@@ -110,10 +106,11 @@ public class Day16
             .Select(x => x with
             {
                 Minute = 30,
-                TotalFlow = x.TotalFlow + (Math.Max(30 - x.Minute, 0) * x.OpenValves.Split(",").Sum(x => flowRates[x]))
+                TotalFlow = x.TotalFlow + ((30 - x.Minute) * x.OpenValves.Split(",").Sum(x => flowRates[x]))
             });
 
         var lastState = finishedStates.MaxBy(x => x.TotalFlow);
+        Console.WriteLine($"{finishedStates.Count()}");
         Console.WriteLine($"{lastState}");
         return lastState!.TotalFlow;
     }
