@@ -10,22 +10,49 @@ public class Day16
     {
         var input = ParseInput(File.ReadAllText(inputFile)).ToList();
 
-        var answer = FindRoute(input);
+        var answer = FindRoute(input, 30).First();
 
         Console.WriteLine(answer);
         answer.TotalFlow.ShouldBe(expected);
     }
 
-    //[TestCase("data/16 - Sample.txt", 1707, TestName = "Part 2 - Sample")]
-    //[TestCase("data/16 - Puzzle Input.txt", 0, TestName = "Part 2 - Puzzle Input")]
+    [TestCase("data/16 - Sample.txt", 1707, TestName = "Part 2 - Sample")]
+    [TestCase("data/16 - Puzzle Input.txt", 2576, TestName = "Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var input = ParseInput(File.ReadAllText(inputFile)).ToList();
-        var answer = 0;//FindRouteWith2(input, 5);
 
+        var isSample = inputFile.Contains("Sample");
+        var allRoutes = FindRoute(input, 26).TakeWhile(x => x.TotalFlow > (isSample ? 700 : 1000)).ToList();
+
+        var routes = allRoutes.ConvertAll(x => new
+        {
+            State = x,
+            Valves = x.OpenValves.Split(",").Skip(1).ToHashSet()
+        });
+
+        TestContext.Progress.WriteLine("Starting checking for overlaps");
+
+        (State, State) best = (routes.Last().State, routes.Last().State);
+
+        foreach (var myRoute in routes)
+        {
+            foreach (var elephantRoute in routes)
+            {
+                if (myRoute.Valves.Overlaps(elephantRoute.Valves))
+                    continue;
+
+                if (myRoute.State.TotalFlow + elephantRoute.State.TotalFlow > best.Item1.TotalFlow + best.Item2.TotalFlow)
+                    best = (myRoute.State, elephantRoute.State);
+
+                //TestContext.Progress.WriteLine($"Overlap: {myRoute}, {elephantRoute}");
+            }
+        }
+
+        Console.WriteLine(best);
+        var answer = best.Item1.TotalFlow + best.Item2.TotalFlow;
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
-        // 2557 - Too low
     }
 
     private static IDictionary<string, Dictionary<Valve, int>> GetDistances(List<Valve> valves)
@@ -53,7 +80,7 @@ public class Day16
         return distances;
     }
 
-    private static State FindRoute(List<Valve> input)
+    private static IEnumerable<State> FindRoute(List<Valve> input, int maxTime)
     {
         var flowRates = input.ToDictionary(k => k.Id, v => v.FlowRate);
         flowRates.Add("", 0);
@@ -66,9 +93,9 @@ public class Day16
         var statesToTry = new PriorityQueue<State, int>();
         var statesTried = new HashSet<State>();
 
-        State? found = null;
+        var found = new List<State>();
 
-        statesToTry.Enqueue(new State("AA", "", 0, 0), 30 * allOpen);
+        statesToTry.Enqueue(new State("AA", "", 0, 0), maxTime * allOpen);
 
         while (statesToTry.Count > 0)
         {
@@ -79,13 +106,16 @@ public class Day16
                 .Where(x => !current.OpenValves.Contains(x.Id))
                 .ToList();
 
-            if (current.Minute >= 30 || options.Count == 0)
+            if (current.Minute == maxTime)
             {
-                found = current;
-                break;
+                //TestContext.Progress.WriteLine($"Found: {current}");
+                yield return current;
+                continue;
             }
 
             var costs = distances[current.CurrentRoom];
+
+            var nextStates = new List<State>();
 
             foreach (var option in options)
             {
@@ -93,24 +123,31 @@ public class Day16
                 var nextOpenValves = current.OpenValves + "," + option.Id;
                 var nextTime = current.Minute + costs[option];
 
+                if (nextTime > maxTime)
+                    continue;
+
                 var flow = current.OpenValves.Split(",").Sum(x => flowRates[x]);
                 var nextTotalFlow = current.TotalFlow + (flow * costs[option]);
-                var nextPotential = (30 - nextTime) * allOpen;
 
-                var nextState = new State(nextRoom, nextOpenValves, nextTime, nextTotalFlow);
+                nextStates.Add(new State(nextRoom, nextOpenValves, nextTime, nextTotalFlow));
+            }
 
+            nextStates.Add(current with
+            {
+                Minute = maxTime,
+                TotalFlow = current.TotalFlow +
+                    ((maxTime - current.Minute) * current.OpenValves.Split(",").Sum(x => flowRates[x]))
+            });
+
+            foreach (var nextState in nextStates)
+            {
                 if (!statesTried.Contains(nextState))
                 {
-                    statesToTry.Enqueue(nextState, -(nextTotalFlow + nextPotential));
+                    var nextPotential = (maxTime - nextState.Minute) * allOpen;
+                    statesToTry.Enqueue(nextState, -(nextState.TotalFlow + nextPotential));
                 }
             }
         }
-
-        return found! with
-        {
-            Minute = 30,
-            TotalFlow = found.TotalFlow + ((30 - found.Minute) * found.OpenValves.Split(",").Sum(x => flowRates[x]))
-        };
     }
 
     private IEnumerable<Valve> ParseInput(string input)
@@ -125,8 +162,9 @@ public class Day16
         }
 
         return input.Split("\n").Select(ParseValve);
-
     }
+
+    private record StatePart2(State Item1, State Item2);
 
     private record State(
         string CurrentRoom,
