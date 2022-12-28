@@ -23,7 +23,7 @@ public class Day16
         var input = ParseInput(File.ReadAllText(inputFile)).ToList();
 
         var isSample = inputFile.Contains("Sample");
-        var allRoutes = FindRoute(input, 26).TakeWhile(x => x.TotalFlow > (isSample ? 700 : 1000)).ToList();
+        var allRoutes = FindRoute(input, 26).ToList();
 
         var routes = allRoutes.ConvertAll(x => new
         {
@@ -31,27 +31,23 @@ public class Day16
             Valves = x.OpenValves.Split(",").Skip(1).ToHashSet()
         });
 
-        TestContext.Progress.WriteLine("Starting checking for overlaps");
-
         (State, State) best = (routes.Last().State, routes.Last().State);
 
         foreach (var myRoute in routes)
         {
             foreach (var elephantRoute in routes)
             {
-                if (myRoute.Valves.Overlaps(elephantRoute.Valves))
-                    continue;
-
-                if (myRoute.State.TotalFlow + elephantRoute.State.TotalFlow > best.Item1.TotalFlow + best.Item2.TotalFlow)
-                    best = (myRoute.State, elephantRoute.State);
-
-                //TestContext.Progress.WriteLine($"Overlap: {myRoute}, {elephantRoute}");
+                if (!myRoute.Valves.Overlaps(elephantRoute.Valves))
+                {
+                    if (myRoute.State.TotalFlow + elephantRoute.State.TotalFlow > best.Item1.TotalFlow + best.Item2.TotalFlow)
+                        best = (myRoute.State, elephantRoute.State);
+                    break;
+                }
             }
         }
 
         Console.WriteLine(best);
         var answer = best.Item1.TotalFlow + best.Item2.TotalFlow;
-        Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
 
@@ -108,7 +104,6 @@ public class Day16
 
             if (current.Minute == maxTime)
             {
-                //TestContext.Progress.WriteLine($"Found: {current}");
                 yield return current;
                 continue;
             }
@@ -163,8 +158,6 @@ public class Day16
 
         return input.Split("\n").Select(ParseValve);
     }
-
-    private record StatePart2(State Item1, State Item2);
 
     private record State(
         string CurrentRoom,
