@@ -2,8 +2,8 @@ namespace AdventOfCode2022;
 
 public class Day11
 {
-    [TestCase("data/11 - Sample.txt", 10605, TestName = "Sample")]
-    [TestCase("data/11 - Puzzle Input.txt", 95472, TestName = "Puzzle Input")]
+    [TestCase("data/11 - Sample.txt", 10605, TestName = "Day 11 - Part 1 - Sample")]
+    [TestCase("data/11 - Puzzle Input.txt", 95472, TestName = "Day 11 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
         var monkeys = ParseInput(inputFile);
@@ -13,12 +13,12 @@ public class Day11
 
         var answer = topTwo[0] * topTwo[1];
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/11 - Sample.txt", 2713310158, TestName = "Part 2 - Sample")]
-    [TestCase("data/11 - Puzzle Input.txt", 17926061332, TestName = "Part 2 - Puzzle Input")]
+    [TestCase("data/11 - Sample.txt", 2713310158, TestName = "Day 11 - Part 2 - Sample")]
+    [TestCase("data/11 - Puzzle Input.txt", 17926061332, TestName = "Day 11 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, long expected)
     {
         var input = ParseInput(inputFile);
@@ -30,7 +30,7 @@ public class Day11
 
         var answer = topTwo[0] * topTwo[1];
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 

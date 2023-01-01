@@ -2,8 +2,8 @@ namespace AdventOfCode2022;
 
 public class Day24
 {
-    [TestCase("data/24 - Sample.txt", 18, TestName = "Sample")]
-    [TestCase("data/24 - Puzzle Input.txt", 251, TestName = "Puzzle Input")]
+    [TestCase("data/24 - Sample.txt", 18, TestName = "Day 24 - Part 1 - Sample")]
+    [TestCase("data/24 - Puzzle Input.txt", 251, TestName = "Day 24 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
         var (start, goal, map, storms) = ParseInput(File.ReadAllText(inputFile));
@@ -15,12 +15,12 @@ public class Day24
             (_, _) => 1,
             (n) => Math.Abs(n.Position.X - goal.X) + Math.Abs(n.Position.Y - goal.Y));
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/24 - Sample.txt", 54, TestName = "Sample")]
-    [TestCase("data/24 - Puzzle Input.txt", 758, TestName = "Puzzle Input")]
+    [TestCase("data/24 - Sample.txt", 54, TestName = "Day 24 - Part 2 - Sample")]
+    [TestCase("data/24 - Puzzle Input.txt", 758, TestName = "Day 24 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var (start, goal, map, storms) = ParseInput(File.ReadAllText(inputFile));
@@ -54,7 +54,7 @@ public class Day24
 
         var answer = one + two + three;
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 

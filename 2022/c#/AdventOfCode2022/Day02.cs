@@ -2,8 +2,8 @@ namespace AdventOfCode2022;
 
 public class Day02
 {
-    [TestCase("data/02 - Sample.txt", 15, TestName = "Sample")]
-    [TestCase("data/02 - Puzzle Input.txt", 13009, TestName = "Puzzle Input")]
+    [TestCase("data/02 - Sample.txt", 15, TestName = "Day 02 - Part 1 - Sample")]
+    [TestCase("data/02 - Puzzle Input.txt", 13009, TestName = "Day 02 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
         var strategies = File.ReadAllLines(inputFile)
@@ -23,12 +23,12 @@ public class Day02
 
         var answer = strategies.Select(ScoreRound).Sum();
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/02 - Sample.txt", 12, TestName = "Sample")]
-    [TestCase("data/02 - Puzzle Input.txt", 10398, TestName = "Puzzle Input")]
+    [TestCase("data/02 - Sample.txt", 12, TestName = "Day 02 - Part 2 - Sample")]
+    [TestCase("data/02 - Puzzle Input.txt", 10398, TestName = "Day 02 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var strategies = File.ReadAllLines(inputFile)
@@ -48,7 +48,7 @@ public class Day02
 
         var answer = strategies.Select(ScoreRound).Sum();
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 

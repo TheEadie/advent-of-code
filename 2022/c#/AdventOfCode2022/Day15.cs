@@ -4,8 +4,8 @@ namespace AdventOfCode2022;
 
 public class Day15
 {
-    [TestCase("data/15 - Sample.txt", 10, 26, TestName = "Sample")]
-    [TestCase("data/15 - Puzzle Input.txt", 2_000_000, 5_508_234, TestName = "Puzzle Input")]
+    [TestCase("data/15 - Sample.txt", 10, 26, TestName = "Day 15 - Part 1 - Sample")]
+    [TestCase("data/15 - Puzzle Input.txt", 2_000_000, 5_508_234, TestName = "Day 15 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int y, int expected)
     {
         var sensors = ParseInput(File.ReadAllText(inputFile)).ToList();
@@ -17,12 +17,12 @@ public class Day15
             .Select(x => new Coordinate(x, y))
             .Count(x => sensors.Any(s => x != s.FirstSensor && s.Distance >= GetDistance(x, s.Position)));
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/15 - Sample.txt", 20, 56_000_011, TestName = "Part 2 - Sample")]
-    [TestCase("data/15 - Puzzle Input.txt", 4_000_000, 10_457_634_860_779, TestName = "Part 2 - Puzzle Input")]
+    [TestCase("data/15 - Sample.txt", 20, 56_000_011, TestName = "Day 15 - Part 2 - Sample")]
+    [TestCase("data/15 - Puzzle Input.txt", 4_000_000, 10_457_634_860_779, TestName = "Day 15 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int maxXY, long expected)
     {
         var sensors = ParseInput(File.ReadAllText(inputFile)).ToList();
@@ -33,7 +33,7 @@ public class Day15
 
         var answer = (long)found.X * 4_000_000 + found.Y;
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 

@@ -2,8 +2,8 @@ namespace AdventOfCode2022;
 
 public class Day14
 {
-    [TestCase("data/14 - Sample.txt", 24, TestName = "Sample")]
-    [TestCase("data/14 - Puzzle Input.txt", 858, TestName = "Puzzle Input")]
+    [TestCase("data/14 - Sample.txt", 24, TestName = "Day 14 - Part 1 - Sample")]
+    [TestCase("data/14 - Puzzle Input.txt", 858, TestName = "Day 14 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
         var cave = ParseInput(File.ReadAllText(inputFile));
@@ -14,12 +14,12 @@ public class Day14
             .TakeWhile(x => x.Y < bottomOfCave)
             .Count();
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/14 - Sample.txt", 93, TestName = "Part 2 - Sample")]
-    [TestCase("data/14 - Puzzle Input.txt", 26845, TestName = "Part 2 - Puzzle Input")]
+    [TestCase("data/14 - Sample.txt", 93, TestName = "Day 14 - Part 2 - Sample")]
+    [TestCase("data/14 - Puzzle Input.txt", 26845, TestName = "Day 14 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var cave = ParseInput(File.ReadAllText(inputFile));
@@ -29,7 +29,7 @@ public class Day14
             .TakeUntil(x => x == start)
             .Count();
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 

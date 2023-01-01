@@ -2,8 +2,8 @@ namespace AdventOfCode2022;
 
 public class Day07
 {
-    [TestCase("data/07 - Sample.txt", 95437, TestName = "Sample")]
-    [TestCase("data/07 - Puzzle Input.txt", 1182909, TestName = "Puzzle Input")]
+    [TestCase("data/07 - Sample.txt", 95437, TestName = "Day 07 - Part 1 - Sample")]
+    [TestCase("data/07 - Puzzle Input.txt", 1182909, TestName = "Day 07 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, double expected)
     {
         var fileSystem = ParseFileSystem(File.ReadAllLines(inputFile));
@@ -12,12 +12,12 @@ public class Day07
             .Where(x => x.Size < 100000)
             .Sum(x => x.Size);
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/07 - Sample.txt", 24933642, TestName = "Sample")]
-    [TestCase("data/07 - Puzzle Input.txt", 2832508, TestName = "Puzzle Input")]
+    [TestCase("data/07 - Sample.txt", 24933642, TestName = "Day 07 - Part 2 - Sample")]
+    [TestCase("data/07 - Puzzle Input.txt", 2832508, TestName = "Day 07 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, double expected)
     {
         var fileSystem = ParseFileSystem(File.ReadAllLines(inputFile));
@@ -27,10 +27,11 @@ public class Day07
 
         var answer = fileSystem.Directories
             .Where(x => x.Size > spaceToDelete)
-            .MinBy(x => x.Size);
+            .MinBy(x => x.Size)!
+            .Size;
 
-        Console.WriteLine(answer!.Size);
-        answer.Size.ShouldBe(expected);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        answer.ShouldBe(expected);
     }
 
     private static FileSystem ParseFileSystem(string[] input)

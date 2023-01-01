@@ -2,8 +2,8 @@ namespace AdventOfCode2022;
 
 public class Day10
 {
-    [TestCase("data/10 - Sample.txt", 13140, TestName = "Sample")]
-    [TestCase("data/10 - Puzzle Input.txt", 12460, TestName = "Puzzle Input")]
+    [TestCase("data/10 - Sample.txt", 13140, TestName = "Day 10 - Part 1 - Sample")]
+    [TestCase("data/10 - Puzzle Input.txt", 12460, TestName = "Day 10 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
         var input = ParseInput(File.ReadAllText(inputFile));
@@ -22,12 +22,12 @@ public class Day10
 
         var answer = signalStrengths.Sum();
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/10 - Sample.txt", 0, TestName = "Sample")]
-    [TestCase("data/10 - Puzzle Input.txt", 0, TestName = "Puzzle Input")]
+    [TestCase("data/10 - Sample.txt", 0, TestName = "Day 10 - Part 2 - Sample")]
+    [TestCase("data/10 - Puzzle Input.txt", 0, TestName = "Day 10 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int _)
     {
         var input = ParseInput(File.ReadAllText(inputFile));

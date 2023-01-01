@@ -2,8 +2,8 @@ namespace AdventOfCode2022;
 
 public class Day20
 {
-    [TestCase("data/20 - Sample.txt", 3, TestName = "Sample")]
-    [TestCase("data/20 - Puzzle Input.txt", 6640, TestName = "Puzzle Input")]
+    [TestCase("data/20 - Sample.txt", 3, TestName = "Day 20 - Part 1 - Sample")]
+    [TestCase("data/20 - Puzzle Input.txt", 6640, TestName = "Day 20 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, double expected)
     {
         var input = File.ReadAllText(inputFile)
@@ -15,12 +15,12 @@ public class Day20
         var (x, y, z) = GetCoordinates(mixed);
         var answer = x + y + z;
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/20 - Sample.txt", 1_623_178_306, TestName = "Part 2 - Sample")]
-    [TestCase("data/20 - Puzzle Input.txt", 11_893_839_037_215, TestName = "Part 2 - Puzzle Input")]
+    [TestCase("data/20 - Sample.txt", 1_623_178_306, TestName = "Day 20 - Part 2 - Sample")]
+    [TestCase("data/20 - Puzzle Input.txt", 11_893_839_037_215, TestName = "Day 20 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, double expected)
     {
         var input = File.ReadAllText(inputFile)
@@ -32,7 +32,7 @@ public class Day20
         var (x, y, z) = GetCoordinates(mixed);
         var answer = x + y + z;
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 

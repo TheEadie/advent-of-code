@@ -2,8 +2,8 @@ namespace AdventOfCode2022;
 
 public class Day12
 {
-    [TestCase("data/12 - Sample.txt", 31, TestName = "Sample")]
-    [TestCase("data/12 - Puzzle Input.txt", 425, TestName = "Puzzle Input")]
+    [TestCase("data/12 - Sample.txt", 31, TestName = "Day 12 - Part 1 - Sample")]
+    [TestCase("data/12 - Puzzle Input.txt", 425, TestName = "Day 12 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
         var (start, goal, map) = ParseInput(File.ReadAllText(inputFile));
@@ -14,13 +14,13 @@ public class Day12
                 (_, _) => 1,
                 DistanceToGoal);
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
 
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/12 - Sample.txt", 29, TestName = "Part 2 - Sample")]
-    [TestCase("data/12 - Puzzle Input.txt", 418, TestName = "Part 2 - Puzzle Input")]
+    [TestCase("data/12 - Sample.txt", 29, TestName = "Day 12 - Part 2 - Sample")]
+    [TestCase("data/12 - Puzzle Input.txt", 418, TestName = "Day 12 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var (start, goal, map) = ParseInput(File.ReadAllText(inputFile));
@@ -33,7 +33,7 @@ public class Day12
                     DistanceToGoal))
             .Min(x => x.Item1);
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 

@@ -2,20 +2,20 @@ namespace AdventOfCode2022;
 
 public class Day01
 {
-    [TestCase("data/01 - Sample.txt", 24000, TestName = "Sample")]
-    [TestCase("data/01 - Puzzle Input.txt", 69795, TestName = "Puzzle Input")]
+    [TestCase("data/01 - Sample.txt", 24000, TestName = "Day 01 - Part 1 - Sample")]
+    [TestCase("data/01 - Puzzle Input.txt", 69795, TestName = "Day 01 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
         var elves = ParseInput(File.ReadAllText(inputFile));
 
         var answer = elves.Max(x => x.Calories.Sum());
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/01 - Sample.txt", 45000, TestName = "Sample")]
-    [TestCase("data/01 - Puzzle Input.txt", 208437, TestName = "Puzzle Input")]
+    [TestCase("data/01 - Sample.txt", 45000, TestName = "Day 01 - Part 2 - Sample")]
+    [TestCase("data/01 - Puzzle Input.txt", 208437, TestName = "Day 01 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var elves = ParseInput(File.ReadAllText(inputFile));
@@ -25,7 +25,7 @@ public class Day01
             .SelectMany(x => x.Calories)
             .Sum();
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 

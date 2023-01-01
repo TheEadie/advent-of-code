@@ -2,34 +2,34 @@ namespace AdventOfCode2022;
 
 public class Day23
 {
-    [TestCase("data/23 - Sample.txt", 110, TestName = "Sample")]
-    [TestCase("data/23 - Puzzle Input.txt", 4247, TestName = "Puzzle Input")]
+    [TestCase("data/23 - Sample.txt", 110, TestName = "Day 23 - Part 1 - Sample")]
+    [TestCase("data/23 - Puzzle Input.txt", 4247, TestName = "Day 23 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
         var map = ParseInput(File.ReadAllText(inputFile)).ToHashSet();
-        
+
         var finalMap = RunStep(map).Take(10).Last().ToList();
 
         var start = new Coordinate(finalMap.Min(x => x.X), finalMap.Min(x => x.Y));
         var end = new Coordinate(finalMap.Max(x => x.X), finalMap.Max(x => x.Y));
 
         var area = (end.X - start.X + 1) * (end.Y - start.Y + 1);
-        
+
         var answer = area - finalMap.Count;
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/23 - Sample.txt", 20, TestName = "Part 2 - Sample")]
-    [TestCase("data/23 - Puzzle Input.txt", 1049, TestName = "Part 2 - Puzzle Input")]
+    [TestCase("data/23 - Sample.txt", 20, TestName = "Day 23 - Part 2 - Sample")]
+    [TestCase("data/23 - Puzzle Input.txt", 1049, TestName = "Day 23 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var map = ParseInput(File.ReadAllText(inputFile)).ToHashSet();
-        
+
         var answer = RunStep(map).Count();
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
@@ -52,7 +52,7 @@ public class Day23
             previousMap = nextMap;
 
             var proposedMoves = new Dictionary<Coordinate, Coordinate>();
-            
+
             foreach (var elf in previousMap)
             {
                 var noNeighbours = !GetNeighbours(elf).Any(previousMap.Contains);
@@ -69,7 +69,7 @@ public class Day23
                     if (!GetNeighboursInDirection(elf, vector).Any(previousMap.Contains))
                     {
                         proposedMoves.Add(elf,
-                            new Coordinate(elf.X + vector.X, 
+                            new Coordinate(elf.X + vector.X,
                                     elf.Y + vector.Y));
                         break;
                     }
@@ -89,7 +89,7 @@ public class Day23
             nextMap = previousMap.Select(elf => proposedMoves.ContainsKey(elf) ? proposedMoves[elf] : elf).ToHashSet();
 
             //PrintMap(nextMap.ToList());
-            
+
             yield return nextMap;
 
             vectorPointer++;
@@ -123,28 +123,28 @@ public class Day23
                 new Coordinate(coordinate.X + vector.X, coordinate.Y + 1),
             };
         }
-        
+
         return new[]
         {
             new Coordinate(coordinate.X - 1, coordinate.Y + vector.Y),
             new Coordinate(coordinate.X, coordinate.Y + vector.Y),
             new Coordinate(coordinate.X + 1, coordinate.Y + vector.Y),
-        }; 
+        };
     }
 
     private static void PrintMap(ICollection<Coordinate> nextMap)
     {
         Console.WriteLine();
         Console.WriteLine();
-        
+
         var minY = nextMap.Min(i => i.Y);
         var maxY = nextMap.Max(i => i.Y);
-        
+
         var minX = nextMap.Min(i => i.X);
         var maxX = nextMap.Max(i => i.X);
 
-        
-        for(var y = minY; y <= maxY; y++)
+
+        for (var y = minY; y <= maxY; y++)
         {
             for (var x = minX; x <= maxX; x++)
             {

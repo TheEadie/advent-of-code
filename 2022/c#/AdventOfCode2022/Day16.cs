@@ -4,20 +4,20 @@ namespace AdventOfCode2022;
 
 public class Day16
 {
-    [TestCase("data/16 - Sample.txt", 1651, TestName = "Sample")]
-    [TestCase("data/16 - Puzzle Input.txt", 1896, TestName = "Puzzle Input")]
+    [TestCase("data/16 - Sample.txt", 1651, TestName = "Day 16 - Part 1 - Sample")]
+    [TestCase("data/16 - Puzzle Input.txt", 1896, TestName = "Day 16 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
         var input = ParseInput(File.ReadAllText(inputFile)).ToList();
 
         var answer = FindRoute(input, 30).First();
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.TotalFlow.ShouldBe(expected);
     }
 
-    [TestCase("data/16 - Sample.txt", 1707, TestName = "Part 2 - Sample")]
-    [TestCase("data/16 - Puzzle Input.txt", 2576, TestName = "Part 2 - Puzzle Input")]
+    [TestCase("data/16 - Sample.txt", 1707, TestName = "Day 16 - Part 2 - Sample")]
+    [TestCase("data/16 - Puzzle Input.txt", 2576, TestName = "Day 16 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var input = ParseInput(File.ReadAllText(inputFile)).ToList();
@@ -46,7 +46,7 @@ public class Day16
             }
         }
 
-        Console.WriteLine(best);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {best}");
         var answer = best.Item1.TotalFlow + best.Item2.TotalFlow;
         answer.ShouldBe(expected);
     }

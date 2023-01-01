@@ -2,8 +2,8 @@ namespace AdventOfCode2022;
 
 public class Day08
 {
-    [TestCase("data/08 - Sample.txt", 21, TestName = "Sample")]
-    [TestCase("data/08 - Puzzle Input.txt", 1763, TestName = "Puzzle Input")]
+    [TestCase("data/08 - Sample.txt", 21, TestName = "Day 08 - Part 1 - Sample")]
+    [TestCase("data/08 - Puzzle Input.txt", 1763, TestName = "Day 08 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
         var input = ParseInput(File.ReadAllText(inputFile));
@@ -14,12 +14,12 @@ public class Day08
             MoveAlongVector(input, x.Key, Vector.Left).All(i => i < x.Value) ||
             MoveAlongVector(input, x.Key, Vector.Right).All(i => i < x.Value));
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/08 - Sample.txt", 8, TestName = "Part 2 -Sample")]
-    [TestCase("data/08 - Puzzle Input.txt", 671160, TestName = "Part 2 - Puzzle Input")]
+    [TestCase("data/08 - Sample.txt", 8, TestName = "Day 08 - Part 2 - Sample")]
+    [TestCase("data/08 - Puzzle Input.txt", 671160, TestName = "Day 08 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var input = ParseInput(File.ReadAllText(inputFile));
@@ -30,7 +30,7 @@ public class Day08
             MoveAlongVector(input, x.Key, Vector.Left).TakeUntil(i => i >= x.Value).Count() *
             MoveAlongVector(input, x.Key, Vector.Right).TakeUntil(i => i >= x.Value).Count());
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 

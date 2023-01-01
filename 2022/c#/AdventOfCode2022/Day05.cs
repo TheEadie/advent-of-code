@@ -2,8 +2,8 @@ namespace AdventOfCode2022;
 
 public class Day05
 {
-    [TestCase("data/05 - Sample.txt", "CMZ", TestName = "Sample")]
-    [TestCase("data/05 - Puzzle Input.txt", "VRWBSFZWM", TestName = "Puzzle Input")]
+    [TestCase("data/05 - Sample.txt", "CMZ", TestName = "Day 05 - Part 1 - Sample")]
+    [TestCase("data/05 - Puzzle Input.txt", "VRWBSFZWM", TestName = "Day 05 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, string expected)
     {
         (var stacks, var moves) = Parse(File.ReadAllText(inputFile));
@@ -23,12 +23,12 @@ public class Day05
             answer += stack.Peek();
         }
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/05 - Sample.txt", "MCD", TestName = "Sample")]
-    [TestCase("data/05 - Puzzle Input.txt", "RBTWJWMCF", TestName = "Puzzle Input")]
+    [TestCase("data/05 - Sample.txt", "MCD", TestName = "Day 05 - Part 2 - Sample")]
+    [TestCase("data/05 - Puzzle Input.txt", "RBTWJWMCF", TestName = "Day 05 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, string expected)
     {
         (var stacks, var moves) = Parse(File.ReadAllText(inputFile));
@@ -55,7 +55,7 @@ public class Day05
             answer += stack.Peek();
         }
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 

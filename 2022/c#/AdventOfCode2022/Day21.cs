@@ -2,20 +2,20 @@ namespace AdventOfCode2022;
 
 public class Day21
 {
-    [TestCase("data/21 - Sample.txt", 152, TestName = "Sample")]
-    [TestCase("data/21 - Puzzle Input.txt", 299_983_725_663_456, TestName = "Puzzle Input")]
+    [TestCase("data/21 - Sample.txt", 152, TestName = "Day 21 - Part 1 - Sample")]
+    [TestCase("data/21 - Puzzle Input.txt", 299_983_725_663_456, TestName = "Day 21 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, long expected)
     {
         var input = ParseInput(File.ReadAllText(inputFile)).ToList();
 
         var answer = GetMonkeyNumber("root", input);
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/21 - Sample.txt", 301, TestName = "Part 2 - Sample")]
-    [TestCase("data/21 - Puzzle Input.txt", 3_093_175_982_595, TestName = "Part 2 - Puzzle Input")]
+    [TestCase("data/21 - Sample.txt", 301, TestName = "Day 21 - Part 2 - Sample")]
+    [TestCase("data/21 - Puzzle Input.txt", 3_093_175_982_595, TestName = "Day 21 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, long expected)
     {
         var input = ParseInput(File.ReadAllText(inputFile)).ToList();
@@ -25,7 +25,7 @@ public class Day21
 
         var answer = Solve(human, root, input);
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 

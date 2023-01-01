@@ -2,8 +2,8 @@ namespace AdventOfCode2022;
 
 public class Day22
 {
-    [TestCase("data/22 - Sample.txt", 6032, TestName = "Sample")]
-    [TestCase("data/22 - Puzzle Input.txt", 122_082, TestName = "Puzzle Input")]
+    [TestCase("data/22 - Sample.txt", 6032, TestName = "Day 22 - Part 1 - Sample")]
+    [TestCase("data/22 - Puzzle Input.txt", 122_082, TestName = "Day 22 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
         var (map, moves) = ParseInput(File.ReadAllText(inputFile));
@@ -22,12 +22,12 @@ public class Day22
                      4 * (finalPosition.Coordinate.X + 1) +
                      GetScoreForDirection(finalPosition.Facing);
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/22 - Sample.txt", 5031, TestName = "Part 2 - Sample")]
-    [TestCase("data/22 - Puzzle Input.txt", 134_076, TestName = "Part 2 - Puzzle Input")]
+    [TestCase("data/22 - Sample.txt", 5031, TestName = "Day 22 - Part 2 - Sample")]
+    [TestCase("data/22 - Puzzle Input.txt", 134_076, TestName = "Day 22 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var (map, moves) = ParseInput(File.ReadAllText(inputFile));
@@ -47,7 +47,7 @@ public class Day22
                      4 * (finalPosition.Coordinate.X + 1) +
                      GetScoreForDirection(finalPosition.Facing);
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 

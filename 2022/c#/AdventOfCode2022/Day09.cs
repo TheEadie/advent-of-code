@@ -2,8 +2,8 @@ namespace AdventOfCode2022;
 
 public class Day09
 {
-    [TestCase("data/09 - Sample.txt", 13, TestName = "Sample")]
-    [TestCase("data/09 - Puzzle Input.txt", 5735, TestName = "Puzzle Input")]
+    [TestCase("data/09 - Sample.txt", 13, TestName = "Day 09 - Part 1 - Sample")]
+    [TestCase("data/09 - Puzzle Input.txt", 5735, TestName = "Day 09 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
         var start = Rope.Create(1);
@@ -16,13 +16,13 @@ public class Day09
             .DistinctBy(x => x.Knots.Last())
             .Count();
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
-    [TestCase("data/09 - Sample.txt", 1, TestName = "Part 2 - Sample")]
-    [TestCase("data/09 - Sample - 2.txt", 36, TestName = "Part 2 - Sample (2)")]
-    [TestCase("data/09 - Puzzle Input.txt", 2478, TestName = "Part 2 - Puzzle Input")]
+    [TestCase("data/09 - Sample.txt", 1, TestName = "Day 09 - Part 2 - Sample")]
+    [TestCase("data/09 - Sample - 2.txt", 36, TestName = "Day 09 - Part 2 - Sample (2)")]
+    [TestCase("data/09 - Puzzle Input.txt", 2478, TestName = "Day 09 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var start = Rope.Create(9);
@@ -35,7 +35,7 @@ public class Day09
             .DistinctBy(x => x.Knots.Last())
             .Count();
 
-        Console.WriteLine(answer);
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
 
