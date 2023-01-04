@@ -31,7 +31,7 @@ public class Day16
             Valves = x.OpenValves.Split(",").Skip(1).ToHashSet()
         });
 
-        (State, State) best = (routes.Last().State, routes.Last().State);
+        var best = (routes.Last().State, routes.Last().State);
 
         foreach (var myRoute in routes)
         {
@@ -61,11 +61,12 @@ public class Day16
 
             foreach (var valve in valves.Where(x => x.FlowRate > 0))
             {
-                var (distance, path) = PathFinding.AStar(v.Id,
-                    valve.Id,
+                var (distance, path) = PathFinding.AStar(
+                    v.Id,
+                    n => n == valve.Id,
                     node => valves.Where(x => x.Tunnels.Contains(node)).Select(x => x.Id),
                     (_, _) => 1,
-                    (_, _) => 0);
+                    _ => 0);
 
                 found.Add(valve, distance + 1);
             }
@@ -145,7 +146,7 @@ public class Day16
         }
     }
 
-    private IEnumerable<Valve> ParseInput(string input)
+    private static IEnumerable<Valve> ParseInput(string input)
     {
         Valve ParseValve(string line)
         {

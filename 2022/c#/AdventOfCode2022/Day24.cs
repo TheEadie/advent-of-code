@@ -8,8 +8,8 @@ public class Day24
     {
         var (start, goal, map, storms) = ParseInput(File.ReadAllText(inputFile));
 
-        var answer = PathFinding.AStar(
-            new State(0, new Coordinate(0, -1)),
+        var (answer, _) = PathFinding.AStar(
+            new State(0, start),
             (n) => n.Position == goal,
             (n) => GetMoves(n, map, storms),
             (_, _) => 1,
@@ -25,7 +25,7 @@ public class Day24
     {
         var (start, goal, map, storms) = ParseInput(File.ReadAllText(inputFile));
 
-        var one = PathFinding.AStar(
+        var (one, _) = PathFinding.AStar(
             new State(0, start),
             (n) => n.Position == goal,
             (n) => GetMoves(n, map, storms),
@@ -34,7 +34,7 @@ public class Day24
 
         TestContext.Progress.WriteLine($"There: {one}");
 
-        var two = PathFinding.AStar(
+        var (two, _) = PathFinding.AStar(
             new State(one, goal),
             (n) => n.Position == start,
             (n) => GetMoves(n, map, storms),
@@ -43,7 +43,7 @@ public class Day24
 
         TestContext.Progress.WriteLine($"Back: {two}");
 
-        var three = PathFinding.AStar(
+        var (three, _) = PathFinding.AStar(
             new State(one + two, start),
             (n) => n.Position == goal,
             (n) => GetMoves(n, map, storms),
@@ -59,10 +59,10 @@ public class Day24
     }
 
     private static IEnumerable<State> GetMoves(State input,
-                        HashSet<Coordinate> map,
-                        HashSet<Coordinate>[] storms)
+                        IReadOnlySet<Coordinate> map,
+                        IReadOnlyList<HashSet<Coordinate>> storms)
     {
-        (var time, var current) = input;
+        var (time, current) = input;
 
         var testCoordinates = new HashSet<Coordinate>
         {

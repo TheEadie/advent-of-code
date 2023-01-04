@@ -26,12 +26,12 @@ public class Day18
         answer.ShouldBe(expected);
     }
 
-    private int GetSurfaceArea(IEnumerable<Coordinate3D> shape)
+    private static int GetSurfaceArea(IReadOnlySet<Coordinate3D> shape)
     {
         return shape.Select(x => 6 - GetNeighbours(x, shape).Count()).Sum();
     }
 
-    private IEnumerable<IEnumerable<Coordinate3D>> GetAreas(IEnumerable<Coordinate3D> map)
+    private static IEnumerable<IReadOnlySet<Coordinate3D>> GetAreas(IReadOnlySet<Coordinate3D> map)
     {
         var areas = new List<HashSet<Coordinate3D>>();
 
@@ -61,7 +61,7 @@ public class Day18
         return areas;
     }
 
-    private static IEnumerable<Coordinate3D> FloodFill(Coordinate3D input, IEnumerable<Coordinate3D> map)
+    private static IEnumerable<Coordinate3D> FloodFill(Coordinate3D input, IReadOnlySet<Coordinate3D> map)
     {
         var area = new HashSet<Coordinate3D>();
         var queue = new Queue<Coordinate3D>();
@@ -84,16 +84,16 @@ public class Day18
         return area;
     }
 
-    private static IEnumerable<Coordinate3D> GetNeighbours(Coordinate3D input, IEnumerable<Coordinate3D> map)
+    private static IEnumerable<Coordinate3D> GetNeighbours(Coordinate3D input, IReadOnlySet<Coordinate3D> map)
     {
         var toCheck = new HashSet<Coordinate3D>
         {
-            new Coordinate3D(input.X - 1, input.Y, input.Z),
-            new Coordinate3D(input.X + 1, input.Y, input.Z),
-            new Coordinate3D(input.X, input.Y - 1, input.Z),
-            new Coordinate3D(input.X, input.Y + 1, input.Z),
-            new Coordinate3D(input.X, input.Y, input.Z - 1),
-            new Coordinate3D(input.X, input.Y, input.Z + 1),
+            new(input.X - 1, input.Y, input.Z),
+            new(input.X + 1, input.Y, input.Z),
+            new(input.X, input.Y - 1, input.Z),
+            new(input.X, input.Y + 1, input.Z),
+            new(input.X, input.Y, input.Z - 1),
+            new(input.X, input.Y, input.Z + 1),
         };
 
         return toCheck.Where(map.Contains);

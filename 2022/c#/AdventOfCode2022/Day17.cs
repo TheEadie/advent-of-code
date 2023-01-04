@@ -8,7 +8,8 @@ public class Day17
     {
         var input = File.ReadAllText(inputFile)
             .ToCharArray()
-            .Select(x => x == '<' ? Direction.Left : Direction.Right);
+            .Select(x => x == '<' ? Direction.Left : Direction.Right)
+            .ToList();
 
         var answer = Drop(input, 2022);
 
@@ -22,7 +23,8 @@ public class Day17
     {
         var input = File.ReadAllText(inputFile)
             .ToCharArray()
-            .Select(x => x == '<' ? Direction.Left : Direction.Right);
+            .Select(x => x == '<' ? Direction.Left : Direction.Right)
+            .ToList();
 
         var answer = Drop(input, 1_000_000_000_000);
 
@@ -30,62 +32,61 @@ public class Day17
         answer.ShouldBe(expected);
     }
 
-    private static long Drop(IEnumerable<Direction> input, long numberToDrop)
+    private static long Drop(IReadOnlyList<Direction> input, long numberToDrop)
     {
         static bool CheckCollision(IEnumerable<Coordinate> block, IEnumerable<Coordinate> map)
         {
-            foreach (var position in block)
-            {
-                if (position.X < 0 || position.X > 6 || map.Contains(position))
-                    return true;
-            }
-
-            return false;
+            return block.Any(position => position.X is < 0 or > 6 || map.Contains(position));
         }
 
         var blocks = new List<List<Coordinate>>()
         {
-            new List<Coordinate> { new Coordinate(0, 0),
-                                    new Coordinate(1, 0),
-                                    new Coordinate(2, 0),
-                                    new Coordinate(3, 0) },
-            new List<Coordinate> { new Coordinate(1, 0),
-                                    new Coordinate(0, 1),
-                                    new Coordinate(1, 1),
-                                    new Coordinate(2, 1),
-                                    new Coordinate(1, 2) },
-            new List<Coordinate> { new Coordinate(0, 0),
-                                    new Coordinate(1, 0),
-                                    new Coordinate(2, 0),
-                                    new Coordinate(2, 1),
-                                    new Coordinate(2, 2) },
-            new List<Coordinate> { new Coordinate(0, 0),
-                                    new Coordinate(0, 1),
-                                    new Coordinate(0, 2),
-                                    new Coordinate(0, 3) },
-            new List<Coordinate> { new Coordinate(0, 0),
-                                    new Coordinate(0, 1),
-                                    new Coordinate(1, 0),
-                                    new Coordinate(1, 1) }
+            new()
+            { new Coordinate(0, 0),
+                new Coordinate(1, 0),
+                new Coordinate(2, 0),
+                new Coordinate(3, 0) },
+            new()
+            { new Coordinate(1, 0),
+                new Coordinate(0, 1),
+                new Coordinate(1, 1),
+                new Coordinate(2, 1),
+                new Coordinate(1, 2) },
+            new()
+            { new Coordinate(0, 0),
+                new Coordinate(1, 0),
+                new Coordinate(2, 0),
+                new Coordinate(2, 1),
+                new Coordinate(2, 2) },
+            new()
+            { new Coordinate(0, 0),
+                new Coordinate(0, 1),
+                new Coordinate(0, 2),
+                new Coordinate(0, 3) },
+            new()
+            { new Coordinate(0, 0), 
+                new Coordinate(0, 1),
+                new Coordinate(1, 0),
+                new Coordinate(1, 1) }
         };
 
         var nextBlock = 0;
         var map = new List<Coordinate>
         {
-            new Coordinate(0, 0),
-            new Coordinate(1, 0),
-            new Coordinate(2, 0),
-            new Coordinate(3, 0),
-            new Coordinate(4, 0),
-            new Coordinate(5, 0),
-            new Coordinate(6, 0)
+            new(0, 0),
+            new(1, 0),
+            new(2, 0),
+            new(3, 0),
+            new(4, 0),
+            new(5, 0),
+            new(6, 0)
         };
 
-        var currentBlock = blocks[0].Select(x => new Coordinate(x.X + 2, x.Y + 4));
+        var currentBlock = blocks[0].Select(x => new Coordinate(x.X + 2, x.Y + 4)).ToHashSet();
         var lines = new Dictionary<(string, string), int>();
 
         var howManyBlocks = 0;
-        var blocksBeforeRepeatingSection = 0;
+        int blocksBeforeRepeatingSection;
         var heightDiffs = new List<long>();
         long lastHeight = 0;
 
@@ -107,38 +108,34 @@ public class Day17
                 blocksBeforeRepeatingSection = value;
                 break;
             }
-            else
-            {
-                //TestContext.Progress.WriteLine($"{blockString} - {lineString}");
-                lines.Add((blockString, lineString), howManyBlocks);
-            }
+
+            //TestContext.Progress.WriteLine($"{blockString} - {lineString}");
+            lines.Add((blockString, lineString), howManyBlocks);
 
             foreach (var direction in input)
             {
-                var potentialBlockX = currentBlock;
-                switch (direction)
+                var potentialBlockX = currentBlock.ToHashSet();
+                
+                potentialBlockX = direction switch
                 {
-                    case Direction.Left:
-                        potentialBlockX = potentialBlockX.Select(x => new Coordinate(x.X - 1, x.Y));
-                        break;
-                    case Direction.Right:
-                        potentialBlockX = potentialBlockX.Select(x => new Coordinate(x.X + 1, x.Y));
-                        break;
-                }
+                    Direction.Left => potentialBlockX.Select(x => new Coordinate(x.X - 1, x.Y)).ToHashSet(),
+                    Direction.Right => potentialBlockX.Select(x => new Coordinate(x.X + 1, x.Y)).ToHashSet(),
+                    _ => potentialBlockX
+                };
 
                 if (CheckCollision(potentialBlockX, map))
                 {
                     potentialBlockX = currentBlock;
                 }
 
-                var potentialBlockY = potentialBlockX.Select(x => new Coordinate(x.X, x.Y - 1));
+                var potentialBlockY = potentialBlockX.Select(x => new Coordinate(x.X, x.Y - 1)).ToHashSet();
 
                 if (CheckCollision(potentialBlockY, map))
                 {
                     map.AddRange(potentialBlockX);
                     nextBlock = (nextBlock + 1) % blocks.Count;
                     var height = map.Max(x => x.Y);
-                    currentBlock = blocks[nextBlock].ConvertAll(x => new Coordinate(x.X + 2, x.Y + height + 4));
+                    currentBlock = blocks[nextBlock].ConvertAll(x => new Coordinate(x.X + 2, x.Y + height + 4)).ToHashSet();
                     howManyBlocks++;
 
                     if (howManyBlocks == numberToDrop)
@@ -151,7 +148,7 @@ public class Day17
                 }
                 else
                 {
-                    currentBlock = potentialBlockY;
+                    currentBlock = potentialBlockY.ToHashSet();
                 }
             }
         }
