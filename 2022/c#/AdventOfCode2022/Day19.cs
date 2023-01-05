@@ -10,7 +10,8 @@ public class Day19
     {
         var input = ParseInput(File.ReadAllText(inputFile)).ToList();
 
-        var answer = input.Select(x => (Blueprint: x, Max: FindNumberOfGeodes(x, 24).First()))
+        var answer = input
+            .Select(x => (Blueprint: x, Max: FindNumberOfGeodes(x, 24).First()))
             .Select(x => x.Blueprint.Id * x.Max)
             .Sum();
         
@@ -19,12 +20,14 @@ public class Day19
     }
 
     [TestCase("data/19 - Sample.txt", 3472, TestName = "Day 19 - Part 2 - Sample")]
-    [TestCase("data/19 - Puzzle Input.txt", 0, TestName = "Day 19 - Part 2 - Puzzle Input")]
+    [TestCase("data/19 - Puzzle Input.txt", 37604, TestName = "Day 19 - Part 2 - Puzzle Input")]
     public void Part2(string inputFile, int expected)
     {
         var input = ParseInput(File.ReadAllText(inputFile)).Take(3).ToList();
 
-        var answer = input.Select(x => FindNumberOfGeodes(x, 32).First()).Aggregate(0, (current, x) => current * x);
+        var answer = input
+            .Select(x => FindNumberOfGeodes(x, 32).First())
+            .Aggregate(1, (current, x) => current * x);
         
         Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
@@ -49,7 +52,7 @@ public class Day19
 
             if (current.Time == maxTime)
             {
-                TestContext.Progress.WriteLine($"Blueprint {blueprint.Id}: {current.Geodes}");
+                //TestContext.Progress.WriteLine($"Blueprint {blueprint.Id}: {current.Geodes}");
                 
                 var totalPath = new List<State> { current };
                 
@@ -78,8 +81,7 @@ public class Day19
 
     private static int GetPotential(State next, int maxTime, Blueprint blueprint)
     {
-        var botScore = next.GeodeRobots + next.ClayRobots + next.ObsidianRobots;
-        var time = maxTime - next.Time + 1;
+        var time = maxTime - next.Time;
 
         if (next.ClayRobots == 0)
         {
@@ -91,10 +93,15 @@ public class Day19
             time -= blueprint.FastestTimeToGetEnoughObsidian;
         }
 
+        if (next.GeodeRobots == 0)
+        {
+            time -= 1;
+        }
+
         if (time < 0)
             return 0;
 
-        return 10 * time;
+        return ((time * (time + 1)) / 2) + next.GeodeRobots * time;
     }
 
     private static IEnumerable<State> GetPossibleStates(State current, Blueprint blueprint)
@@ -113,10 +120,7 @@ public class Day19
 
         // Build Ore Robot
         if (current.Ore >= blueprint.OreRobotOreCost &&
-            current.OreRobots < new List<int>{blueprint.OreRobotOreCost,
-                                            blueprint.ClayRobotOreCost,
-                                            blueprint.ObsidianRobotOreCost,
-                                            blueprint.GeodeRobotOreCost}.Max())
+            current.OreRobots < blueprint.MaxOreNeededPerMin)
         {
             yield return nextTime with
             {
@@ -170,16 +174,26 @@ public class Day19
                 "^Blueprint ([0-9]+): Each ore robot costs ([0-9]+) ore. Each clay robot costs ([0-9]+) ore. Each obsidian robot costs ([0-9]+) ore and ([0-9]+) clay. Each geode robot costs ([0-9]+) ore and ([0-9]+) obsidian.$");
             var groups = regex.Match(line).Groups;
 
+            var id = int.Parse(groups[1].Value);
+            var oreRobotOreCost = int.Parse(groups[2].Value);
+            var clayRobotOreCost = int.Parse(groups[3].Value);
+            var obsidianRobotOreCost = int.Parse(groups[4].Value);
+            var obsidianRobotClayCost = int.Parse(groups[5].Value);
+            var geodeRobotOreCost = int.Parse(groups[6].Value);
+            var geodeRobotObsidianCost = int.Parse(groups[7].Value);
+            var maxOreNeededPerMin = new List<int>(){oreRobotOreCost, clayRobotOreCost, obsidianRobotOreCost, geodeRobotOreCost}.Max();
+            
             return new Blueprint(
-                int.Parse(groups[1].Value),
-        int.Parse(groups[2].Value),
-        int.Parse(groups[3].Value),
-        int.Parse(groups[4].Value),
-        int.Parse(groups[5].Value),
-        int.Parse(groups[6].Value),
-        int.Parse(groups[7].Value),
-                (int)Math.Floor(Math.Sqrt(2 * int.Parse(groups[5].Value))),
-                (int)Math.Floor(Math.Sqrt(2 * int.Parse(groups[7].Value))));
+                id,
+                oreRobotOreCost,
+                clayRobotOreCost,
+                obsidianRobotOreCost,
+                obsidianRobotClayCost,
+                geodeRobotOreCost,
+                geodeRobotObsidianCost,
+                maxOreNeededPerMin,
+                (int)Math.Floor(Math.Sqrt(2 * obsidianRobotClayCost)),
+                (int)Math.Floor(Math.Sqrt(2 * geodeRobotObsidianCost)));
         }
 
         return input.Split("\n").Select(ParseBlueprint);
@@ -204,6 +218,7 @@ public class Day19
         int ObsidianRobotClayCost,
         int GeodeRobotOreCost,
         int GeodeRobotObsidianCost,
+        int MaxOreNeededPerMin,
         int FastestTimeToGetEnoughClay,
         int FastestTimeToGetEnoughObsidian);
 }
