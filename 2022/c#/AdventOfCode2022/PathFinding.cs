@@ -27,7 +27,7 @@ public static class PathFinding
             if (isGoal(current))
             {
                 var totalPath = new List<TNode> { current };
-                
+
                 var track = current;
                 while (cameFrom.ContainsKey(track))
                 {

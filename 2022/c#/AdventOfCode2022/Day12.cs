@@ -9,7 +9,7 @@ public class Day12
         var (start, goal, map) = ParseInput(File.ReadAllText(inputFile));
 
         var (answer, path) =
-            PathFinding.AStar(start, 
+            PathFinding.AStar(start,
                 n => n == goal,
                 n => GetNeighbours(n, map),
                 (_, _) => 1,
@@ -28,7 +28,7 @@ public class Day12
 
         var answer = map.Where(x => x.Value == 0)
             .Select(x =>
-                PathFinding.AStar(x.Key, 
+                PathFinding.AStar(x.Key,
                     n => n == goal,
                     n => GetNeighbours(n, map),
                     (_, _) => 1,

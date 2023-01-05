@@ -14,7 +14,7 @@ public class Day19
             .Select(x => (Blueprint: x, Max: FindNumberOfGeodes(x, 24).First()))
             .Select(x => x.Blueprint.Id * x.Max)
             .Sum();
-        
+
         Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
@@ -28,7 +28,7 @@ public class Day19
         var answer = input
             .Select(x => FindNumberOfGeodes(x, 32).First())
             .Aggregate(1, (current, x) => current * x);
-        
+
         Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
         answer.ShouldBe(expected);
     }
@@ -45,26 +45,26 @@ public class Day19
         while (statesToTry.Count > 0)
         {
             var current = statesToTry.Dequeue();
-            if(statesTried.Contains(current))
+            if (statesTried.Contains(current))
                 continue;
-            
+
             statesTried.Add(current);
 
             if (current.Time == maxTime)
             {
                 //TestContext.Progress.WriteLine($"Blueprint {blueprint.Id}: {current.Geodes}");
-                
+
                 var totalPath = new List<State> { current };
-                
+
                 var track = current;
                 while (cameFrom.ContainsKey(track))
                 {
                     track = cameFrom[track];
                     totalPath = totalPath.Prepend(track).ToList();
                 }
-                
+
                 //TestContext.Progress.WriteLine(string.Join(Environment.NewLine, totalPath));
-                
+
                 yield return current.Geodes;
             }
 
@@ -87,7 +87,7 @@ public class Day19
         {
             time -= blueprint.FastestTimeToGetEnoughClay;
         }
-        
+
         if (next.ObsidianRobots == 0)
         {
             time -= blueprint.FastestTimeToGetEnoughObsidian;
@@ -128,7 +128,7 @@ public class Day19
                 OreRobots = nextTime.OreRobots + 1
             };
         }
-        
+
         // Build Clay Robot
         if (current.Ore >= blueprint.ClayRobotOreCost &&
             current.ClayRobots < blueprint.ObsidianRobotClayCost)
@@ -139,7 +139,7 @@ public class Day19
                 ClayRobots = nextTime.ClayRobots + 1
             };
         }
-        
+
         // Build Obsidian Robot
         if (current.Ore >= blueprint.ObsidianRobotOreCost &&
             current.Clay >= blueprint.ObsidianRobotClayCost &&
@@ -152,7 +152,7 @@ public class Day19
                 ObsidianRobots = nextTime.ObsidianRobots + 1
             };
         }
-        
+
         // Build Geode Robot
         if (current.Ore >= blueprint.GeodeRobotOreCost &&
             current.Obsidian >= blueprint.GeodeRobotObsidianCost)
@@ -181,8 +181,8 @@ public class Day19
             var obsidianRobotClayCost = int.Parse(groups[5].Value);
             var geodeRobotOreCost = int.Parse(groups[6].Value);
             var geodeRobotObsidianCost = int.Parse(groups[7].Value);
-            var maxOreNeededPerMin = new List<int>(){oreRobotOreCost, clayRobotOreCost, obsidianRobotOreCost, geodeRobotOreCost}.Max();
-            
+            var maxOreNeededPerMin = new List<int>() { oreRobotOreCost, clayRobotOreCost, obsidianRobotOreCost, geodeRobotOreCost }.Max();
+
             return new Blueprint(
                 id,
                 oreRobotOreCost,
