@@ -5,16 +5,12 @@ namespace AdventOfCode2022;
 public class Day19
 {
     [TestCase("data/19 - Sample.txt", 33, TestName = "Day 19 - Part 1 - Sample")]
-    [TestCase("data/19 - Puzzle Input.txt", 0, TestName = "Day 19 - Part 1 - Puzzle Input")]
+    [TestCase("data/19 - Puzzle Input.txt", 1306, TestName = "Day 19 - Part 1 - Puzzle Input")]
     public void Part1(string inputFile, int expected)
     {
-        var input = ParseInput(File.ReadAllText(inputFile));
+        var input = ParseInput(File.ReadAllText(inputFile)).ToList();
 
-        var hack = FindLargestNumberOfGeodes(input.First(), 24);
-        
-        
-
-        var answer = input.Select(x => (Blueprint: x, Max: FindLargestNumberOfGeodes(x, 24)))
+        var answer = input.Select(x => (Blueprint: x, Max: FindNumberOfGeodes(x, 24).First()))
             .Select(x => x.Blueprint.Id * x.Max)
             .Sum();
         
@@ -22,14 +18,26 @@ public class Day19
         answer.ShouldBe(expected);
     }
 
-    private static int FindLargestNumberOfGeodes(Blueprint blueprint, int maxTime)
+    [TestCase("data/19 - Sample.txt", 3472, TestName = "Day 19 - Part 2 - Sample")]
+    [TestCase("data/19 - Puzzle Input.txt", 0, TestName = "Day 19 - Part 2 - Puzzle Input")]
+    public void Part2(string inputFile, int expected)
+    {
+        var input = ParseInput(File.ReadAllText(inputFile)).Take(3).ToList();
+
+        var answer = input.Select(x => FindNumberOfGeodes(x, 32).First()).Aggregate(0, (current, x) => current * x);
+        
+        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        answer.ShouldBe(expected);
+    }
+
+    private static IEnumerable<int> FindNumberOfGeodes(Blueprint blueprint, int maxTime)
     {
         var statesToTry = new PriorityQueue<State, int>();
         var statesTried = new HashSet<State>();
         var cameFrom = new Dictionary<State, State>();
 
         var start = new State(0, 0, 0, 0, 0, 1, 0, 0, 0);
-        statesToTry.Enqueue(start, GetPotential(start, maxTime));
+        statesToTry.Enqueue(start, GetPotential(start, maxTime, blueprint));
 
         while (statesToTry.Count > 0)
         {
@@ -52,25 +60,41 @@ public class Day19
                     totalPath = totalPath.Prepend(track).ToList();
                 }
                 
-                TestContext.Progress.WriteLine(string.Join(Environment.NewLine, totalPath));
+                //TestContext.Progress.WriteLine(string.Join(Environment.NewLine, totalPath));
                 
-                return current.Geodes;
+                yield return current.Geodes;
             }
 
             foreach (var next in GetPossibleStates(current, blueprint))
             {
-                var nextPotential = GetPotential(next, maxTime);
+                var nextPotential = GetPotential(next, maxTime, blueprint);
                 cameFrom[next] = current;
                 statesToTry.Enqueue(next, -(next.Geodes + nextPotential));
             }
         }
 
-        return 0;
+        TestContext.Progress.WriteLine("Failed to find a path");
     }
 
-    private static int GetPotential(State next, int maxTime)
+    private static int GetPotential(State next, int maxTime, Blueprint blueprint)
     {
-        return (maxTime - next.Time) * ((maxTime - next.Time) + 1) / 2;
+        var botScore = next.GeodeRobots + next.ClayRobots + next.ObsidianRobots;
+        var time = maxTime - next.Time + 1;
+
+        if (next.ClayRobots == 0)
+        {
+            time -= blueprint.FastestTimeToGetEnoughClay;
+        }
+        
+        if (next.ObsidianRobots == 0)
+        {
+            time -= blueprint.FastestTimeToGetEnoughObsidian;
+        }
+
+        if (time < 0)
+            return 0;
+
+        return 10 * time;
     }
 
     private static IEnumerable<State> GetPossibleStates(State current, Blueprint blueprint)
@@ -88,7 +112,11 @@ public class Day19
         yield return nextTime;
 
         // Build Ore Robot
-        if (current.Ore >= blueprint.OreRobotOreCost)
+        if (current.Ore >= blueprint.OreRobotOreCost &&
+            current.OreRobots < new List<int>{blueprint.OreRobotOreCost,
+                                            blueprint.ClayRobotOreCost,
+                                            blueprint.ObsidianRobotOreCost,
+                                            blueprint.GeodeRobotOreCost}.Max())
         {
             yield return nextTime with
             {
@@ -98,7 +126,8 @@ public class Day19
         }
         
         // Build Clay Robot
-        if (current.Ore >= blueprint.ClayRobotOreCost)
+        if (current.Ore >= blueprint.ClayRobotOreCost &&
+            current.ClayRobots < blueprint.ObsidianRobotClayCost)
         {
             yield return nextTime with
             {
@@ -109,11 +138,12 @@ public class Day19
         
         // Build Obsidian Robot
         if (current.Ore >= blueprint.ObsidianRobotOreCost &&
-            current.Clay >= blueprint.ObsidianRobotClayCost)
+            current.Clay >= blueprint.ObsidianRobotClayCost &&
+            current.ObsidianRobots < blueprint.GeodeRobotObsidianCost)
         {
             yield return nextTime with
             {
-                Ore = nextTime.Ore - blueprint.OreRobotOreCost,
+                Ore = nextTime.Ore - blueprint.ObsidianRobotOreCost,
                 Clay = nextTime.Clay - blueprint.ObsidianRobotClayCost,
                 ObsidianRobots = nextTime.ObsidianRobots + 1
             };
@@ -126,24 +156,12 @@ public class Day19
             yield return nextTime with
             {
                 Ore = nextTime.Ore - blueprint.GeodeRobotOreCost,
-                Obsidian = nextTime.Clay - blueprint.GeodeRobotObsidianCost,
+                Obsidian = nextTime.Obsidian - blueprint.GeodeRobotObsidianCost,
                 GeodeRobots = nextTime.GeodeRobots + 1
             };
         }
     }
 
-    [TestCase("data/19 - Sample.txt", 0, TestName = "Day 19 - Part 2 - Sample")]
-    [TestCase("data/19 - Puzzle Input.txt", 0, TestName = "Day 19 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
-    {
-        var input = File.ReadAllText(inputFile);
-
-        var answer = 0;
-
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
-        answer.ShouldBe(expected);
-    }
-    
     private static IEnumerable<Blueprint> ParseInput(string input)
     {
         Blueprint ParseBlueprint(string line)
@@ -159,7 +177,9 @@ public class Day19
         int.Parse(groups[4].Value),
         int.Parse(groups[5].Value),
         int.Parse(groups[6].Value),
-        int.Parse(groups[7].Value));
+        int.Parse(groups[7].Value),
+                (int)Math.Floor(Math.Sqrt(2 * int.Parse(groups[5].Value))),
+                (int)Math.Floor(Math.Sqrt(2 * int.Parse(groups[7].Value))));
         }
 
         return input.Split("\n").Select(ParseBlueprint);
@@ -183,5 +203,7 @@ public class Day19
         int ObsidianRobotOreCost,
         int ObsidianRobotClayCost,
         int GeodeRobotOreCost,
-        int GeodeRobotObsidianCost);
+        int GeodeRobotObsidianCost,
+        int FastestTimeToGetEnoughClay,
+        int FastestTimeToGetEnoughObsidian);
 }
