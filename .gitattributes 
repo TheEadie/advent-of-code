@@ -1,2 +1,4 @@
-*.txt text eol=lf
+* text=auto
 *.sh text eol=lf
+*.txt text eol=lf
+makefile text eol=lf
