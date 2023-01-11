@@ -1,30 +1,33 @@
-import { readFileSync } from "fs";
+import { Day } from "../../day";
 
-const file = readFileSync("./src/2020/day01/input.txt", "utf-8");
-
-const partOne = (input: string): number | undefined => {
-  const numbers = input.split("\n").map((x) => parseInt(x));
-
-  for (let i = 0; i < numbers.length; i++) {
-    const candidate = 2020 - numbers[i];
-    if (numbers.includes(candidate)) {
-      return numbers[i] * candidate;
-    }
+class Day01 extends Day {
+  constructor() {
+    super(2020, 1);
   }
-};
 
-const partTwo = (input: string): number | undefined => {
-  const numbers = input.split("\n").map((x) => parseInt(x));
+  partOne(input: string): string {
+    const numbers = input.split("\n").map((x) => parseInt(x));
 
-  for (let i = 0; i < numbers.length; i++) {
-    for (let j = 0; j < numbers.length; j++) {
-      const candidate = 2020 - numbers[i] - numbers[j];
+    for (let i = 0; i < numbers.length; i++) {
+      const candidate = 2020 - numbers[i];
       if (numbers.includes(candidate)) {
-        return numbers[i] * numbers[j] * candidate;
+        return (numbers[i] * candidate).toString();
       }
     }
   }
-};
 
-console.log(`Part 1: ${partOne(file)}`);
-console.log(`Part 2: ${partTwo(file)}`);
+  partTwo(input: string): string {
+    const numbers = input.split("\n").map((x) => parseInt(x));
+
+    for (let i = 0; i < numbers.length; i++) {
+      for (let j = 0; j < numbers.length; j++) {
+        const candidate = 2020 - numbers[i] - numbers[j];
+        if (numbers.includes(candidate)) {
+          return (numbers[i] * numbers[j] * candidate).toString();
+        }
+      }
+    }
+  }
+}
+
+export default new Day01();
