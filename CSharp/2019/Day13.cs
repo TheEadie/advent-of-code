@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Shouldly;
 
-namespace AdventOfCode
+namespace AdventOfCode2019
 {
     public class Day13
     {
@@ -19,7 +19,7 @@ namespace AdventOfCode
                 .Select(long.Parse)
                 .ToArray();
 
-            var emulator = new IntCode.IntCode(program);
+            var emulator = new AdventOfCode.IntCode.IntCode(program);
             var screen = new Screen(emulator.Output);
 
             var cancellationTokenSource = new CancellationTokenSource();
@@ -50,7 +50,7 @@ namespace AdventOfCode
                 .Select(long.Parse)
                 .ToArray();
 
-            var emulator = new IntCode.IntCode(program);
+            var emulator = new AdventOfCode.IntCode.IntCode(program);
             emulator.Memory[0] = 2;
             
             var screen = new Screen(emulator.Output);

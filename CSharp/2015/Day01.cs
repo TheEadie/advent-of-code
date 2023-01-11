@@ -4,7 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using Shouldly;
 
-namespace AdventOfCode
+namespace AdventOfCode2015
 {
     public class Day01
     {

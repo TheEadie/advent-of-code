@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using NUnit.Framework;
 using Shouldly;
 
-namespace AdventOfCode
+namespace AdventOfCode2015
 {
     public class Day04
     {

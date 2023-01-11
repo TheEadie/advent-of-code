@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Shouldly;
 
-namespace AdventOfCode
+namespace AdventOfCode2019
 {
     public class Day11
     {
@@ -19,7 +19,7 @@ namespace AdventOfCode
                 .Select(long.Parse)
                 .ToArray();
 
-            var emulator = new IntCode.IntCode(program);
+            var emulator = new AdventOfCode.IntCode.IntCode(program);
             var emulatorTask = emulator.RunAsync(CancellationToken.None);
             
             var panels = new Dictionary<Coordinate, int>();
@@ -44,7 +44,7 @@ namespace AdventOfCode
                 .Select(long.Parse)
                 .ToArray();
 
-            var emulator = new IntCode.IntCode(program);
+            var emulator = new AdventOfCode.IntCode.IntCode(program);
             var emulatorTask = emulator.RunAsync(CancellationToken.None);
             
             var panels = new Dictionary<Coordinate, int> {{new Coordinate(0, 0), 1}};
@@ -70,7 +70,7 @@ namespace AdventOfCode
             Console.WriteLine(answer);
         }
 
-        private void RunRobot(CancellationToken cancellationToken, Robot robot, Dictionary<Coordinate, int> panels, IntCode.IntCode emulator)
+        private void RunRobot(CancellationToken cancellationToken, Robot robot, Dictionary<Coordinate, int> panels, AdventOfCode.IntCode.IntCode emulator)
         {
             while (!cancellationToken.IsCancellationRequested)
             {

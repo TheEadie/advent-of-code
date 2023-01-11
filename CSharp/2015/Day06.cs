@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Shouldly;
 
-namespace AdventOfCode
+namespace AdventOfCode2015
 {
     public class Day06
     {

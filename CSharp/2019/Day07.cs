@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Shouldly;
 
-namespace AdventOfCode
+namespace AdventOfCode2019
 {
     public class Day07
     {
@@ -30,11 +30,11 @@ namespace AdventOfCode
         
         private static Task<long> GetOutputPart1(long[] program, int[] inputs)
         {
-            var ampA = new IntCode.IntCode(program);
-            var ampB = new IntCode.IntCode(program);
-            var ampC = new IntCode.IntCode(program);
-            var ampD = new IntCode.IntCode(program);
-            var ampE = new IntCode.IntCode(program);
+            var ampA = new AdventOfCode.IntCode.IntCode(program);
+            var ampB = new AdventOfCode.IntCode.IntCode(program);
+            var ampC = new AdventOfCode.IntCode.IntCode(program);
+            var ampD = new AdventOfCode.IntCode.IntCode(program);
+            var ampE = new AdventOfCode.IntCode.IntCode(program);
             
             ampA.Inputs.Enqueue(inputs[0]);
             ampB.Inputs.Enqueue(inputs[1]);
@@ -92,11 +92,11 @@ namespace AdventOfCode
         
         private static Task<long> GetOutputPart2(long[] program, int[] inputs)
         {
-            var ampA = new IntCode.IntCode(program);
-            var ampB = new IntCode.IntCode(program);
-            var ampC = new IntCode.IntCode(program);
-            var ampD = new IntCode.IntCode(program);
-            var ampE = new IntCode.IntCode(program);
+            var ampA = new AdventOfCode.IntCode.IntCode(program);
+            var ampB = new AdventOfCode.IntCode.IntCode(program);
+            var ampC = new AdventOfCode.IntCode.IntCode(program);
+            var ampD = new AdventOfCode.IntCode.IntCode(program);
+            var ampE = new AdventOfCode.IntCode.IntCode(program);
             
             ampA.Inputs.Enqueue(inputs[0]);
             ampB.Inputs.Enqueue(inputs[1]);

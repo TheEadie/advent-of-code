@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Shouldly;
 
-namespace AdventOfCode
+namespace AdventOfCode2019
 {
     public class Day02
     {
@@ -21,7 +21,7 @@ namespace AdventOfCode
             program[1] = 12;
             program[2] = 2;
             
-            var emulator = new IntCode.IntCode(program);
+            var emulator = new AdventOfCode.IntCode.IntCode(program);
             await emulator.RunAsync(CancellationToken.None);
             var answer = emulator.Memory[0];
 
@@ -40,7 +40,7 @@ namespace AdventOfCode
                     {
                         program[1] = n;
                         program[2] = v;
-                        var emulator = new IntCode.IntCode(program);
+                        var emulator = new AdventOfCode.IntCode.IntCode(program);
                         await emulator.RunAsync(CancellationToken.None);
                         var output = emulator.Memory[0];
 

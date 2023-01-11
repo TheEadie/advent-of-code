@@ -6,52 +6,54 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Shouldly;
 
-namespace AdventOfCode
+namespace AdventOfCode2019
 {
-    public class Day09
+    public class Day05
     {
         [Test]
         public async Task Part1()
         {
-            var program = (await File.ReadAllLinesAsync("day09.txt"))[0]
+            var program = (await File.ReadAllLinesAsync("day05.txt"))[0]
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
 
-            var emulator = new IntCode.IntCode(program);
+            var emulator = new AdventOfCode.IntCode.IntCode(program);
+            
             emulator.Inputs.Enqueue(1);
 
             await emulator.RunAsync(CancellationToken.None);
 
-            foreach (var output in emulator.Output)
+            foreach (var value in emulator.Output)
             {
-                Console.WriteLine(output);
+                Console.WriteLine(value);
             }
 
             var answer = emulator.Output.Last();
-            answer.ShouldBe(2941952859);
+            answer.ShouldBe(16225258);
         }
-        
+
         [Test]
         public async Task Part2()
         {
-            var program = (await File.ReadAllLinesAsync("day09.txt"))[0]
+            var program = (await File.ReadAllLinesAsync("day05.txt"))[0]
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
 
-            var emulator = new IntCode.IntCode(program);
-            emulator.Inputs.Enqueue(2);
+            var emulator = new AdventOfCode.IntCode.IntCode(program);
+            
+            emulator.Inputs.Enqueue(5);
 
             await emulator.RunAsync(CancellationToken.None);
 
-            foreach (var output in emulator.Output)
+            foreach (var value in emulator.Output)
             {
-                Console.WriteLine(output);
+                Console.WriteLine(value);
             }
 
             var answer = emulator.Output.Last();
-            answer.ShouldBe(66113);
+            answer.ShouldBe(2808771);
         }
     }
 }
