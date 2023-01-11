@@ -2,7 +2,7 @@ import { readFileSync } from "fs";
 
 const file = readFileSync("./src/2020/day01/input.txt", "utf-8");
 
-const partOne = (input: string): number => {
+const partOne = (input: string): number | undefined => {
   const numbers = input.split("\n").map((x) => parseInt(x));
 
   for (let i = 0; i < numbers.length; i++) {
@@ -13,7 +13,7 @@ const partOne = (input: string): number => {
   }
 };
 
-const partTwo = (input: string): number => {
+const partTwo = (input: string): number | undefined => {
   const numbers = input.split("\n").map((x) => parseInt(x));
 
   for (let i = 0; i < numbers.length; i++) {
