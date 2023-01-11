@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 
-const file = readFileSync("./src/day07/input.txt", "utf-8").split("\n");
+const file = readFileSync("./src/2020/day07/input.txt", "utf-8").split("\n");
 
 const partOne = (input: string[]): number => {
   const bags = input.map(parse);

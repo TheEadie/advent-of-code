@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 
-const file = readFileSync("./src/day06/input.txt", "utf-8").split("\n\n");
+const file = readFileSync("./src/2020/day06/input.txt", "utf-8").split("\n\n");
 
 const partOne = (input: string[]): number => {
   return input.map(atLeastOneAnsweredYes).reduce((acc, val) => {

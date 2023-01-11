@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 
-const file = readFileSync("./src/day02/input.txt", "utf-8");
+const file = readFileSync("./src/2020/day02/input.txt", "utf-8");
 
 interface parsedRow {
   min: number;

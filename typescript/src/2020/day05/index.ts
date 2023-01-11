@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 
-const file = readFileSync("./src/day05/input.txt", "utf-8").split("\n");
+const file = readFileSync("./src/2020/day05/input.txt", "utf-8").split("\n");
 
 const partOne = (input: string[]): number => {
   return Math.max(...input.map(getSeatId));

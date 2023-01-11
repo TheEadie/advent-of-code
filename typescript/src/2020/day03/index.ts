@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 
-const file = readFileSync("./src/day03/input.txt", "utf-8").split("\n");
+const file = readFileSync("./src/2020/day03/input.txt", "utf-8").split("\n");
 
 const partOne = (input: string[]): number => {
   return countTreesHit(input, 3, 1);
