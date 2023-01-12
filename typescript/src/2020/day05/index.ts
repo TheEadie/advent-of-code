@@ -1,10 +1,37 @@
-import { readFileSync } from "fs";
+import { Day, Expected } from "../../day";
 
-const file = readFileSync("./src/2020/day05/input.txt", "utf-8").split("\n");
+class Day05 extends Day {
+  constructor() {
+    super(2020, 5, "Binary Boarding");
+  }
 
-const partOne = (input: string[]): number => {
-  return Math.max(...input.map(getSeatId));
-};
+  expectationsPartOne = (): Expected[] => {
+    return [{ input: "input.txt", output: "922" }];
+  };
+
+  partOne = (input: string): string => {
+    const lines = input.split("\n");
+    return Math.max(...lines.map(getSeatId)).toString();
+  };
+
+  expectationsPartTwo = (): Expected[] => {
+    return [{ input: "input.txt", output: "747" }];
+  };
+
+  partTwo = (input: string): string => {
+    const lines = input.split("\n");
+    return lines
+      .map(getSeatId)
+      .sort((a, b) => a - b)
+      .reduce((acc, val, ind, arr) => {
+        if (val != arr[0] && val - arr[ind - 1] != 1) acc = val - 1;
+        return acc;
+      })
+      .toString();
+  };
+}
+
+export default new Day05();
 
 const getSeatId = (input: string): number => {
   const row = getRow(input);
@@ -21,16 +48,3 @@ const getCol = (input: string): number => {
   const binary = input.substring(7, 10).replace(/L/g, "0").replace(/R/g, "1");
   return parseInt(binary, 2);
 };
-
-const partTwo = (input: string[]): number => {
-  return input
-    .map(getSeatId)
-    .sort((a, b) => a - b)
-    .reduce((acc, val, ind, arr) => {
-      if (val != arr[0] && val - arr[ind - 1] != 1) acc = val - 1;
-      return acc;
-    });
-};
-
-console.log(`Part 1: ${partOne(file)}`);
-console.log(`Part 2: ${partTwo(file)}`);

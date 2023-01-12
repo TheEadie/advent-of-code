@@ -1,20 +1,42 @@
-import { readFileSync } from "fs";
+import { Day, Expected } from "../../day";
 
-const file = readFileSync("./src/2020/day03/input.txt", "utf-8").split("\n");
+class Day03 extends Day {
+  constructor() {
+    super(2020, 3, "Toboggan Trajectory");
+  }
 
-const partOne = (input: string[]): number => {
-  return countTreesHit(input, 3, 1);
-};
+  expectationsPartOne = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "7" },
+      { input: "input.txt", output: "191" },
+    ];
+  };
 
-const partTwo = (input: string[]): number => {
-  return (
-    countTreesHit(input, 3, 1) *
-    countTreesHit(input, 1, 1) *
-    countTreesHit(input, 5, 1) *
-    countTreesHit(input, 7, 1) *
-    countTreesHit(input, 1, 2)
-  );
-};
+  partOne = (input: string): string => {
+    const rows = input.split("\n");
+    return countTreesHit(rows, 3, 1).toString();
+  };
+
+  expectationsPartTwo = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "336" },
+      { input: "input.txt", output: "1478615040" },
+    ];
+  };
+
+  partTwo = (input: string): string => {
+    const rows = input.split("\n");
+    return (
+      countTreesHit(rows, 3, 1) *
+      countTreesHit(rows, 1, 1) *
+      countTreesHit(rows, 5, 1) *
+      countTreesHit(rows, 7, 1) *
+      countTreesHit(rows, 1, 2)
+    ).toString();
+  };
+}
+
+export default new Day03();
 
 const countTreesHit = (
   input: string[],
@@ -36,9 +58,5 @@ const countTreesHit = (
     x += right;
   }
 
-  console.log(`${treeCount}`);
   return treeCount;
 };
-
-console.log(`Part 1: ${partOne(file)}`);
-console.log(`Part 2: ${partTwo(file)}`);

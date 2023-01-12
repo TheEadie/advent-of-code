@@ -1,11 +1,18 @@
-import { Day } from "../../day";
+import { Day, Expected } from "../../day";
 
 class Day01 extends Day {
   constructor() {
-    super(2020, 1);
+    super(2020, 1, "Report Repair");
   }
 
-  partOne(input: string): string {
+  expectationsPartOne = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "514579" },
+      { input: "input.txt", output: "326211" },
+    ];
+  };
+
+  partOne = (input: string): string => {
     const numbers = input.split("\n").map((x) => parseInt(x));
 
     for (let i = 0; i < numbers.length; i++) {
@@ -14,9 +21,16 @@ class Day01 extends Day {
         return (numbers[i] * candidate).toString();
       }
     }
-  }
+  };
 
-  partTwo(input: string): string {
+  expectationsPartTwo = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "241861950" },
+      { input: "input.txt", output: "131347190" },
+    ];
+  };
+
+  partTwo = (input: string): string => {
     const numbers = input.split("\n").map((x) => parseInt(x));
 
     for (let i = 0; i < numbers.length; i++) {
@@ -27,7 +41,7 @@ class Day01 extends Day {
         }
       }
     }
-  }
+  };
 }
 
 export default new Day01();

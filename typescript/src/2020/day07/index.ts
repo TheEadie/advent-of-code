@@ -1,24 +1,46 @@
-import { readFileSync } from "fs";
+import { Day, Expected } from "../../day";
 
-const file = readFileSync("./src/2020/day07/input.txt", "utf-8").split("\n");
+class Day07 extends Day {
+  constructor() {
+    super(2020, 7, "Handy Haversacks");
+  }
 
-const partOne = (input: string[]): number => {
-  const bags = input.map(parse);
-  const bagGraph = createGraph(bags);
-  const goldBag = bagGraph.find((x) => x.colour === "shiny gold");
+  expectationsPartOne = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "4" },
+      { input: "input.txt", output: "348" },
+    ];
+  };
 
-  const result = [];
-  getBagColoursBagCanBeIn(result, goldBag);
-  const resultSet = new Set(result);
+  partOne = (input: string): string => {
+    const lines = input.split("\n");
+    const bags = lines.map(parse);
+    const bagGraph = createGraph(bags);
+    const goldBag = bagGraph.find((x) => x.colour === "shiny gold");
 
-  return resultSet.size - 1;
-};
+    const result = [];
+    getBagColoursBagCanBeIn(result, goldBag);
+    const resultSet = new Set(result);
 
-const partTwo = (input: string[]): number => {
-  const bags = input.map(parse);
-  const result = numberOfBags("shiny gold", bags);
-  return result - 1;
-};
+    return (resultSet.size - 1).toString();
+  };
+
+  expectationsPartTwo = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "32" },
+      { input: "input.txt", output: "18885" },
+    ];
+  };
+
+  partTwo = (input: string): string => {
+    const lines = input.split("\n");
+    const bags = lines.map(parse);
+    const result = numberOfBags("shiny gold", bags);
+    return (result - 1).toString();
+  };
+}
+
+export default new Day07();
 
 const getBagColoursBagCanBeIn = (colours: string[], bag: bagNode) => {
   colours.push(bag.colour);
@@ -90,6 +112,3 @@ const parseBagColour = (input: string): mustContain => {
   }
   return { number: parseInt(regexResult[1]), colour: regexResult[2] };
 };
-
-console.log(`Part 1: ${partOne(file)}`);
-console.log(`Part 2: ${partTwo(file)}`);

@@ -1,20 +1,48 @@
-import { readFileSync } from "fs";
+import { Day, Expected } from "../../day";
 
-const file = readFileSync("./src/2020/day06/input.txt", "utf-8").split("\n\n");
+class Day06 extends Day {
+  constructor() {
+    super(2020, 6, "Custom Customs");
+  }
 
-const partOne = (input: string[]): number => {
-  return input.map(atLeastOneAnsweredYes).reduce((acc, val) => {
-    acc += val;
-    return acc;
-  });
-};
+  expectationsPartOne = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "11" },
+      { input: "input.txt", output: "6549" },
+    ];
+  };
 
-const partTwo = (input: string[]): number => {
-  return input.map(allAnsweredYes).reduce((acc, val) => {
-    acc += val;
-    return acc;
-  });
-};
+  partOne = (input: string): string => {
+    const lines = input.split("\n\n");
+    return lines
+      .map(atLeastOneAnsweredYes)
+      .reduce((acc, val) => {
+        acc += val;
+        return acc;
+      })
+      .toString();
+  };
+
+  expectationsPartTwo = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "6" },
+      { input: "input.txt", output: "3466" },
+    ];
+  };
+
+  partTwo = (input: string): string => {
+    const lines = input.split("\n\n");
+    return lines
+      .map(allAnsweredYes)
+      .reduce((acc, val) => {
+        acc += val;
+        return acc;
+      })
+      .toString();
+  };
+}
+
+export default new Day06();
 
 const atLeastOneAnsweredYes = (input: string): number => {
   const letterTally = input.split("").reduce((acc, char) => {
@@ -38,6 +66,3 @@ const allAnsweredYes = (input: string): number => {
     (x) => letterTally[x] === numberOfPeople
   ).length;
 };
-
-console.log(`Part 1: ${partOne(file)}`);
-console.log(`Part 2: ${partTwo(file)}`);

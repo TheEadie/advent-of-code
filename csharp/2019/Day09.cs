@@ -49,7 +49,7 @@ namespace AdventOfCode2019
             {
                 Console.WriteLine(output);
             }
-
+ 
             var answer = emulator.Output.Last();
             answer.ShouldBe(66113);
         }

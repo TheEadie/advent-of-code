@@ -1,6 +1,35 @@
-import { readFileSync } from "fs";
+import { Day, Expected } from "../../day";
 
-const file = readFileSync("./src/2020/day04/input.txt", "utf-8");
+class Day04 extends Day {
+  constructor() {
+    super(2020, 4, "Passport Processing");
+  }
+
+  expectationsPartOne = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "2" },
+      { input: "input.txt", output: "206" },
+    ];
+  };
+
+  partOne = (input: string): string => {
+    const rawPassports = input.split("\n\n");
+    const passports = rawPassports.map(parsePassport);
+    return passports.filter(validPassportPartOne).length.toString();
+  };
+
+  expectationsPartTwo = (): Expected[] => {
+    return [{ input: "input.txt", output: "123" }];
+  };
+
+  partTwo = (input: string): string => {
+    const rawPassports = input.split("\n\n");
+    const passports = rawPassports.map(parsePassport);
+    return passports.filter(validPassportPartTwo).length.toString();
+  };
+}
+
+export default new Day04();
 
 interface passport {
   byr: number;
@@ -8,7 +37,7 @@ interface passport {
   eyr: number;
   hgt: string;
   hcl: string;
-  ecl: eyeColour;
+  ecl: string;
   pid: string;
   cid: string;
 }
@@ -23,18 +52,6 @@ enum eyeColour {
   oth,
 }
 
-const partOne = (input: string): number => {
-  const rawPassports = input.split("\n\n");
-  const passports = rawPassports.map(parsePassport);
-  return passports.filter(validPassportPartOne).length;
-};
-
-const partTwo = (input: string): number => {
-  const rawPassports = input.split("\n\n");
-  const passports = rawPassports.map(parsePassport);
-  return passports.filter(validPassportPartTwo).length;
-};
-
 const parsePassport = (input: string): passport => {
   const elements = input.split(/ |\n/);
   return {
@@ -43,7 +60,7 @@ const parsePassport = (input: string): passport => {
     eyr: parseYear(findItem(elements, "eyr")),
     hgt: findItem(elements, "hgt"),
     hcl: findItem(elements, "hcl"),
-    ecl: eyeColour[findItem(elements, "ecl")],
+    ecl: findItem(elements, "ecl"),
     pid: findItem(elements, "pid"),
     cid: findItem(elements, "cid"),
   };
@@ -78,7 +95,9 @@ const validPassportPartOne = (passport: passport): boolean => {
 };
 
 const validPassportPartTwo = (passport: passport): boolean => {
+  var eyes = eyeColour[passport.ecl];
   return (
+    eyes != undefined &&
     passport.byr != undefined &&
     passport.byr >= 1920 &&
     passport.byr <= 2002 &&
@@ -98,6 +117,3 @@ const validPassportPartTwo = (passport: passport): boolean => {
     true
   );
 };
-
-console.log(`Part 1: ${partOne(file)}`);
-console.log(`Part 2: ${partTwo(file)}`);

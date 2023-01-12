@@ -1,6 +1,36 @@
-import { readFileSync } from "fs";
+import { Day, Expected } from "../../day";
 
-const file = readFileSync("./src/2020/day02/input.txt", "utf-8");
+class Day02 extends Day {
+  constructor() {
+    super(2020, 2, "Password Philosophy");
+  }
+
+  expectationsPartOne = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "2" },
+      { input: "input.txt", output: "524" },
+    ];
+  };
+
+  partOne = (input: string): string => {
+    const rows = input.split("\n");
+    return rows.filter(validPasswordPartOne).length.toString();
+  };
+
+  expectationsPartTwo = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "1" },
+      { input: "input.txt", output: "485" },
+    ];
+  };
+
+  partTwo = (input: string): string => {
+    const rows = input.split("\n");
+    return rows.filter(validPasswordPartTwo).length.toString();
+  };
+}
+
+export default new Day02();
 
 interface parsedRow {
   min: number;
@@ -8,11 +38,6 @@ interface parsedRow {
   letter: string;
   password: string;
 }
-
-const partOne = (input: string): number => {
-  const rows = input.split("\n");
-  return rows.filter(validPasswordPartOne).length;
-};
 
 const validPasswordPartOne = (input: string): boolean => {
   const parsedRow = parseRow(input);
@@ -29,11 +54,6 @@ const validPasswordPartOne = (input: string): boolean => {
   }
 
   return false;
-};
-
-const partTwo = (input: string): number => {
-  const rows = input.split("\n");
-  return rows.filter(validPasswordPartTwo).length;
 };
 
 const validPasswordPartTwo = (input: string): boolean => {
@@ -69,6 +89,3 @@ const parseRow = (input: string): parsedRow => {
 
   return { min: min, max: max, letter: char, password: password };
 };
-
-console.log(`Part 1: ${partOne(file)}`);
-console.log(`Part 2: ${partTwo(file)}`);

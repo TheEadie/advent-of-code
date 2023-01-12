@@ -1,36 +1,58 @@
-import { readFileSync } from "fs";
+import { Day, Expected } from "../../day";
 
-const file = readFileSync("./src/2020/day08/input.txt", "utf-8").split("\n");
+class Day08 extends Day {
+  constructor() {
+    super(2020, 8, "Handheld Halting");
+  }
 
-const partOne = (input: string[]): number => {
-  const instructions = input.map(parse);
-  return run(instructions).accumulator;
-};
+  expectationsPartOne = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "5" },
+      { input: "input.txt", output: "1797" },
+    ];
+  };
 
-const partTwo = (input: string[]): number => {
-  const instructions = input.map(parse);
+  partOne = (input: string): string => {
+    const lines = input.split("\n");
+    const instructions = lines.map(parse);
+    return run(instructions).accumulator.toString();
+  };
 
-  const mutatedInstructions = instructions
-    .map((instruction, i, original) => ({
-      instruction,
-      i,
-      original,
-    }))
-    .filter(
-      ({ instruction }) =>
-        instruction.command === "nop" || instruction.command === "jmp"
-    )
-    .map(({ i, original }) => {
-      const newInstructions = [...original];
-      newInstructions[i] = swap(newInstructions[i]);
-      return newInstructions;
-    });
+  expectationsPartTwo = (): Expected[] => {
+    return [
+      { input: "sample.txt", output: "8" },
+      { input: "input.txt", output: "1036" },
+    ];
+  };
 
-  const workingInstructions = mutatedInstructions.find(
-    (x) => run(x).terminated
-  );
-  return run(workingInstructions).accumulator;
-};
+  partTwo = (input: string): string => {
+    const lines = input.split("\n");
+    const instructions = lines.map(parse);
+
+    const mutatedInstructions = instructions
+      .map((instruction, i, original) => ({
+        instruction,
+        i,
+        original,
+      }))
+      .filter(
+        ({ instruction }) =>
+          instruction.command === "nop" || instruction.command === "jmp"
+      )
+      .map(({ i, original }) => {
+        const newInstructions = [...original];
+        newInstructions[i] = swap(newInstructions[i]);
+        return newInstructions;
+      });
+
+    const workingInstructions = mutatedInstructions.find(
+      (x) => run(x).terminated
+    );
+    return run(workingInstructions).accumulator.toString();
+  };
+}
+
+export default new Day08();
 
 const parse = (input: string): instruction => {
   const lineRegex = input.match(/^(nop|acc|jmp) ([+|-][0-9]+)/);
@@ -93,6 +115,3 @@ const swap = (input: instruction): instruction => {
   }
   return input;
 };
-
-console.log(`Part 1: ${partOne(file)}`);
-console.log(`Part 2: ${partTwo(file)}`);
