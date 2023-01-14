@@ -1,28 +1,24 @@
-import { Day, Expected } from "../../day";
+import { Day } from "../../day";
 
-class Day03 extends Day {
-  constructor() {
-    super(2020, 3, "Toboggan Trajectory");
-  }
+class Day03 implements Day {
+  year = 2020;
+  day = 3;
+  name = "Toboggan Trajectory";
 
-  expectationsPartOne = (): Expected[] => {
-    return [
-      { input: "sample.txt", output: "7" },
-      { input: "input.txt", output: "191" },
-    ];
-  };
+  expectationsPartOne = [
+    { input: "sample.txt", output: "7" },
+    { input: "input.txt", output: "191" },
+  ];
 
   partOne = (input: string): string => {
     const rows = input.split("\n");
     return countTreesHit(rows, 3, 1).toString();
   };
 
-  expectationsPartTwo = (): Expected[] => {
-    return [
-      { input: "sample.txt", output: "336" },
-      { input: "input.txt", output: "1478615040" },
-    ];
-  };
+  expectationsPartTwo = [
+    { input: "sample.txt", output: "336" },
+    { input: "input.txt", output: "1478615040" },
+  ];
 
   partTwo = (input: string): string => {
     const rows = input.split("\n");

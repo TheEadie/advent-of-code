@@ -1,4 +1,5 @@
 import { Day } from "./day";
+import { promises } from "fs";
 
 async function runDay(year: number, day: number) {
   const dayRunner: Day = (
@@ -8,9 +9,9 @@ async function runDay(year: number, day: number) {
   console.log(`--- ${year} - Day ${day}: ${dayRunner.name} ---`);
   console.log();
 
-  for (var expectiation of dayRunner.expectationsPartOne()) {
+  for (var expectiation of dayRunner.expectationsPartOne) {
     const start = new Date().getTime();
-    const partOneResult = await dayRunner.runPartOne(expectiation.input);
+    const partOneResult = await runPartOne(dayRunner, expectiation.input);
     const elapsed = new Date().getTime() - start;
 
     if (partOneResult === expectiation.output) {
@@ -24,9 +25,9 @@ async function runDay(year: number, day: number) {
     }
   }
 
-  for (var expectiation of dayRunner.expectationsPartTwo()) {
+  for (var expectiation of dayRunner.expectationsPartTwo) {
     const start = new Date().getTime();
-    const result = await dayRunner.runPartTwo(expectiation.input);
+    const result = await runPartTwo(dayRunner, expectiation.input);
     const elapsed = new Date().getTime() - start;
 
     if (result === expectiation.output) {
@@ -42,6 +43,22 @@ async function runDay(year: number, day: number) {
 
   console.log();
 }
+
+const runPartOne = async (day: Day, fileName: string): Promise<string> => {
+  const content = await promises.readFile(
+    `./src/${day.year}/day${String(day.day).padStart(2, "0")}/${fileName}`
+  );
+  const result = day.partOne(content.toString());
+  return result;
+};
+
+const runPartTwo = async (day: Day, fileName: string): Promise<string> => {
+  const content = await promises.readFile(
+    `./src/${day.year}/day${String(day.day).padStart(2, "0")}/${fileName}`
+  );
+  const result = day.partTwo(content.toString());
+  return result;
+};
 
 async function run() {
   console.log("🎄🎄🎄   ADVENT OF CODE   🎄🎄🎄");

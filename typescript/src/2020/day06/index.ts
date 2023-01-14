@@ -1,16 +1,14 @@
-import { Day, Expected } from "../../day";
+import { Day } from "../../day";
 
-class Day06 extends Day {
-  constructor() {
-    super(2020, 6, "Custom Customs");
-  }
+class Day06 implements Day {
+  year = 2020;
+  day = 6;
+  name = "Custom Customs";
 
-  expectationsPartOne = (): Expected[] => {
-    return [
-      { input: "sample.txt", output: "11" },
-      { input: "input.txt", output: "6549" },
-    ];
-  };
+  expectationsPartOne = [
+    { input: "sample.txt", output: "11" },
+    { input: "input.txt", output: "6549" },
+  ];
 
   partOne = (input: string): string => {
     const lines = input.split("\n\n");
@@ -23,12 +21,10 @@ class Day06 extends Day {
       .toString();
   };
 
-  expectationsPartTwo = (): Expected[] => {
-    return [
-      { input: "sample.txt", output: "6" },
-      { input: "input.txt", output: "3466" },
-    ];
-  };
+  expectationsPartTwo = [
+    { input: "sample.txt", output: "6" },
+    { input: "input.txt", output: "3466" },
+  ];
 
   partTwo = (input: string): string => {
     const lines = input.split("\n\n");

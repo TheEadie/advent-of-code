@@ -1,16 +1,14 @@
-import { Day, Expected } from "../../day";
+import { Day } from "../../day";
 
-class Day04 extends Day {
-  constructor() {
-    super(2020, 4, "Passport Processing");
-  }
+class Day04 implements Day {
+  year = 2020;
+  day = 4;
+  name = "Passport Processing";
 
-  expectationsPartOne = (): Expected[] => {
-    return [
-      { input: "sample.txt", output: "2" },
-      { input: "input.txt", output: "206" },
-    ];
-  };
+  expectationsPartOne = [
+    { input: "sample.txt", output: "2" },
+    { input: "input.txt", output: "206" },
+  ];
 
   partOne = (input: string): string => {
     const rawPassports = input.split("\n\n");
@@ -18,9 +16,7 @@ class Day04 extends Day {
     return passports.filter(validPassportPartOne).length.toString();
   };
 
-  expectationsPartTwo = (): Expected[] => {
-    return [{ input: "input.txt", output: "123" }];
-  };
+  expectationsPartTwo = [{ input: "input.txt", output: "123" }];
 
   partTwo = (input: string): string => {
     const rawPassports = input.split("\n\n");

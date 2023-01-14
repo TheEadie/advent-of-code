@@ -1,16 +1,14 @@
-import { Day, Expected } from "../../day";
+import { Day } from "../../day";
 
-class Day09 extends Day {
-  constructor() {
-    super(2020, 9, "Encoding Error");
-  }
+class Day09 implements Day {
+  year = 2020;
+  day = 9;
+  name = "Encoding Error";
 
-  expectationsPartOne = (): Expected[] => {
-    return [
-      { input: "sample.txt", output: "127" },
-      { input: "input.txt", output: "400480901" },
-    ];
-  };
+  expectationsPartOne = [
+    { input: "sample.txt", output: "127" },
+    { input: "input.txt", output: "400480901" },
+  ];
 
   partOne = (input: string): string => {
     const numbers = input.split("\n").map((x) => parseInt(x));
@@ -18,12 +16,10 @@ class Day09 extends Day {
     return findWeakness(numbers, numToLookback).toString();
   };
 
-  expectationsPartTwo = (): Expected[] => {
-    return [
-      { input: "sample.txt", output: "62" },
-      { input: "input.txt", output: "67587168" },
-    ];
-  };
+  expectationsPartTwo = [
+    { input: "sample.txt", output: "62" },
+    { input: "input.txt", output: "67587168" },
+  ];
 
   partTwo = (input: string): string => {
     const numbers = input.split("\n").map((x) => parseInt(x));
