@@ -60,7 +60,7 @@ async function run() {
   if (params.length === 2) {
     runDay(parseInt(params[0]), parseInt(params[1]));
   } else if (params.length === 1) {
-    for (let i = 1; i <= 9; i++) {
+    for (let i = 1; i <= 10; i++) {
       await runDay(parseInt(params[0]), i);
     }
   } else {
