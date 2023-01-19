@@ -2,43 +2,53 @@ namespace AdventOfCode2022.Day07;
 
 public class Day07
 {
-    [TestCase("Day07/Sample.txt", 95437, TestName = "Day 07 - Part 1 - Sample")]
-    [TestCase("Day07/Puzzle Input.txt", 1182909, TestName = "Day 07 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, double expected)
+    private readonly AdventSession _session = new(2022, 7);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var fileSystem = ParseFileSystem(File.ReadAllLines(inputFile));
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 95437)]
+    [TestCase("Puzzle Input.txt", 1182909)]
+    public async Task Part1(string inputFile, double expected)
+    {
+        var input = await _session.Start(inputFile);
+        var fileSystem = ParseFileSystem(input);
 
         var answer = fileSystem.Directories
             .Where(x => x.Size < 100000)
             .Sum(x => x.Size);
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day07/Sample.txt", 24933642, TestName = "Day 07 - Part 2 - Sample")]
-    [TestCase("Day07/Puzzle Input.txt", 2832508, TestName = "Day 07 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, double expected)
+    [TestCase("Sample.txt", 24933642)]
+    [TestCase("Puzzle Input.txt", 2832508)]
+    public async Task Part2(string inputFile, double expected)
     {
-        var fileSystem = ParseFileSystem(File.ReadAllLines(inputFile));
+        var input = await _session.Start(inputFile);
+        var fileSystem = ParseFileSystem(input);
 
-        var avaliableSpace = 70000000 - fileSystem.Root.Size;
-        var spaceToDelete = 30000000 - avaliableSpace;
+        var availableSpace = 70000000 - fileSystem.Root.Size;
+        var spaceToDelete = 30000000 - availableSpace;
 
         var answer = fileSystem.Directories
             .Where(x => x.Size > spaceToDelete)
             .MinBy(x => x.Size)!
             .Size;
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 
-    private static FileSystem ParseFileSystem(string[] input)
+    private static FileSystem ParseFileSystem(string input)
     {
         var fileSystem = new FileSystem();
 
-        foreach (var line in input.Skip(1))
+        foreach (var line in input.Split("\n").Skip(1))
         {
             if (line == "$ cd ..")
             {
@@ -59,7 +69,7 @@ public class Day07
             else
             {
                 var fileInfo = line.Split(" ");
-                fileSystem.FoundFile(fileInfo[1], double.Parse(fileInfo[0]));
+                fileSystem.FoundFile(double.Parse(fileInfo[0]));
             }
         }
 
@@ -69,7 +79,7 @@ public class Day07
     private class FileSystem
     {
         public Directory Root { get; }
-        public Directory CurrentDir { get; private set; }
+        private Directory CurrentDir { get; set; }
         public IList<Directory> Directories { get; }
 
         public FileSystem()
@@ -97,9 +107,9 @@ public class Day07
             Directories.Add(dir);
         }
 
-        public void FoundFile(string name, double size)
+        public void FoundFile(double size)
         {
-            CurrentDir.Files.Add(new FileDetails(name, size));
+            CurrentDir.Files.Add(new FileDetails(size));
         }
     }
 
@@ -113,5 +123,5 @@ public class Day07
         }
     }
 
-    private record FileDetails(string Name, double Size);
+    private record FileDetails(double Size);
 }

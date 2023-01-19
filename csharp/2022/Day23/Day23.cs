@@ -2,11 +2,20 @@ namespace AdventOfCode2022.Day23;
 
 public class Day23
 {
-    [TestCase("Day23/Sample.txt", 110, TestName = "Day 23 - Part 1 - Sample")]
-    [TestCase("Day23/Puzzle Input.txt", 4247, TestName = "Day 23 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 23);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var map = ParseInput(File.ReadAllText(inputFile)).ToHashSet();
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 110)]
+    [TestCase("Puzzle Input.txt", 4247)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var map = ParseInput(input).ToHashSet();
 
         var finalMap = RunStep(map).Take(10).Last().ToList();
 
@@ -17,19 +26,20 @@ public class Day23
 
         var answer = area - finalMap.Count;
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day23/Sample.txt", 20, TestName = "Day 23 - Part 2 - Sample")]
-    [TestCase("Day23/Puzzle Input.txt", 1049, TestName = "Day 23 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 20)]
+    [TestCase("Puzzle Input.txt", 1049)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var map = ParseInput(File.ReadAllText(inputFile)).ToHashSet();
+        var input = await _session.Start(inputFile);
+        var map = ParseInput(input).ToHashSet();
 
         var answer = RunStep(map).Count();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

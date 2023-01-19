@@ -2,35 +2,45 @@ namespace AdventOfCode2022.Day08;
 
 public class Day08
 {
-    [TestCase("Day08/Sample.txt", 21, TestName = "Day 08 - Part 1 - Sample")]
-    [TestCase("Day08/Puzzle Input.txt", 1763, TestName = "Day 08 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 8);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var input = ParseInput(File.ReadAllText(inputFile));
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 21)]
+    [TestCase("Puzzle Input.txt", 1763)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var map = ParseInput(input);
 
-        var answer = input.Count(x =>
-            MoveAlongVector(input, x.Key, Vector.Up).All(i => i < x.Value) ||
-            MoveAlongVector(input, x.Key, Vector.Down).All(i => i < x.Value) ||
-            MoveAlongVector(input, x.Key, Vector.Left).All(i => i < x.Value) ||
-            MoveAlongVector(input, x.Key, Vector.Right).All(i => i < x.Value));
+        var answer = map.Count(x =>
+            MoveAlongVector(map, x.Key, Vector.Up).All(i => i < x.Value) ||
+            MoveAlongVector(map, x.Key, Vector.Down).All(i => i < x.Value) ||
+            MoveAlongVector(map, x.Key, Vector.Left).All(i => i < x.Value) ||
+            MoveAlongVector(map, x.Key, Vector.Right).All(i => i < x.Value));
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day08/Sample.txt", 8, TestName = "Day 08 - Part 2 - Sample")]
-    [TestCase("Day08/Puzzle Input.txt", 671160, TestName = "Day 08 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 8)]
+    [TestCase("Puzzle Input.txt", 671160)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var input = ParseInput(File.ReadAllText(inputFile));
+        var input = await _session.Start(inputFile);
+        var map = ParseInput(input);
 
-        var answer = input.Max(x =>
-            MoveAlongVector(input, x.Key, Vector.Up).TakeUntil(i => i >= x.Value).Count() *
-            MoveAlongVector(input, x.Key, Vector.Down).TakeUntil(i => i >= x.Value).Count() *
-            MoveAlongVector(input, x.Key, Vector.Left).TakeUntil(i => i >= x.Value).Count() *
-            MoveAlongVector(input, x.Key, Vector.Right).TakeUntil(i => i >= x.Value).Count());
+        var answer = map.Max(x =>
+            MoveAlongVector(map, x.Key, Vector.Up).TakeUntil(i => i >= x.Value).Count() *
+            MoveAlongVector(map, x.Key, Vector.Down).TakeUntil(i => i >= x.Value).Count() *
+            MoveAlongVector(map, x.Key, Vector.Left).TakeUntil(i => i >= x.Value).Count() *
+            MoveAlongVector(map, x.Key, Vector.Right).TakeUntil(i => i >= x.Value).Count());
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

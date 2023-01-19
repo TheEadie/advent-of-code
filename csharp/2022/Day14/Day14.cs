@@ -2,11 +2,20 @@ namespace AdventOfCode2022.Day14;
 
 public class Day14
 {
-    [TestCase("Day14/Sample.txt", 24, TestName = "Day 14 - Part 1 - Sample")]
-    [TestCase("Day14/Puzzle Input.txt", 858, TestName = "Day 14 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 14);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var cave = ParseInput(File.ReadAllText(inputFile));
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 24)]
+    [TestCase("Puzzle Input.txt", 858)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var cave = ParseInput(input);
         var start = new Coordinate(500, 0);
         var bottomOfCave = cave.Keys.Max(x => x.Y);
 
@@ -14,22 +23,23 @@ public class Day14
             .TakeWhile(x => x.Y < bottomOfCave)
             .Count();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day14/Sample.txt", 93, TestName = "Day 14 - Part 2 - Sample")]
-    [TestCase("Day14/Puzzle Input.txt", 26845, TestName = "Day 14 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 93)]
+    [TestCase("Puzzle Input.txt", 26845)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var cave = ParseInput(File.ReadAllText(inputFile));
+        var input = await _session.Start(inputFile);
+        var cave = ParseInput(input);
         var start = new Coordinate(500, 0);
 
         var answer = DropSand(start, cave)
             .TakeUntil(x => x == start)
             .Count();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

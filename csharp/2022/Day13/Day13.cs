@@ -2,11 +2,21 @@ namespace AdventOfCode2022.Day13;
 
 public class Day13
 {
-    [TestCase("Day13/Sample.txt", 13, TestName = "Day 13 - Part 1 - Sample")]
-    [TestCase("Day13/Puzzle Input.txt", 6428, TestName = "Day 13 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 13);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var answer = File.ReadAllText(inputFile)
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 13)]
+    [TestCase("Puzzle Input.txt", 6428)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+
+        var answer = input
             .Split("\n\n")
             .Select((pair, i) =>
             {
@@ -17,18 +27,21 @@ public class Day13
             .Select(x => x.index + 1)
             .Sum();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day13/Sample.txt", 140, TestName = "Day 13 - Part 2 - Sample")]
-    [TestCase("Day13/Puzzle Input.txt", 22464, TestName = "Day 13 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 140)]
+    [TestCase("Puzzle Input.txt", 22464)]
+    public async Task Part2(string inputFile, int expected)
     {
+        var input = await _session.Start(inputFile);
+        
         var two = new Element(new List<Element> { new(2) });
         var six = new Element(new List<Element> { new(6) });
 
-        var input = File.ReadAllLines(inputFile)
+        var nodes = input
+            .Split("\n")
             .Where(x => !string.IsNullOrEmpty(x))
             .Select(ParseElement)
             .Append(two)
@@ -37,12 +50,12 @@ public class Day13
             .Order(new ElementComparer())
             .ToList();
 
-        var indexOfTwo = input.TakeWhile(x => new ElementComparer().Compare(x, two) != 0).Count() + 1;
-        var indexOfSix = input.TakeWhile(x => new ElementComparer().Compare(x, six) != 0).Count() + 1;
+        var indexOfTwo = nodes.TakeWhile(x => new ElementComparer().Compare(x, two) != 0).Count() + 1;
+        var indexOfSix = nodes.TakeWhile(x => new ElementComparer().Compare(x, six) != 0).Count() + 1;
 
         var answer = indexOfTwo * indexOfSix;
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

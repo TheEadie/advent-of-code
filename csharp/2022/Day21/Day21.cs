@@ -2,30 +2,40 @@ namespace AdventOfCode2022.Day21;
 
 public class Day21
 {
-    [TestCase("Day21/Sample.txt", 152, TestName = "Day 21 - Part 1 - Sample")]
-    [TestCase("Day21/Puzzle Input.txt", 299_983_725_663_456, TestName = "Day 21 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, long expected)
+    private readonly AdventSession _session = new(2022, 21);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var input = ParseInput(File.ReadAllText(inputFile)).ToList();
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 152)]
+    [TestCase("Puzzle Input.txt", 299_983_725_663_456)]
+    public async Task Part1(string inputFile, long expected)
+    {
+        var input = await _session.Start(inputFile);
+        var monkeys = ParseInput(input).ToList();
 
-        var answer = GetMonkeyNumber("root", input);
+        var answer = GetMonkeyNumber("root", monkeys);
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day21/Sample.txt", 301, TestName = "Day 21 - Part 2 - Sample")]
-    [TestCase("Day21/Puzzle Input.txt", 3_093_175_982_595, TestName = "Day 21 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, long expected)
+    [TestCase("Sample.txt", 301)]
+    [TestCase("Puzzle Input.txt", 3_093_175_982_595)]
+    public async Task Part2(string inputFile, long expected)
     {
-        var input = ParseInput(File.ReadAllText(inputFile)).ToList();
+        var input = await _session.Start(inputFile);
+        var monkeys = ParseInput(input).ToList();
 
-        var root = input.Single(x => x.Id == "root");
-        var human = input.Single(x => x.Id == "humn");
+        var root = monkeys.Single(x => x.Id == "root");
+        var human = monkeys.Single(x => x.Id == "humn");
 
-        var answer = Solve(human, root, input);
+        var answer = Solve(human, root, monkeys);
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

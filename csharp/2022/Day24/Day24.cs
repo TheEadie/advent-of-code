@@ -2,11 +2,20 @@ namespace AdventOfCode2022.Day24;
 
 public class Day24
 {
-    [TestCase("Day24/Sample.txt", 18, TestName = "Day 24 - Part 1 - Sample")]
-    [TestCase("Day24/Puzzle Input.txt", 251, TestName = "Day 24 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 24);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var (start, goal, map, storms) = ParseInput(File.ReadAllText(inputFile));
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 18)]
+    [TestCase("Puzzle Input.txt", 251)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var (start, goal, map, storms) = ParseInput(input);
 
         var (answer, _) = PathFinding.AStar(
             new State(0, start),
@@ -15,15 +24,16 @@ public class Day24
             (_, _) => 1,
             (n) => Math.Abs(n.Position.X - goal.X) + Math.Abs(n.Position.Y - goal.Y));
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day24/Sample.txt", 54, TestName = "Day 24 - Part 2 - Sample")]
-    [TestCase("Day24/Puzzle Input.txt", 758, TestName = "Day 24 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 54)]
+    [TestCase("Puzzle Input.txt", 758)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var (start, goal, map, storms) = ParseInput(File.ReadAllText(inputFile));
+        var input = await _session.Start(inputFile);
+        var (start, goal, map, storms) = ParseInput(input);
 
         var (one, _) = PathFinding.AStar(
             new State(0, start),
@@ -32,7 +42,7 @@ public class Day24
             (_, _) => 1,
             (n) => Math.Abs(n.Position.X - goal.X) + Math.Abs(n.Position.Y - goal.Y));
 
-        TestContext.Progress.WriteLine($"There: {one}");
+        await TestContext.Progress.WriteLineAsync($"There: {one}");
 
         var (two, _) = PathFinding.AStar(
             new State(one, goal),
@@ -41,7 +51,7 @@ public class Day24
             (_, _) => 1,
             (n) => Math.Abs(n.Position.X - start.X) + Math.Abs(n.Position.Y - start.Y));
 
-        TestContext.Progress.WriteLine($"Back: {two}");
+        await TestContext.Progress.WriteLineAsync($"Back: {two}");
 
         var (three, _) = PathFinding.AStar(
             new State(one + two, start),
@@ -50,11 +60,11 @@ public class Day24
             (_, _) => 1,
             (n) => Math.Abs(n.Position.X - goal.X) + Math.Abs(n.Position.Y - goal.Y));
 
-        TestContext.Progress.WriteLine($"Back again: {three}");
+        await TestContext.Progress.WriteLineAsync($"Back again: {three}");
 
         var answer = one + two + three;
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

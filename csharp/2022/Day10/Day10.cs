@@ -2,16 +2,25 @@ namespace AdventOfCode2022.Day10;
 
 public class Day10
 {
-    [TestCase("Day10/Sample.txt", 13140, TestName = "Day 10 - Part 1 - Sample")]
-    [TestCase("Day10/Puzzle Input.txt", 12460, TestName = "Day 10 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 10);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var input = ParseInput(File.ReadAllText(inputFile));
-        var cpu = new CPU(input);
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 13140)]
+    [TestCase("Puzzle Input.txt", 12460)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var opCodes = ParseInput(input).ToList();
+        var cpu = new Cpu(opCodes);
 
         var signalStrengths = new List<double>();
 
-        for (var i = 1; i < input.Sum(x => x.Steps.Length); i++)
+        for (var i = 1; i < opCodes.Sum(x => x.Steps.Length); i++)
         {
             if (i == 20 || ((i - 20) % 40) == 0)
             {
@@ -22,24 +31,27 @@ public class Day10
 
         var answer = signalStrengths.Sum();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day10/Sample.txt", 0, TestName = "Day 10 - Part 2 - Sample")]
-    [TestCase("Day10/Puzzle Input.txt", 0, TestName = "Day 10 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int _)
+    [TestCase("Sample.txt", 0)]
+    [TestCase("Puzzle Input.txt", 0)]
+    public async Task Part2(string inputFile, int _)
     {
-        var input = ParseInput(File.ReadAllText(inputFile));
-        var cpu = new CPU(input);
-        var gpu = new GPU(cpu.Registers);
+        var input = await _session.Start(inputFile);
+        
+        var opCodes = ParseInput(input).ToList();
+        var cpu = new Cpu(opCodes);
+        var gpu = new Gpu(cpu.Registers);
 
-        for (var i = 1; i < input.Sum(x => x.Steps.Length); i++)
+        for (var i = 1; i < opCodes.Sum(x => x.Steps.Length); i++)
         {
             gpu.Step();
             cpu.Step();
         }
 
+        _session.PrintAnswer(2, "");
         gpu.Draw();
     }
 
@@ -49,10 +61,10 @@ public class Day10
                 .Select(x =>
                     x.Split(" ")[0] switch
                     {
-                        "noop" => new OpCode("Noop", new Func<Registers, bool>[] {
+                        "noop" => new OpCode(new Func<Registers, bool>[] {
                             _ => true
                         }),
-                        "addx" => new OpCode("Add x", new Func<Registers, bool>[]{
+                        "addx" => new OpCode(new Func<Registers, bool>[]{
                             _ => false,
                             r => {r.X += int.Parse(x.Split(" ")[1]); return true;}
                     }),
@@ -60,15 +72,15 @@ public class Day10
                     });
     }
 
-    private class CPU
+    private class Cpu
     {
         public Registers Registers { get; }
         private readonly OpCode[] _instructions;
         private int _pc;
         private OpCode _currentInstruction;
-        private int _subPC;
+        private int _subPc;
 
-        public CPU(IEnumerable<OpCode> program)
+        public Cpu(IEnumerable<OpCode> program)
         {
             Registers = new Registers();
             _instructions = program.ToArray();
@@ -77,24 +89,22 @@ public class Day10
 
         public void Step()
         {
-            var complete = _currentInstruction.Steps[_subPC](Registers);
-            _subPC++;
-            if (complete)
-            {
-                _subPC = 0;
-                _pc++;
-                _currentInstruction = _instructions[_pc];
-            }
+            var complete = _currentInstruction.Steps[_subPc](Registers);
+            _subPc++;
+            if (!complete) return;
+            _subPc = 0;
+            _pc++;
+            _currentInstruction = _instructions[_pc];
         }
     }
 
-    private class GPU
+    private class Gpu
     {
         private readonly Registers _registers;
         private readonly bool[,] _pixels;
         private int _cycle;
 
-        public GPU(Registers registers)
+        public Gpu(Registers registers)
         {
             _registers = registers;
             _pixels = new bool[6, 40];
@@ -125,7 +135,7 @@ public class Day10
         }
     }
 
-    private record OpCode(string Description, Func<Registers, bool>[] Steps);
+    private record OpCode(Func<Registers, bool>[] Steps);
 
     private class Registers
     {

@@ -2,30 +2,43 @@ namespace AdventOfCode2022.Day04;
 
 public class Day04
 {
-    [TestCase("Day04/Sample.txt", 2, TestName = "Day 04 - Part 1 - Sample")]
-    [TestCase("Day04/Puzzle Input.txt", 584, TestName = "Day 04 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 4);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var answer = File.ReadAllLines(inputFile)
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 2)]
+    [TestCase("Puzzle Input.txt", 584)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var answer = input
+            .Split("\n")
             .Select(x => x.Split(","))
             .Select(x => (GetRange(x[0]), GetRange(x[1])))
             .Count(x => x.Item1.Intersect(x.Item2).Count() == x.Item1.Count() ||
                         x.Item1.Intersect(x.Item2).Count() == x.Item2.Count());
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day04/Sample.txt", 4, TestName = "Day 04 - Part 2 - Sample")]
-    [TestCase("Day04/Puzzle Input.txt", 933, TestName = "Day 04 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 4)]
+    [TestCase("Puzzle Input.txt", 933)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var answer = File.ReadAllLines(inputFile)
+        var input = await _session.Start(inputFile);
+
+        var answer = input
+            .Split("\n")
             .Select(x => x.Split(","))
             .Select(x => (GetRange(x[0]), GetRange(x[1])))
             .Count(x => x.Item1.Intersect(x.Item2).Any());
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

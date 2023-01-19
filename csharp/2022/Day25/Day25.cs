@@ -4,19 +4,28 @@ namespace AdventOfCode2022.Day25;
 
 public class Day25
 {
-    [TestCase("Day25/Sample.txt", "2=-1=0", TestName = "Day 25 - Part 1 - Sample")]
-    [TestCase("Day25/Puzzle Input.txt", "2011-=2=-1020-1===-1", TestName = "Day 25 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, string expected)
+    private readonly AdventSession _session = new(2022, 25);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var total = File.ReadAllLines(inputFile).Select(GetDecimalFromSNAFU).Sum();
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", "2=-1=0")]
+    [TestCase("Puzzle Input.txt", "2011-=2=-1020-1===-1")]
+    public async Task Part1(string inputFile, string expected)
+    {
+        var input = await _session.Start(inputFile);
+        var total = input.Split("\n").Select(GetDecimalFromSnafu).Sum();
 
-        var answer = GetSNAFUFromDecimal(total);
+        var answer = GetSnafuFromDecimal(total);
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    private static long GetDecimalFromSNAFU(string snafu)
+    private static long GetDecimalFromSnafu(string snafu)
     {
         long number = 0;
         long i = 1;
@@ -39,7 +48,7 @@ public class Day25
         return number;
     }
 
-    private static string GetSNAFUFromDecimal(long input)
+    private static string GetSnafuFromDecimal(long input)
     {
         var snafu = new StringBuilder();
 

@@ -2,11 +2,20 @@ namespace AdventOfCode2022.Day22;
 
 public class Day22
 {
-    [TestCase("Day22/Sample.txt", 6032, TestName = "Day 22 - Part 1 - Sample")]
-    [TestCase("Day22/Puzzle Input.txt", 122_082, TestName = "Day 22 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 22);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var (map, moves) = ParseInput(File.ReadAllText(inputFile));
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 6032)]
+    [TestCase("Puzzle Input.txt", 122_082)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var (map, moves) = ParseInput(input);
 
         var start = map
             .Where(x => x.Key.Y == 0)
@@ -22,15 +31,16 @@ public class Day22
                      4 * (finalPosition.Coordinate.X + 1) +
                      GetScoreForDirection(finalPosition.Facing);
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day22/Sample.txt", 5031, TestName = "Day 22 - Part 2 - Sample")]
-    [TestCase("Day22/Puzzle Input.txt", 134_076, TestName = "Day 22 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 5031)]
+    [TestCase("Puzzle Input.txt", 134_076)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var (map, moves) = ParseInput(File.ReadAllText(inputFile));
+        var input = await _session.Start(inputFile);
+        var (map, moves) = ParseInput(input);
 
         var start = map
             .Where(x => x.Key.Y == 0)
@@ -47,7 +57,7 @@ public class Day22
                      4 * (finalPosition.Coordinate.X + 1) +
                      GetScoreForDirection(finalPosition.Facing);
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

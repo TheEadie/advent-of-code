@@ -4,9 +4,10 @@ public static class LinqExtensions
 {
     public static IEnumerable<IEnumerable<T>> Window<T>(this IEnumerable<T> source, int size)
     {
-        for (var i = 0; i < source.Count(); i++)
+        var enumerable = source.ToList();
+        for (var i = 0; i < enumerable.Count; i++)
         {
-            yield return source.Skip(i).Take(size);
+            yield return enumerable.Skip(i).Take(size);
         }
     }
 

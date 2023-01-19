@@ -2,29 +2,38 @@ namespace AdventOfCode2022.Day12;
 
 public class Day12
 {
-    [TestCase("Day12/Sample.txt", 31, TestName = "Day 12 - Part 1 - Sample")]
-    [TestCase("Day12/Puzzle Input.txt", 425, TestName = "Day 12 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
-    {
-        var (start, goal, map) = ParseInput(File.ReadAllText(inputFile));
+    private readonly AdventSession _session = new(2022, 12);
 
-        var (answer, path) =
+    [OneTimeSetUp]
+    public void SetUp()
+    {
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 31)]
+    [TestCase("Puzzle Input.txt", 425)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var (start, goal, map) = ParseInput(input);
+
+        var (answer, _) =
             PathFinding.AStar(start,
                 n => n == goal,
                 n => GetNeighbours(n, map),
                 (_, _) => 1,
                 n => DistanceToGoal(n, goal));
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
-
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day12/Sample.txt", 29, TestName = "Day 12 - Part 2 - Sample")]
-    [TestCase("Day12/Puzzle Input.txt", 418, TestName = "Day 12 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 29)]
+    [TestCase("Puzzle Input.txt", 418)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var (start, goal, map) = ParseInput(File.ReadAllText(inputFile));
+        var input = await _session.Start(inputFile);
+        var (_, goal, map) = ParseInput(input);
 
         var answer = map.Where(x => x.Value == 0)
             .Select(x =>
@@ -32,10 +41,11 @@ public class Day12
                     n => n == goal,
                     n => GetNeighbours(n, map),
                     (_, _) => 1,
-                    n => DistanceToGoal(n, goal)))
+                    n => DistanceToGoal(n, goal))
+            )
             .Min(x => x.Item1);
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 
@@ -76,7 +86,7 @@ public class Day12
         return (start, goal, map);
     }
 
-    private int DistanceToGoal(Coordinate current, Coordinate goal)
+    private static int DistanceToGoal(Coordinate current, Coordinate goal)
     {
         return (goal.X - current.X) + (goal.Y - current.Y);
     }

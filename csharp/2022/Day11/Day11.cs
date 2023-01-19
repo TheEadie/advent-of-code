@@ -2,10 +2,19 @@ namespace AdventOfCode2022.Day11;
 
 public class Day11
 {
-    [TestCase("Day11/Sample.txt", 10605, TestName = "Day 11 - Part 1 - Sample")]
-    [TestCase("Day11/Puzzle Input.txt", 95472, TestName = "Day 11 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 11);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 10605)]
+    [TestCase("Puzzle Input.txt", 95472)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var _ = await _session.Start(inputFile);
         var monkeys = ParseInput(inputFile);
 
         var inspected = Inspect(monkeys, x => x / 3).Take(20).Last();
@@ -13,14 +22,15 @@ public class Day11
 
         var answer = topTwo[0] * topTwo[1];
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day11/Sample.txt", 2713310158, TestName = "Day 11 - Part 2 - Sample")]
-    [TestCase("Day11/Puzzle Input.txt", 17926061332, TestName = "Day 11 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, long expected)
+    [TestCase("Sample.txt", 2713310158)]
+    [TestCase("Puzzle Input.txt", 17926061332)]
+    public async Task Part2(string inputFile, long expected)
     {
+        var _ = await _session.Start(inputFile);
         var input = ParseInput(inputFile);
 
         var commonFactor = input.Select(x => x.Divider).Aggregate((total, x) => total * x);
@@ -30,7 +40,7 @@ public class Day11
 
         var answer = topTwo[0] * topTwo[1];
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 
@@ -72,9 +82,10 @@ public class Day11
         }
 
 
+        // ReSharper disable once IteratorNeverReturns
     }
 
-    private Monkey[] ParseInput(string inputFile)
+    private static Monkey[] ParseInput(string inputFile)
     {
         if (inputFile.Contains("Sample"))
         {

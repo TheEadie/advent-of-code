@@ -4,11 +4,20 @@ namespace AdventOfCode2022.Day15;
 
 public class Day15
 {
-    [TestCase("Day15/Sample.txt", 10, 26, TestName = "Day 15 - Part 1 - Sample")]
-    [TestCase("Day15/Puzzle Input.txt", 2_000_000, 5_508_234, TestName = "Day 15 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int y, int expected)
+    private readonly AdventSession _session = new(2022, 15);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var sensors = ParseInput(File.ReadAllText(inputFile)).ToList();
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 10, 26)]
+    [TestCase("Puzzle Input.txt", 2_000_000, 5_508_234)]
+    public async Task Part1(string inputFile, int y, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var sensors = ParseInput(input).ToList();
 
         var minX = sensors.Min(x => x.Position.X - x.Distance);
         var maxX = sensors.Max(x => x.Position.X + x.Distance);
@@ -17,23 +26,24 @@ public class Day15
             .Select(x => new Coordinate(x, y))
             .Count(x => sensors.Any(s => x != s.FirstSensor && s.Distance >= GetDistance(x, s.Position)));
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day15/Sample.txt", 20, 56_000_011, TestName = "Day 15 - Part 2 - Sample")]
-    [TestCase("Day15/Puzzle Input.txt", 4_000_000, 10_457_634_860_779, TestName = "Day 15 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int maxXY, long expected)
+    [TestCase("Sample.txt", 20, 56_000_011)]
+    [TestCase("Puzzle Input.txt", 4_000_000, 10_457_634_860_779)]
+    public async Task Part2(string inputFile, int maxXy, long expected)
     {
-        var sensors = ParseInput(File.ReadAllText(inputFile)).ToList();
+        var input = await _session.Start(inputFile);
+        var sensors = ParseInput(input).ToList();
         var found = sensors
             .SelectMany(GetBorder)
-            .Where(x => x.X > 0 && x.X <= maxXY && x.Y > 0 && x.Y <= maxXY)
+            .Where(x => x.X > 0 && x.X <= maxXy && x.Y > 0 && x.Y <= maxXy)
             .First(x => sensors.All(s => s.Distance < GetDistance(x, s.Position)));
 
         var answer = (long)found.X * 4_000_000 + found.Y;
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

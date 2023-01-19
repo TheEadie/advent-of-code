@@ -2,31 +2,45 @@ namespace AdventOfCode2022.Day06;
 
 public class Day06
 {
-    [TestCase("Day06/Sample.txt", 7, TestName = "Day 06 - Part 1 - Sample")]
-    [TestCase("Day06/Puzzle Input.txt", 1034, TestName = "Day 06 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 6);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var answer = File.ReadAllText(inputFile)
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 7)]
+    [TestCase("Puzzle Input.txt", 1034)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        
+        var answer = input
             .Window(4)
-            .TakeWhile(x => x.Distinct().Count() != x.Count())
+            .Select(x => x.ToList())
+            .TakeWhile(x => x.Distinct().Count() != x.Count)
             .Count()
             + 4;
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day06/Sample.txt", 19, TestName = "Day 06 - Part 2 - Sample")]
-    [TestCase("Day06/Puzzle Input.txt", 2472, TestName = "Day 06 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 19)]
+    [TestCase("Puzzle Input.txt", 2472)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var answer = File.ReadAllText(inputFile)
+        var input = await _session.Start(inputFile);
+        
+        var answer = input
             .Window(14)
-            .TakeWhile(x => x.Distinct().Count() != x.Count())
+            .Select(x => x.ToList())
+            .TakeWhile(x => x.Distinct().Count() != x.Count)
             .Count()
             + 14;
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 }

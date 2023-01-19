@@ -4,32 +4,42 @@ namespace AdventOfCode2022.Day19;
 
 public class Day19
 {
-    [TestCase("Day19/Sample.txt", 33, TestName = "Day 19 - Part 1 - Sample")]
-    [TestCase("Day19/Puzzle Input.txt", 1306, TestName = "Day 19 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
-    {
-        var input = ParseInput(File.ReadAllText(inputFile)).ToList();
+    private readonly AdventSession _session = new(2022, 19);
 
-        var answer = input
+    [OneTimeSetUp]
+    public void SetUp()
+    {
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 33)]
+    [TestCase("Puzzle Input.txt", 1306)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var blueprints = ParseInput(input).ToList();
+
+        var answer = blueprints
             .Select(x => (Blueprint: x, Max: FindNumberOfGeodes(x, 24).First()))
             .Select(x => x.Blueprint.Id * x.Max)
             .Sum();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day19/Sample.txt", 3472, TestName = "Day 19 - Part 2 - Sample")]
-    [TestCase("Day19/Puzzle Input.txt", 37604, TestName = "Day 19 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 3472)]
+    [TestCase("Puzzle Input.txt", 37604)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var input = ParseInput(File.ReadAllText(inputFile)).Take(3).ToList();
+        var input = await _session.Start(inputFile);
+        var blueprints = ParseInput(input).Take(3).ToList();
 
-        var answer = input
+        var answer = blueprints
             .Select(x => FindNumberOfGeodes(x, 32).First())
             .Aggregate(1, (current, x) => current * x);
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

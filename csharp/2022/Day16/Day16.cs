@@ -4,26 +4,35 @@ namespace AdventOfCode2022.Day16;
 
 public class Day16
 {
-    [TestCase("Day16/Sample.txt", 1651, TestName = "Day 16 - Part 1 - Sample")]
-    [TestCase("Day16/Puzzle Input.txt", 1896, TestName = "Day 16 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 16);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var input = ParseInput(File.ReadAllText(inputFile)).ToList();
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 1651)]
+    [TestCase("Puzzle Input.txt", 1896)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var valves = ParseInput(input).ToList();
 
-        var answer = FindRoute(input, 30).First();
+        var answer = FindRoute(valves, 30).First();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.TotalFlow.ShouldBe(expected);
     }
 
-    [TestCase("Day16/Sample.txt", 1707, TestName = "Day 16 - Part 2 - Sample")]
-    [TestCase("Day16/Puzzle Input.txt", 2576, TestName = "Day 16 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 1707)]
+    [TestCase("Puzzle Input.txt", 2576)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var input = ParseInput(File.ReadAllText(inputFile)).ToList();
+        var input = await _session.Start(inputFile);
+        var valves = ParseInput(input).ToList();
 
-        var isSample = inputFile.Contains("Sample");
-        var allRoutes = FindRoute(input, 26).ToList();
+        var allRoutes = FindRoute(valves, 26).ToList();
 
         var routes = allRoutes.ConvertAll(x => new
         {
@@ -46,7 +55,7 @@ public class Day16
             }
         }
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {best}");
+        _session.PrintAnswer(2, best);
         var answer = best.Item1.TotalFlow + best.Item2.TotalFlow;
         answer.ShouldBe(expected);
     }
@@ -61,7 +70,7 @@ public class Day16
 
             foreach (var valve in valves.Where(x => x.FlowRate > 0))
             {
-                var (distance, path) = PathFinding.AStar(
+                var (distance, _) = PathFinding.AStar(
                     v.Id,
                     n => n == valve.Id,
                     node => valves.Where(x => x.Tunnels.Contains(node)).Select(x => x.Id),
@@ -89,8 +98,6 @@ public class Day16
 
         var statesToTry = new PriorityQueue<State, int>();
         var statesTried = new HashSet<State>();
-
-        var found = new List<State>();
 
         statesToTry.Enqueue(new State("AA", "", 0, 0), maxTime * allOpen);
 

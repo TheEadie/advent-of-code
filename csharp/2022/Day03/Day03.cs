@@ -2,35 +2,49 @@ namespace AdventOfCode2022.Day03;
 
 public class Day03
 {
-    [TestCase("Day03/Sample.txt", 157, TestName = "Day 03 - Part 1 - Sample")]
-    [TestCase("Day03/Puzzle Input.txt", 7727, TestName = "Day 03 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 3);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var answer = File.ReadAllLines(inputFile)
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 157)]
+    [TestCase("Puzzle Input.txt", 7727)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        
+        var answer = input
+            .Split("\n")
             .Select(x => (x[..(x.Length / 2)], x[(x.Length / 2)..]))
             .Select(x => x.Item1.Intersect(x.Item2).Single())
             .Select(Score)
             .Sum();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day03/Sample.txt", 70, TestName = "Day 03 - Part 2 - Sample")]
-    [TestCase("Day03/Puzzle Input.txt", 2609, TestName = "Day 03 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 70)]
+    [TestCase("Puzzle Input.txt", 2609)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var answer = File.ReadAllLines(inputFile)
+        var input = await _session.Start(inputFile);
+        
+        var answer = input
+            .Split("\n")
             .Chunk(3)
             .Select(x => x[0].Intersect(x[1].Intersect(x[2])).Single())
             .Select(Score)
             .Sum();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 
-    private int Score(char item)
+    private static int Score(char item)
     {
         if (char.IsUpper(item))
         {

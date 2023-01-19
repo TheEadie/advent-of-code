@@ -2,30 +2,39 @@ namespace AdventOfCode2022.Day01;
 
 public class Day01
 {
-    [TestCase("Day01/Sample.txt", 24000, TestName = "Day 01 - Part 1 - Sample")]
-    [TestCase("Day01/Puzzle Input.txt", 69795, TestName = "Day 01 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 1);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var elves = ParseInput(File.ReadAllText(inputFile));
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 24000)]
+    [TestCase("Puzzle Input.txt", 69795)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
 
-        var answer = elves.Max(x => x.Calories.Sum());
+        var answer = ParseInput(input).Max(x => x.Calories.Sum());
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day01/Sample.txt", 45000, TestName = "Day 01 - Part 2 - Sample")]
-    [TestCase("Day01/Puzzle Input.txt", 208437, TestName = "Day 01 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 45000)]
+    [TestCase("Puzzle Input.txt", 208437)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var elves = ParseInput(File.ReadAllText(inputFile));
+        var input = await _session.Start(inputFile);
 
-        var answer = elves.OrderByDescending(x => x.Calories.Sum())
+        var answer = ParseInput(input)
+            .OrderByDescending(x => x.Calories.Sum())
             .Take(3)
             .SelectMany(x => x.Calories)
             .Sum();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

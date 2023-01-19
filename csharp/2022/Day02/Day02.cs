@@ -2,11 +2,22 @@ namespace AdventOfCode2022.Day02;
 
 public class Day02
 {
-    [TestCase("Day02/Sample.txt", 15, TestName = "Day 02 - Part 1 - Sample")]
-    [TestCase("Day02/Puzzle Input.txt", 13009, TestName = "Day 02 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 2);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var strategies = File.ReadAllLines(inputFile)
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 15)]
+    [TestCase("Puzzle Input.txt", 13009)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        
+        var strategies = input
+            .Split("\n")
             .Select(x => x switch
             {
                 "A X" => new Round(Hand.Rock, Hand.Rock),
@@ -23,15 +34,17 @@ public class Day02
 
         var answer = strategies.Select(ScoreRound).Sum();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day02/Sample.txt", 12, TestName = "Day 02 - Part 2 - Sample")]
-    [TestCase("Day02/Puzzle Input.txt", 10398, TestName = "Day 02 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 12)]
+    [TestCase("Puzzle Input.txt", 10398)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var strategies = File.ReadAllLines(inputFile)
+        var input = await _session.Start(inputFile);
+        var strategies = input
+            .Split("\n")
             .Select(x => x switch
             {
                 "A X" => new Round(Hand.Rock, Hand.Scissors),
@@ -48,7 +61,7 @@ public class Day02
 
         var answer = strategies.Select(ScoreRound).Sum();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 
@@ -67,9 +80,9 @@ public class Day02
         if (round.Opponent == round.Us)
             score += 3;
 
-        if ((round.Us == Hand.Rock && round.Opponent == Hand.Scissors) ||
-            (round.Us == Hand.Scissors && round.Opponent == Hand.Paper) ||
-            (round.Us == Hand.Paper && round.Opponent == Hand.Rock))
+        if (round is {Us: Hand.Rock, Opponent: Hand.Scissors} 
+            or {Us: Hand.Scissors, Opponent: Hand.Paper} 
+            or {Us: Hand.Paper, Opponent: Hand.Rock})
         {
             score += 6;
         }

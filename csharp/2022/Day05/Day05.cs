@@ -2,11 +2,20 @@ namespace AdventOfCode2022.Day05;
 
 public class Day05
 {
-    [TestCase("Day05/Sample.txt", "CMZ", TestName = "Day 05 - Part 1 - Sample")]
-    [TestCase("Day05/Puzzle Input.txt", "VRWBSFZWM", TestName = "Day 05 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, string expected)
+    private readonly AdventSession _session = new(2022, 5);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        (var stacks, var moves) = Parse(File.ReadAllText(inputFile));
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", "CMZ")]
+    [TestCase("Puzzle Input.txt", "VRWBSFZWM")]
+    public async Task Part1(string inputFile, string expected)
+    {
+        var input = await _session.Start(inputFile);
+        var (stacks, moves) = Parse(input);
 
         foreach (var move in moves)
         {
@@ -17,21 +26,18 @@ public class Day05
             }
         }
 
-        var answer = "";
-        foreach (var stack in stacks)
-        {
-            answer += stack.Peek();
-        }
+        var answer = stacks.Aggregate("", (current, stack) => current + stack.Peek());
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day05/Sample.txt", "MCD", TestName = "Day 05 - Part 2 - Sample")]
-    [TestCase("Day05/Puzzle Input.txt", "RBTWJWMCF", TestName = "Day 05 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, string expected)
+    [TestCase("Sample.txt", "MCD")]
+    [TestCase("Puzzle Input.txt", "RBTWJWMCF")]
+    public async Task Part2(string inputFile, string expected)
     {
-        (var stacks, var moves) = Parse(File.ReadAllText(inputFile));
+        var input = await _session.Start(inputFile);
+        var (stacks, moves) = Parse(input);
 
         foreach (var move in moves)
         {
@@ -48,21 +54,16 @@ public class Day05
             }
         }
 
-        var answer = "";
+        var answer = stacks.Aggregate("", (current, stack) => current + stack.Peek());
 
-        foreach (var stack in stacks)
-        {
-            answer += stack.Peek();
-        }
-
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 
     private static (Stack<char>[], IEnumerable<Move>) Parse(string input)
     {
         var sections = input.Split("\n" + "\n");
-        var stackInput = sections[0].Split("\n").Reverse();
+        var stackInput = sections[0].Split("\n").Reverse().ToList();
         var noOfStacks = (stackInput.First().Length + 1) / 4;
 
         var stacks = new Stack<char>[noOfStacks];

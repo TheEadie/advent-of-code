@@ -2,40 +2,48 @@ namespace AdventOfCode2022.Day09;
 
 public class Day09
 {
-    [TestCase("Day09/Sample.txt", 13, TestName = "Day 09 - Part 1 - Sample")]
-    [TestCase("Day09/Puzzle Input.txt", 5735, TestName = "Day 09 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
-    {
-        var start = Rope.Create(1);
+    private readonly AdventSession _session = new(2022, 9);
 
-        var answer = ParseInput(File.ReadAllText(inputFile))
+    [OneTimeSetUp]
+    public void SetUp()
+    {
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 13)]
+    [TestCase("Puzzle Input.txt", 5735)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+
+        var answer = ParseInput(input)
             .Aggregate(
-                new List<Rope> { start },
+                new List<Rope> {Rope.Create(1)},
                 (ropes, vector) =>
                     ropes.Append(Move(ropes.Last(), vector)).ToList())
             .DistinctBy(x => x.Knots.Last())
             .Count();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day09/Sample.txt", 1, TestName = "Day 09 - Part 2 - Sample")]
-    [TestCase("Day09/Sample - 2.txt", 36, TestName = "Day 09 - Part 2 - Sample (2)")]
-    [TestCase("Day09/Puzzle Input.txt", 2478, TestName = "Day 09 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 1)]
+    [TestCase("Sample - 2.txt", 36)]
+    [TestCase("Puzzle Input.txt", 2478)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var start = Rope.Create(9);
+        var input = await _session.Start(inputFile);
 
-        var answer = ParseInput(File.ReadAllText(inputFile))
+        var answer = ParseInput(input)
             .Aggregate(
-                new List<Rope> { start },
+                new List<Rope> {Rope.Create(9)},
                 (ropes, vector) =>
                     ropes.Append(Move(ropes.Last(), vector)).ToList())
             .DistinctBy(x => x.Knots.Last())
             .Count();
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 
@@ -44,18 +52,18 @@ public class Day09
         static bool IsAdjacent(Vector diff) =>
             Math.Abs(diff.X) <= 1 && Math.Abs(diff.Y) <= 1;
 
-        static Coordinate Move(Coordinate current, Vector vector) =>
+        static Coordinate MoveKnot(Coordinate current, Vector vector) =>
             new(current.X + Math.Clamp(vector.X, -1, 1),
                 current.Y + Math.Clamp(vector.Y, -1, 1));
 
-        var newHead = Move(rope.Head, vector);
+        var newHead = MoveKnot(rope.Head, vector);
         var knots = new List<Coordinate>();
         var prevKnot = newHead;
 
         foreach (var currentKnot in rope.Knots)
         {
             var diff = new Vector(prevKnot.X - currentKnot.X, prevKnot.Y - currentKnot.Y);
-            var newKnot = IsAdjacent(diff) ? currentKnot : Move(currentKnot, diff);
+            var newKnot = IsAdjacent(diff) ? currentKnot : MoveKnot(currentKnot, diff);
             knots.Add(newKnot);
             prevKnot = newKnot;
         }

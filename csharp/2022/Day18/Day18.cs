@@ -2,27 +2,37 @@ namespace AdventOfCode2022.Day18;
 
 public class Day18
 {
-    [TestCase("Day18/Sample.txt", 64, TestName = "Day 18 - Part 1 - Sample")]
-    [TestCase("Day18/Puzzle Input.txt", 4548, TestName = "Day 18 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 18);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var droplets = ParseInput(File.ReadAllText(inputFile));
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 64)]
+    [TestCase("Puzzle Input.txt", 4548)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var droplets = ParseInput(input);
 
         var answer = GetSurfaceArea(droplets);
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day18/Sample.txt", 58, TestName = "Day 18 - Part 2 - Sample")]
-    [TestCase("Day18/Puzzle Input.txt", 2588, TestName = "Day 18 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 58)]
+    [TestCase("Puzzle Input.txt", 2588)]
+    public async Task Part2(string inputFile, int expected)
     {
-        var droplets = ParseInput(File.ReadAllText(inputFile));
+        var input = await _session.Start(inputFile);
+        var droplets = ParseInput(input);
 
         var answer = GetSurfaceArea(droplets) - GetAreas(droplets).Skip(1).Sum(GetSurfaceArea);
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

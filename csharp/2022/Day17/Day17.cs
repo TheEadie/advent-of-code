@@ -2,33 +2,43 @@ namespace AdventOfCode2022.Day17;
 
 public class Day17
 {
-    [TestCase("Day17/Sample.txt", 3068, TestName = "Day 17 - Part 1 - Sample")]
-    [TestCase("Day17/Puzzle Input.txt", 3193, TestName = "Day 17 - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(2022, 17);
+
+    [OneTimeSetUp]
+    public void SetUp()
     {
-        var input = File.ReadAllText(inputFile)
+        _session.PrintHeading();
+    }
+    
+    [TestCase("Sample.txt", 3068)]
+    [TestCase("Puzzle Input.txt", 3193)]
+    public async Task Part1(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var directions = input
             .ToCharArray()
             .Select(x => x == '<' ? Direction.Left : Direction.Right)
             .ToList();
 
-        var answer = Drop(input, 2022);
-
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        var answer = Drop(directions, 2022);
+        
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Day17/Sample.txt", 1_514_285_714_288, TestName = "Day 17 - Part 2 - Sample")]
-    [TestCase("Day17/Puzzle Input.txt", 1_577_650_429_835, TestName = "Day 17 - Part 2 - Puzzle Input")]
-    public void Part2(string inputFile, long expected)
+    [TestCase("Sample.txt", 1_514_285_714_288)]
+    [TestCase("Puzzle Input.txt", 1_577_650_429_835)]
+    public async Task Part2(string inputFile, long expected)
     {
-        var input = File.ReadAllText(inputFile)
+        var input = await _session.Start(inputFile);
+        var directions = input
             .ToCharArray()
             .Select(x => x == '<' ? Direction.Left : Direction.Right)
             .ToList();
 
-        var answer = Drop(input, 1_000_000_000_000);
+        var answer = Drop(directions, 1_000_000_000_000);
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 
