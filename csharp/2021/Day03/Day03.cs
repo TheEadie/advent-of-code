@@ -1,25 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using AdventOfCode2021.Utils;
-using NUnit.Framework;
-using Shouldly;
+﻿using AdventOfCode2021.Utils;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2021.Day03
 {
     public class Day03
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 3, "Binary Diagnostic");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var input = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var binary = ParseInput(input);
             var gammaString = string.Empty;
 
-            for (var position = 0; position < input[0].Length; position++)
+            for (var position = 0; position < binary[0].Length; position++)
             {
-                var ones = NumberOfBits(input, '1', position);
-                var zeros = NumberOfBits(input, '0', position);
+                var ones = NumberOfBits(binary, '1', position);
+                var zeros = NumberOfBits(binary, '0', position);
                 gammaString += ones > zeros ? '1' : '0';
             }
 
@@ -29,14 +32,15 @@ namespace AdventOfCode2021
             var epsilon = BinaryUtils.Invert(gammaBinary).ToInt();
 
             var answer = gamma * epsilon;
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(3429254);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var oxygenInput = ParseInput().ToList();
+            var input = await _session.Start("Puzzle Input.txt");
+            var oxygenInput = ParseInput(input).ToList();
 
             for (var position = 0; position < oxygenInput[0].Length; position++)
             {
@@ -49,7 +53,7 @@ namespace AdventOfCode2021
 
             var oxygen = oxygenInput[0].ToInt();
 
-            var co2Input = ParseInput().ToList();
+            var co2Input = ParseInput(input).ToList();
 
             for (var position = 0; position < co2Input[0].Length; position++)
             {
@@ -63,13 +67,13 @@ namespace AdventOfCode2021
             var co2 = co2Input[0].ToInt();
 
             var answer = oxygen * co2;
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(5410338);
         }
 
-        private static Binary[] ParseInput()
+        private static Binary[] ParseInput(string input)
         {
-            var lines = File.ReadAllLines("Day03.txt");
+            var lines = input.Split("\n");
             var characters = lines.Select(x => new Binary(x)).ToArray();
             return characters;
         }

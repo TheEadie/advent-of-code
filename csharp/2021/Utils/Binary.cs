@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace AdventOfCode2021.Utils
+﻿namespace AdventOfCode2021.Utils
 {
     public class Binary
     {

@@ -1,43 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using AdventOfCode2021.Utils;
-using NUnit.Framework;
-using Shouldly;
+﻿using AdventOfCode2021.Utils;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2021.Day05
 {
     public class Day05
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 5, "Hydrothermal Venture");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var answer = ParseInput()
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var answer = ParseInput(input)
                 .Where(x => x.Start.X == x.End.X || x.Start.Y == x.End.Y)
                 .SelectMany(x => x.GetCoordinatesOnLine())
                 .GroupBy(x => x)
                 .Count(x => x.Count() > 1);
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(5145);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var answer = ParseInput()
+            var input = await _session.Start("Puzzle Input.txt");
+            var answer = ParseInput(input)
                 .SelectMany(x => x.GetCoordinatesOnLine())
                 .GroupBy(x => x)
                 .Count(x => x.Count() > 1);
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(16518);
         }
 
-        private static IEnumerable<Line> ParseInput()
+        private static IEnumerable<Line> ParseInput(string input)
         {
-            var lines = File.ReadAllLines("Day05.txt");
+            var lines = input.Split("\n");
             var parseOne = lines.Select(x => x.Split(" -> ")).Select(ParseVentLine);
             return parseOne.ToList();
         }

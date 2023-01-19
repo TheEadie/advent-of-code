@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
+using NUnit.Framework;
 
-namespace AdventOfCode2022;
+namespace Utils;
 
 public class AdventSession
 {

@@ -1,17 +1,20 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day02
 {
     public class Day02
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 2, "Dive!");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var directions = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var directions = ParseInput(input);
 
             var x = 0;
             var depth = 0;
@@ -33,14 +36,15 @@ namespace AdventOfCode2021
             }
 
             var answer = x * depth;
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(2117664);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var directions = ParseInput();
+            var input = await _session.Start("Puzzle Input.txt");
+            var directions = ParseInput(input);
 
             var x = 0;
             var depth = 0;
@@ -64,12 +68,13 @@ namespace AdventOfCode2021
             }
 
             var answer = x * depth;
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
+            answer.ShouldBe(2073416724);
         }
 
-        private static Direction[] ParseInput()
+        private static Direction[] ParseInput(string input)
         {
-            var lines = File.ReadAllLines("Day02.txt");
+            var lines = input.Split("\n");
             var depths = lines.Select(ParseLine).ToArray();
             return depths;
         }

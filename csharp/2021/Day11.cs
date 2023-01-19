@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using AdventOfCode2021.Utils;
-using NUnit.Framework;
-using Shouldly;
+﻿using AdventOfCode2021.Utils;
 
 namespace AdventOfCode2021
 {

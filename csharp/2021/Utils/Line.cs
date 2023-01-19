@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace AdventOfCode2021.Utils
+﻿namespace AdventOfCode2021.Utils
 {
     public class Line
     {

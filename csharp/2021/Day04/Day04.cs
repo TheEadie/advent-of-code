@@ -1,35 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day04
 {
     public class Day04
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 4, "Giant Squid");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var (calls, boards) = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var (calls, boards) = ParseInput(input);
             var winningBoards = PlayBingo(calls, boards);
 
             var score = winningBoards.First().Item2;
             
-            Console.WriteLine(score);
+            _session.PrintAnswer(1, score);
             score.ShouldBe(35711);
-            
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var (calls, boards) = ParseInput();
+            var input = await _session.Start("Puzzle Input.txt");
+            var (calls, boards) = ParseInput(input);
             var winningBoards = PlayBingo(calls, boards);
 
             var score = winningBoards.Last().Item2;
-            Console.WriteLine(score);
+            _session.PrintAnswer(2, score);
             score.ShouldBe(5586);
         }
 
@@ -57,9 +59,9 @@ namespace AdventOfCode2021
             return winningBoards;
         }
 
-        private static (int[], List<BingoBoard>) ParseInput()
+        private static (int[], List<BingoBoard>) ParseInput(string input)
         {
-            var lines = File.ReadAllLines("Day04.txt");
+            var lines = input.Split("\n");
             var calls = lines[0].Split(',').Select(int.Parse).ToArray();
 
             var boardBatch = new List<string>();
