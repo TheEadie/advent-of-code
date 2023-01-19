@@ -1,4 +1,4 @@
-namespace AdventOfCode2022;
+namespace Utils;
 
 public static class PathFinding
 {
