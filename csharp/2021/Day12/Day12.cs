@@ -1,16 +1,25 @@
-﻿namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day12
 {
     public class Day12
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 12, "Passage Pathing");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var graph = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var graph = ParseInput(input);
 
             var paths = GetPaths("start", graph, new List<string> {"start"});
 
             var answer = paths.Count();
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(3802);
         }
 
@@ -37,13 +46,14 @@
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var graph = ParseInput();
+            var input = await _session.Start("Puzzle Input.txt");
+            var graph = ParseInput(input);
             var paths = GetPathsPart2("start", graph, new List<string> {"start"});
 
             var answer = paths.Count();
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(99448);
         }
         
@@ -90,10 +100,10 @@
 
         }
 
-        private static Dictionary<string, IList<string>> ParseInput()
+        private static Dictionary<string, IList<string>> ParseInput(string input)
         {
             var graph = new Dictionary<string, IList<string>>();
-            var lines = File.ReadAllLines("Day12.txt");
+            var lines = input.Split("\n");
             var connections = lines.Select(x => x.Split('-')).Select(x => new {Source = x[0], Target = x[1]});
 
             foreach (var connection in connections)

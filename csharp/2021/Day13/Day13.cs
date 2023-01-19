@@ -1,24 +1,34 @@
 ﻿using AdventOfCode2021.Utils;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2021.Day13
 {
     public class Day13
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 13, "Transparent Origami");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var (coordinates, folds) = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var (coordinates, folds) = ParseInput(input);
 
             var answer = Reflect(coordinates, folds.Take(1)).Distinct().Count();
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(729);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var (coordinates, folds) = ParseInput();
+            var input = await _session.Start("Puzzle Input.txt");
+            var (coordinates, folds) = ParseInput(input);
             var answer = Reflect(coordinates, folds).Distinct().ToList();
 
             for (var y = 0; y <= answer.Max(c => c.Y); y++)
@@ -31,6 +41,7 @@ namespace AdventOfCode2021
             }
 
             // RGZLBHFP
+            _session.PrintAnswer(2, "");
             answer.Count.ShouldBe(100);
         }
 
@@ -57,10 +68,9 @@ namespace AdventOfCode2021
             return newCoordinates;
         }
 
-        private static (IEnumerable<Coordinate>, IEnumerable<Fold>) ParseInput()
+        private static (IEnumerable<Coordinate>, IEnumerable<Fold>) ParseInput(string input)
         {
-            var graph = new Dictionary<string, IList<string>>();
-            var lines = File.ReadAllLines("Day13.txt");
+            var lines = input.Split("\n");
 
             var coordinates = lines.TakeWhile(x => x != "")
                 .Select(x => x.Split(','))

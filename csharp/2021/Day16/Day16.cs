@@ -1,28 +1,38 @@
-﻿namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day16
 {
     public class Day16
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 16, "Packet Decoder");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var binary = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var binary = ParseInput(input);
             var packets = ParseBinary(binary);
 
             var answer = AddVersions(packets);
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(996);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var binary = ParseInput();
+            var input = await _session.Start("Puzzle Input.txt");
+            var binary = ParseInput(input);
             var packets = ParseBinary(binary);
 
             var answer = Process(packets.First());
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(96257984154);
         }
 
@@ -111,9 +121,9 @@
         private static int ToInt(IEnumerable<char> binary) => Convert.ToInt32(new string(binary.ToArray()), 2);
         private static long ToLong(IEnumerable<char> binary) => Convert.ToInt64(new string(binary.ToArray()), 2);
 
-        private static BinaryStream ParseInput()
+        private static BinaryStream ParseInput(string input)
         {
-            var lines = File.ReadAllLines("Day16.txt");
+            var lines = input.Split("\n");
 
             var hexString = lines[0];
 

@@ -1,11 +1,20 @@
-﻿namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day14
 {
     public class Day14
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 14, "Extended Polymerization");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var (template, rules) = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var (template, rules) = ParseInput(input);
 
             var elementCounts = CountElements(template, rules, 10);
 
@@ -14,14 +23,15 @@
 
             var answer = mostCommon - leastCommon;
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(2345);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var (template, rules) = ParseInput();
+            var input = await _session.Start("Puzzle Input.txt");
+            var (template, rules) = ParseInput(input);
 
             var elementCounts = CountElements(template, rules, 40);
 
@@ -30,7 +40,7 @@
 
             var answer = mostCommon - leastCommon;
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(2432786807053);
         }
 
@@ -75,10 +85,10 @@
         }
 
 
-        private static (string, IDictionary<string, char>) ParseInput()
+        private static (string, IDictionary<string, char>) ParseInput(string input)
         {
 
-            var lines = File.ReadAllLines("Day14.txt");
+            var lines = input.Split("\n");
 
             var template = lines[0];
 

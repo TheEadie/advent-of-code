@@ -1,22 +1,32 @@
 ﻿using AdventOfCode2021.Utils;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2021.Day11
 {
     public class Day11
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 11, "Dumbo Octopus");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var answer = Run(ParseInput()).Take(100).Sum();
-            Console.WriteLine(answer);
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var answer = Run(ParseInput(input)).Take(100).Sum();
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(1757);
         }
         
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var answer = Run(ParseInput()).TakeWhile(x => x != 100).Count() + 1;
-            Console.WriteLine(answer);
+            var input = await _session.Start("Puzzle Input.txt");
+            var answer = Run(ParseInput(input)).TakeWhile(x => x != 100).Count() + 1;
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(422);
         }
 
@@ -80,10 +90,10 @@ namespace AdventOfCode2021
             return testCoordinates.Where(map.ContainsKey);
         }
 
-        private static Dictionary<Coordinate, int> ParseInput()
+        private static Dictionary<Coordinate, int> ParseInput(string input)
         {
             var map = new Dictionary<Coordinate, int>();
-            var lines = File.ReadAllLines("Day11.txt");
+            var lines = input.Split("\n");
             var rows = lines.Select(line => line.ToCharArray().Select(x => int.Parse(x.ToString())).ToList()).ToList();
 
             var sizeX = rows.Count;

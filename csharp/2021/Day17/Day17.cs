@@ -1,25 +1,35 @@
 ﻿using AdventOfCode2021.Utils;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2021.Day17
 {
     public class Day17
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 17, "Trick Shot");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var (_, areaBottomRight) = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var (_, areaBottomRight) = ParseInput(input);
 
             var maxY = GetMaxYVelocity(areaBottomRight.Y);
             var answer = GetMaxHeight(maxY);
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(8256);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var (areaTopLeft, areaBottomRight) = ParseInput();
+            var input = await _session.Start("Puzzle Input.txt");
+            var (areaTopLeft, areaBottomRight) = ParseInput(input);
 
             var minX = GetMinXVelocity(areaTopLeft.X, areaBottomRight.X);
             var maxX = areaBottomRight.X;
@@ -39,7 +49,7 @@ namespace AdventOfCode2021
             }
 
             var answer = valid.Count();
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(2326);
         }
 
@@ -91,7 +101,7 @@ namespace AdventOfCode2021
         }
 
 
-        private static (Coordinate, Coordinate) ParseInput()
+        private static (Coordinate, Coordinate) ParseInput(string input)
         {
             var topLeft = new Coordinate(150, -70);
             var bottomRight = new Coordinate(171, -129);

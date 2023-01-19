@@ -1,12 +1,21 @@
-﻿namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day25
 {
     public class Day25
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 25, "Sea Cucumber");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
             var previous = new SeaFloor(0,0);
-            var current = ParseInput();
+            var current = ParseInput(input);
 
             var answer = 0;
 
@@ -17,14 +26,14 @@
                 current = MoveSouth(current);
                 answer++;
             }
-            
+
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(504);
-            Console.WriteLine(answer);
         }
 
-        private static SeaFloor ParseInput()
+        private static SeaFloor ParseInput(string input)
         {
-            var lines = File.ReadAllLines("Day25.txt");
+            var lines = input.Split("\n");
             var rows = lines.Select(line => line.ToCharArray().ToList()).ToList();
 
             var sizeX = rows.Count;

@@ -1,22 +1,32 @@
-﻿namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day23
 {
     public class Day23
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 23, "Amphipod");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var _ = await _session.Start("Puzzle Input.txt");
             var start = new GameState("...........", "DC", "AA", "DB", "CB");
             var goal = new GameState("...........", "AA", "BB", "CC", "DD");
 
             var (answer, route) = Run(start, goal, new Dictionary<GameState, int>());
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(14546);
         }
 
         [Test]
-        public void Part1Sample()
+        public async Task Part1Sample()
         {
+            var _ = await _session.Start("Sample.txt");
             var start = new GameState("...........", "BA", "CD", "BC", "DA");
             var goal = new GameState("...........", "AA", "BB", "CC", "DD");
 
@@ -24,28 +34,30 @@
 
             foreach (var state in route)
             {
-                Console.WriteLine(state);
+                //Console.WriteLine(state);
             }
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(12521);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
+            var _ = await _session.Start("Puzzle Input.txt");
             var start = new GameState("...........", "DDDC", "ACBA", "DBAB", "CACB");
             var goal = new GameState("...........", "AAAA", "BBBB", "CCCC", "DDDD");
 
             var (answer, route) = Run(start, goal, new Dictionary<GameState, int>());
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(42308);
         }
 
         [Test]
-        public void Part2Sample()
+        public async Task Part2Sample()
         {
+            var _ = await _session.Start("Sample.txt");
             var start = new GameState("...........", "BDDA", "CCBD", "BBAC", "DACA");
             var goal = new GameState("...........", "AAAA", "BBBB", "CCCC", "DDDD");
 
@@ -53,10 +65,10 @@
 
             foreach (var state in route)
             {
-                Console.WriteLine(state);
+                //Console.WriteLine(state);
             }
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(44169);
         }
 

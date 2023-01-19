@@ -1,32 +1,42 @@
 ﻿using AdventOfCode2021.Utils;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2021.Day15
 {
     public class Day15
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 15, "Chiton");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var riskPlane = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var riskPlane = ParseInput(input);
 
             var start = riskPlane.First().Key;
             var goal = riskPlane.Last().Key;
 
             var answer = Run(start, goal, riskPlane);
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(373);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var riskPlane = RepeatMap(ParseInput());
+            var input = await _session.Start("Puzzle Input.txt");
+            var riskPlane = RepeatMap(ParseInput(input));
 
             var start = riskPlane.First().Key;
             var goal = riskPlane.Last().Key;
 
             var answer = Run(start, goal, riskPlane);
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(2868);
         }
 
@@ -122,10 +132,10 @@ namespace AdventOfCode2021
             return riskPlane;
         }
 
-        private static Dictionary<Coordinate, int> ParseInput()
+        private static Dictionary<Coordinate, int> ParseInput(string input)
         {
             var map = new Dictionary<Coordinate, int>();
-            var lines = File.ReadAllLines("Day15.txt");
+            var lines = input.Split("\n");
             var rows = lines.Select(line => line.ToCharArray().Select(x => int.Parse(x.ToString())).ToList()).ToList();
 
             var sizeX = rows.Count;

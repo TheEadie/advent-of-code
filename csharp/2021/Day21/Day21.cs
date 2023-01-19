@@ -1,10 +1,19 @@
-﻿namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day21
 {
     public class Day21
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 21, "Dirac Dice");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var _ = await _session.Start("Puzzle Input.txt");
             var state = new GameState(new Player(1, 0), new Player(0, 0));
             var dice = 1;
             var player = 0;
@@ -21,14 +30,15 @@
             var losingScore = Math.Min(state.One.Score, state.Two.Score);
             var answer = losingScore * (dice - 1);
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(428736);
 
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
+            var _ = await _session.Start("Puzzle Input.txt");
             var states = new Dictionary<GameState, long>();
             states.Add(new GameState(new Player(1, 0), new Player(0, 0)), 1);
             var player = 0;
@@ -48,7 +58,7 @@
             }
 
             var answer = Math.Max(totalPlayerOneWins, totalPlayerTwoWins);
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(57328067654557);
         }
 

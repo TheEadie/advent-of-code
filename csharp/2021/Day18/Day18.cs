@@ -1,26 +1,36 @@
 ﻿using System.Text;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2021.Day18
 {
     public class Day18
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 18, "Snailfish");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var snailFishNumbers = ParseInput().ToList();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var snailFishNumbers = ParseInput(input).ToList();
 
             var total = snailFishNumbers.Aggregate(Add);
             Console.WriteLine(total);
 
             var answer = GetMagnitude(total);
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(4111);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var lines = File.ReadAllLines("Day18.txt");
+            var input = await _session.Start("Puzzle Input.txt");
+            var lines = input.Split("\n");
 
             var sums = new List<long>();
             foreach (var first in lines)
@@ -33,7 +43,7 @@ namespace AdventOfCode2021
             }
 
             var answer = sums.Max();
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(4917);
         }
 
@@ -239,9 +249,9 @@ namespace AdventOfCode2021
 
         private bool IsPair(SnailFishNumber number) => number.Left?.Value != null && number.Right?.Value != null;
 
-        private static IEnumerable<SnailFishNumber> ParseInput()
+        private static IEnumerable<SnailFishNumber> ParseInput(string input)
         {
-            return File.ReadAllLines("Day18.txt").Select(ParseSnailFishNumber);
+            return input.Split("\n").Select(ParseSnailFishNumber);
         }
 
         private static SnailFishNumber ParseSnailFishNumber(string input)

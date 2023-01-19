@@ -1,31 +1,39 @@
-﻿namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day22
 {
     public class Day22
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 22, "Reactor Reboot");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var commands = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var commands = ParseInput(input);
 
             commands.RemoveAll(x => x.Cube.End.X > 50 || x.Cube.Start.X < -50
                                                       || x.Cube.End.Y > 50 || x.Cube.Start.Y < -50 ||
                                                       x.Cube.End.Z > 50 || x.Cube.Start.Z < -50);
 
             var answer = HowManyCubesOn(commands);
-
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(615700);
 
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var commands = ParseInput();
+            var input = await _session.Start("Puzzle Input.txt");
+            var commands = ParseInput(input);
 
             var answer = HowManyCubesOn(commands);
-
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(1236463892941356);
         }
 
@@ -54,9 +62,9 @@
             return answer;
         }
 
-        private List<Command> ParseInput()
+        private List<Command> ParseInput(string input)
         {
-            return File.ReadAllLines("Day22.txt").Select(ParseCommand).ToList();
+            return input.Split("\n").Select(ParseCommand).ToList();
         }
 
         private Command ParseCommand(string input)

@@ -1,14 +1,23 @@
-﻿namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day24
 {
     public class Day24
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 24, "Arithmetic Logic Unit");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
             var stack = new Stack<Block>();
             var max = new int[14];
 
-            var blocks = ParseBlocks();
+            var blocks = ParseBlocks(input);
 
             foreach (var block in blocks)
             {
@@ -27,21 +36,22 @@
 
             var answer = long.Parse(string.Join("", max.Select(x => x.ToString())));
 
-            var commands = ParseInput();
+            var commands = ParseInput(input);
             var result = Run(answer, commands);
             result.ShouldBe(0);
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(92967699949891);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
+            var input = await _session.Start("Puzzle Input.txt");
             var stack = new Stack<Block>();
             var max = new int[14];
 
-            var blocks = ParseBlocks();
+            var blocks = ParseBlocks(input);
 
             foreach (var block in blocks)
             {
@@ -60,11 +70,11 @@
 
             var answer = long.Parse(string.Join("", max.Select(x => x.ToString())));
 
-            var commands = ParseInput();
+            var commands = ParseInput(input);
             var result = Run(answer, commands);
             result.ShouldBe(0);
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(91411143612181);
         }
 
@@ -93,9 +103,9 @@
             return registers[RegisterLetter.z];
         }
 
-        private IEnumerable<Block> ParseBlocks()
+        private IEnumerable<Block> ParseBlocks(string input)
         {
-            var lines = File.ReadAllLines("Day24.txt");
+            var lines = input.Split("\n");
 
             for (var i = 0; i < 14; i++)
             {
@@ -107,9 +117,9 @@
             }
         }
 
-        private List<ICommand> ParseInput()
+        private List<ICommand> ParseInput(string input)
         {
-            return File.ReadAllLines("Day24.txt").Select(ParseCommand).ToList();
+            return input.Split("\n").Select(ParseCommand).ToList();
         }
 
         private record Block(int Number, bool Pop, int ConditionAdd, int PushAdd);

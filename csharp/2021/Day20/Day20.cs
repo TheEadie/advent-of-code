@@ -1,30 +1,40 @@
 ﻿using AdventOfCode2021.Utils;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2021.Day20
 {
     public class Day20
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 20, "Trench Map");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var (lookup, image) = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var (lookup, image) = ParseInput(input);
 
             image = Enhance(image, lookup, 2);
 
             var answer = image.Count(x => x.Value);
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(5622);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var (lookup, image) = ParseInput();
+            var input = await _session.Start("Puzzle Input.txt");
+            var (lookup, image) = ParseInput(input);
 
             image = Enhance(image, lookup, 50);
 
             var answer = image.Count(x => x.Value);
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(20395);
         }
 
@@ -80,10 +90,10 @@ namespace AdventOfCode2021
 
         }
 
-        private static (Dictionary<int, bool>, Dictionary<Coordinate, bool>) ParseInput()
+        private static (Dictionary<int, bool>, Dictionary<Coordinate, bool>) ParseInput(string input)
         {
             var image = new Dictionary<Coordinate, bool>();
-            var lines = File.ReadAllLines("Day20.txt");
+            var lines = input.Split("\n");
 
             var lookup = lines[0]
                 .Select((x, i) => new { On = (x == '#'), Number = i })

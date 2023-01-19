@@ -1,21 +1,31 @@
-﻿namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day19
 {
     public class Day19
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 19, "Beacon Scanner");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var locatedScanners = LocateScanners(ParseInput());
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var locatedScanners = LocateScanners(ParseInput(input));
 
             var answer = locatedScanners.SelectMany(x => x.BeaconsInWorld).Distinct().Count();
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(479);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var locatedScanners = LocateScanners(ParseInput()).ToList();
+            var input = await _session.Start("Puzzle Input.txt");
+            var locatedScanners = LocateScanners(ParseInput(input)).ToList();
 
             var distances = (
                     from scannerA in locatedScanners
@@ -26,7 +36,7 @@
 
 
             var answer = distances.Max();
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(13113);
         }
 
@@ -100,9 +110,9 @@
             return scanners;
         }
 
-        private static IEnumerable<Scanner> ParseInput()
+        private static IEnumerable<Scanner> ParseInput(string input)
         {
-            var lines = File.ReadAllLines("Day19.txt");
+            var lines = input.Split("\n");
 
             var scanners = new List<Scanner>();
             var position = 0;
