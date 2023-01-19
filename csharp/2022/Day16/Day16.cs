@@ -4,7 +4,7 @@ namespace AdventOfCode2022.Day16;
 
 public class Day16
 {
-    private readonly AdventSession _session = new(2022, 16);
+    private readonly AdventSession _session = new(2022, 16, "Proboscidea Volcanium");
 
     [OneTimeSetUp]
     public void SetUp()

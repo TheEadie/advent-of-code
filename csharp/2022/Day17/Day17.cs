@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day17;
 
 public class Day17
 {
-    private readonly AdventSession _session = new(2022, 17);
+    private readonly AdventSession _session = new(2022, 17, "Pyroclastic Flow");
 
     [OneTimeSetUp]
     public void SetUp()

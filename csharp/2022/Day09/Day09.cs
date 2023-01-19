@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day09;
 
 public class Day09
 {
-    private readonly AdventSession _session = new(2022, 9);
+    private readonly AdventSession _session = new(2022, 9, "Rope Bridge");
 
     [OneTimeSetUp]
     public void SetUp()

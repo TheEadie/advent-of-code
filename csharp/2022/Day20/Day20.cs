@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day20;
 
 public class Day20
 {
-    private readonly AdventSession _session = new(2022, 20);
+    private readonly AdventSession _session = new(2022, 20, "Grove Positioning System");
 
     [OneTimeSetUp]
     public void SetUp()

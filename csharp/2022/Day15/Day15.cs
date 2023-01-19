@@ -4,7 +4,7 @@ namespace AdventOfCode2022.Day15;
 
 public class Day15
 {
-    private readonly AdventSession _session = new(2022, 15);
+    private readonly AdventSession _session = new(2022, 15, "Beacon Exclusion Zone");
 
     [OneTimeSetUp]
     public void SetUp()

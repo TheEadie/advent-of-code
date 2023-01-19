@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day03;
 
 public class Day03
 {
-    private readonly AdventSession _session = new(2022, 3);
+    private readonly AdventSession _session = new(2022, 3, "Rucksack Reorganization");
 
     [OneTimeSetUp]
     public void SetUp()

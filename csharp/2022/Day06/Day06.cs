@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day06;
 
 public class Day06
 {
-    private readonly AdventSession _session = new(2022, 6);
+    private readonly AdventSession _session = new(2022, 6, "Tuning Trouble");
 
     [OneTimeSetUp]
     public void SetUp()

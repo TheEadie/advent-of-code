@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day07;
 
 public class Day07
 {
-    private readonly AdventSession _session = new(2022, 7);
+    private readonly AdventSession _session = new(2022, 7, "No Space Left On Device");
 
     [OneTimeSetUp]
     public void SetUp()

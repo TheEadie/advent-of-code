@@ -4,7 +4,7 @@ namespace AdventOfCode2022.Day19;
 
 public class Day19
 {
-    private readonly AdventSession _session = new(2022, 19);
+    private readonly AdventSession _session = new(2022, 19, "Not Enough Minerals");
 
     [OneTimeSetUp]
     public void SetUp()

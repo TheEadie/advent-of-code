@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day12;
 
 public class Day12
 {
-    private readonly AdventSession _session = new(2022, 12);
+    private readonly AdventSession _session = new(2022, 12, "Hill Climbing Algorithm");
 
     [OneTimeSetUp]
     public void SetUp()

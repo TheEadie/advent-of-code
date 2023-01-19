@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day13;
 
 public class Day13
 {
-    private readonly AdventSession _session = new(2022, 13);
+    private readonly AdventSession _session = new(2022, 13, "Distress Signal");
 
     [OneTimeSetUp]
     public void SetUp()

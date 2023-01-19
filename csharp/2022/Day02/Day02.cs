@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day02;
 
 public class Day02
 {
-    private readonly AdventSession _session = new(2022, 2);
+    private readonly AdventSession _session = new(2022, 2, "Rock Paper Scissors");
 
     [OneTimeSetUp]
     public void SetUp()

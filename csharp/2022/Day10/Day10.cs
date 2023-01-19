@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day10;
 
 public class Day10
 {
-    private readonly AdventSession _session = new(2022, 10);
+    private readonly AdventSession _session = new(2022, 10, "Cathode-Ray Tube");
 
     [OneTimeSetUp]
     public void SetUp()

@@ -4,7 +4,7 @@ namespace AdventOfCode2022.Day25;
 
 public class Day25
 {
-    private readonly AdventSession _session = new(2022, 25);
+    private readonly AdventSession _session = new(2022, 25, "Full of Hot Air");
 
     [OneTimeSetUp]
     public void SetUp()

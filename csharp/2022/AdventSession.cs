@@ -6,13 +6,15 @@ public class AdventSession
 {
     private readonly int _year;
     private readonly int _day;
+    private readonly string _name;
     private string? _filename;
     private readonly Stopwatch _timer;
 
-    public AdventSession(int year, int day)
+    public AdventSession(int year, int day, string name = "")
     {
         _year = year;
         _day = day;
+        _name = name;
         _timer = new Stopwatch();
     }
 
@@ -52,7 +54,7 @@ public class AdventSession
 
     public void PrintHeading()
     {
-        TestContext.Progress.WriteLine($"\n--- {_year} - Day {_day}:\n");
+        TestContext.Progress.WriteLine($"\n--- {_year} - Day {_day}: {_name}\n");
     }
 
     public void PrintAnswer(int part, object answer)

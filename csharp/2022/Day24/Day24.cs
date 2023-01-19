@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day24;
 
 public class Day24
 {
-    private readonly AdventSession _session = new(2022, 24);
+    private readonly AdventSession _session = new(2022, 24, "Blizzard Basin");
 
     [OneTimeSetUp]
     public void SetUp()

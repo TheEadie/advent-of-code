@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day14;
 
 public class Day14
 {
-    private readonly AdventSession _session = new(2022, 14);
+    private readonly AdventSession _session = new(2022, 14, "Regolith Reservoir");
 
     [OneTimeSetUp]
     public void SetUp()

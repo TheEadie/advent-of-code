@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day22;
 
 public class Day22
 {
-    private readonly AdventSession _session = new(2022, 22);
+    private readonly AdventSession _session = new(2022, 22, "Monkey Map");
 
     [OneTimeSetUp]
     public void SetUp()

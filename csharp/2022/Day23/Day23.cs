@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Day23;
 
 public class Day23
 {
-    private readonly AdventSession _session = new(2022, 23);
+    private readonly AdventSession _session = new(2022, 23, "Unstable Diffusion");
 
     [OneTimeSetUp]
     public void SetUp()
