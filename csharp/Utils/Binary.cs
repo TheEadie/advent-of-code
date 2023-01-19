@@ -1,4 +1,4 @@
-﻿namespace AdventOfCode2021.Utils
+﻿namespace Utils
 {
     public class Binary
     {
@@ -20,15 +20,13 @@
 
         public int ToInt() => Convert.ToInt32(new string(_bits), 2);
 
+        public Binary Invert() =>
+            new(new string(Enumerable.Range(0, _bits.Length).Select(x => _bits[x] == '1' ? '0' : '1')
+                .ToArray()));
+
         public override string ToString()
         {
-            return new(_bits);
+            return new string(_bits);
         }
-    }
-
-    public static class BinaryUtils
-    {
-        public static Binary Invert(Binary input) =>
-            new Binary(new string(Enumerable.Range(0, input.Length).Select((x) => input.GetBit(x) == '1' ? '0' : '1').ToArray()));
     }
 }

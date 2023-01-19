@@ -1,6 +1,4 @@
-﻿using AdventOfCode2021.Utils;
-
-namespace AdventOfCode2021.Day11
+﻿namespace AdventOfCode2021.Day11
 {
     public class Day11
     {

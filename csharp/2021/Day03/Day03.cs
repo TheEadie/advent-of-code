@@ -1,6 +1,4 @@
-﻿using AdventOfCode2021.Utils;
-
-namespace AdventOfCode2021.Day03
+﻿namespace AdventOfCode2021.Day03
 {
     public class Day03
     {
@@ -29,7 +27,7 @@ namespace AdventOfCode2021.Day03
             var gammaBinary = new Binary(gammaString);
 
             var gamma = gammaBinary.ToInt();
-            var epsilon = BinaryUtils.Invert(gammaBinary).ToInt();
+            var epsilon = gammaBinary.Invert().ToInt();
 
             var answer = gamma * epsilon;
             _session.PrintAnswer(1, answer);

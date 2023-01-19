@@ -1,4 +1,4 @@
-namespace AdventOfCode2022;
+namespace Utils;
 
 public record Coordinate(int X, int Y);
 
