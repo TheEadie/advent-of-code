@@ -1,13 +1,22 @@
 ﻿using AdventOfCode2021.Utils;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2021.Day09
 {
     public class Day09
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 9, "Smoke Basin");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var heightMap = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var heightMap = ParseInput(input);
 
             var sizeX = heightMap.GetLength(0);
             var sizeY = heightMap.GetLength(1);
@@ -26,14 +35,15 @@ namespace AdventOfCode2021
                 }
             }
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(566);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var heightMap = ParseInput();
+            var input = await _session.Start("Puzzle Input.txt");
+            var heightMap = ParseInput(input);
 
             var sizeX = heightMap.GetLength(0);
             var sizeY = heightMap.GetLength(1);
@@ -58,7 +68,7 @@ namespace AdventOfCode2021
                 .Take(3)
                 .Aggregate((a, x) => a * x);
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(891684);
 
         }
@@ -95,9 +105,9 @@ namespace AdventOfCode2021
             return testCoordinates;
         }
 
-        private static int[,] ParseInput()
+        private static int[,] ParseInput(string input)
         {
-            var lines = File.ReadAllLines("Day09.txt");
+            var lines = input.Split("\n");
             var rows = lines.Select(line => line.ToCharArray().Select(x => int.Parse(x.ToString())).ToList()).ToList();
 
             var sizeX = rows.Count;

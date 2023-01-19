@@ -1,11 +1,20 @@
-﻿namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day10
 {
     public class Day10
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 10, "Syntax Scoring");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var lines = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var lines = ParseInput(input);
             var answer = 0;
 
             foreach (var line in lines)
@@ -30,14 +39,15 @@
                 }
             }
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(316851);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var lines = ParseInput();
+            var input = await _session.Start("Puzzle Input.txt");
+            var lines = ParseInput(input);
             var scores = new List<long>();
 
             foreach (var line in lines)
@@ -77,13 +87,13 @@
 
             var answer = scores.OrderBy(x => x).ElementAt(scores.Count / 2);
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(2182912364);
         }
 
-        private static IEnumerable<char[]> ParseInput()
+        private static IEnumerable<char[]> ParseInput(string input)
         {
-            var lines = File.ReadAllLines("Day10.txt");
+            var lines = input.Split("\n");
             return lines.Select(line => line.ToCharArray()).ToList();
         }
 

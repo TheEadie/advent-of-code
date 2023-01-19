@@ -1,24 +1,34 @@
-﻿namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day08
 {
     public class Day08
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2021, 8, "Seven Segment Search");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var answer = ParseInput()
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var answer = ParseInput(input)
                 .SelectMany(x => x.Result)
                 .Count(x => x.Length is 2 or 3 or 4 or 7);
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(397);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var answer = ParseInput().Sum(GetSignal);
+            var input = await _session.Start("Puzzle Input.txt");
+            var answer = ParseInput(input).Sum(GetSignal);
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(1027422);
 
         }
@@ -61,9 +71,9 @@
             return int.Parse(signalText);
         }
 
-        private static IEnumerable<Note> ParseInput()
+        private static IEnumerable<Note> ParseInput(string input)
         {
-            var lines = File.ReadAllLines("Day08.txt");
+            var lines = input.Split("\n");
             return lines.Select(x => x.Split(" | ")).Select(x =>
                 new Note(x[0].Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(SortString),
                     x[1].Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(SortString))).ToList();

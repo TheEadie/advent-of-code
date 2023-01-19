@@ -1,22 +1,32 @@
-﻿namespace AdventOfCode2021
+﻿namespace AdventOfCode2021.Day06
 {
     public class Day06
     {
-        [Test]
-        public void Part1()
-        {
-            var answer = Run(ParseInput(), 80);
+        private readonly AdventSession _session = new(2021, 6, "Lanternfish");
 
-            Console.WriteLine(answer);
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var answer = Run(ParseInput(input), 80);
+
+            _session.PrintAnswer(1, answer);
             answer.ShouldBe(362346);
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var answer = Run(ParseInput(), 256);
+            var input = await _session.Start("Puzzle Input.txt");
+            var answer = Run(ParseInput(input), 256);
 
-            Console.WriteLine(answer);
+            _session.PrintAnswer(2, answer);
             answer.ShouldBe(1639643057051);
         }
 
@@ -45,9 +55,9 @@
             return countOfFish.Sum();
         }
 
-        private static List<int> ParseInput()
+        private static List<int> ParseInput(string input)
         {
-            var lines = File.ReadAllLines("Day06.txt");
+            var lines = input.Split("\n");
             var parseOne = lines[0].Split(",").Select(int.Parse);
             return parseOne.ToList();
         }
