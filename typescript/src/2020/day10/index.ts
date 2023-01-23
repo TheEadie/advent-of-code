@@ -30,9 +30,8 @@ class Day10 implements Day {
   partTwo = (input: string): string => {
     return getAdapters(input)
       .map((v, i, all) => v - all[i - 1])
-      .filter((_, i) => i > 0)
-      .toString()
-      .replace(/,/g, "")
+      .slice(1)
+      .join("")
       .split("3")
       .map((x) => x.length)
       .filter((x) => x > 0)
