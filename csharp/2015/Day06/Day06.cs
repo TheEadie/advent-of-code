@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2015
+﻿namespace AdventOfCode2015.Day06
 {
     public class Day06
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2015, 6, "Probably a Fire Hazard");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var commands = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var commands = await ParseInput();
             var lights = new Dictionary<Coordinate, bool>();
 
             foreach (var command in commands)
@@ -65,9 +66,9 @@ namespace AdventOfCode2015
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var commands = ParseInput();
+            var commands = await ParseInput();
             var lights = new Dictionary<Coordinate, int>();
 
             foreach (var command in commands)
@@ -136,9 +137,10 @@ namespace AdventOfCode2015
             answer.ShouldBe(14110788);
         }
 
-        private static IEnumerable<Command> ParseInput()
+        private async Task<IEnumerable<Command>> ParseInput()
         {
-            var lines = File.ReadAllLines("Day06.txt").ToList();
+            var input = await _session.Start("Puzzle Input.txt");
+            var lines = input.Split("\n");
 
             return lines.Select(ParseCommand);
         }

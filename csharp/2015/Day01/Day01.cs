@@ -1,17 +1,19 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2015
+﻿namespace AdventOfCode2015.Day01
 {
     public class Day01
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2015, 1, "Not Quite Lisp");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var moves = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var moves = await ParseInput();
 
             var answer = moves.Sum();
             Console.WriteLine(answer);
@@ -19,9 +21,9 @@ namespace AdventOfCode2015
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var moves = ParseInput();
+            var moves = await ParseInput();
             var currentFloor = 0;
             var answer = 0;
             for(var i = 0; i < moves.Length; i++)
@@ -38,10 +40,10 @@ namespace AdventOfCode2015
             answer.ShouldBe(1771);
         }
 
-        private static int[] ParseInput()
+        private async Task<int[]> ParseInput()
         {
-            var lines = File.ReadAllLines("Day01.txt");
-            return lines[0].ToCharArray().Select(x => (x == '(') ? 1 : -1).ToArray();
+            var input = await _session.Start("Puzzle Input.txt");
+            return input.ToCharArray().Select(x => (x == '(') ? 1 : -1).ToArray();
         }
     }
 }

@@ -1,14 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using NUnit.Framework;
-using Shouldly;
 
-namespace AdventOfCode2015
+namespace AdventOfCode2015.Day04
 {
     public class Day04
     {
+        private readonly AdventSession _session = new(2015, 4, "The Ideal Stocking Stuffer");
+
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            _session.PrintHeading();
+        }
+        
         [Test]
         public void Part1()
         {

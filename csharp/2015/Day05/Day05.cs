@@ -1,18 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2015
+﻿namespace AdventOfCode2015.Day05
 {
     public class Day05
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2015, 5, "Doesn't He Have Intern-Elves For This?");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var list = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var list = input.Split("\n");
 
             var nice = list
                 .Where(x => x.Count(l => l is 'a' or 'e' or 'i' or 'o' or 'u') >= 3)
@@ -27,9 +29,10 @@ namespace AdventOfCode2015
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var list = ParseInput();
+            var input = await _session.Start("Puzzle Input.txt");
+            var list = input.Split("\n");
 
             var nice = list
                 .Where(x => Enumerable.Range(0, x.Length - 1)
@@ -41,12 +44,6 @@ namespace AdventOfCode2015
 
             Console.WriteLine(answer);
             answer.ShouldBe(53);
-        }
-
-        private static IEnumerable<string> ParseInput()
-        {
-            return File.ReadAllLines("Day05.txt").ToList();
-
         }
     }
 

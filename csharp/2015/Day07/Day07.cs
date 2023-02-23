@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2015
+﻿namespace AdventOfCode2015.Day07
 {
     public class Day07
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2015, 7, "Some Assembly Required");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var commands = ParseInput();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var commands = await ParseInput();
 
             var answer = (int) commands["a"].Invoke();
             Console.WriteLine(answer);
@@ -20,12 +21,12 @@ namespace AdventOfCode2015
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var commands = ParseInput();
+            var commands = await ParseInput();
             var a = commands["a"].Invoke();
             
-            var resetCommands = ParseInput();
+            var resetCommands = await ParseInput();
             resetCommands["b"] = () => a;
 
             var answer = (int) resetCommands["a"].Invoke();
@@ -33,9 +34,10 @@ namespace AdventOfCode2015
             answer.ShouldBe(40149);
         }
 
-        private static IDictionary<string, Func<ushort>> ParseInput()
+        private async Task<IDictionary<string, Func<ushort>>> ParseInput()
         {
-            var lines = File.ReadAllLines("Day07.txt").ToList();
+            var input = await _session.Start("Puzzle Input.txt");
+            var lines = input.Split("\n");
             var commands = new Dictionary<string, Func<ushort>>();
 
             foreach (var line in lines)

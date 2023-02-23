@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2015
+﻿namespace AdventOfCode2015.Day02
 {
     public class Day02
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2015, 2, "I Was Told There Would Be No Math");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var presents = ParseInput().ToList();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var presents = (await ParseInput()).ToList();
 
             var presentArea = presents.Sum(x => 2 * x.Length * x.Width + 2 * x.Width * x.Height + 2 * x.Height * x.Length);
             var extra = presents.Sum(x => new List<int> {x.Length * x.Width, x.Width * x.Height, x.Height * x.Length}.Min());
@@ -23,9 +24,9 @@ namespace AdventOfCode2015
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var presents = ParseInput().ToList();
+            var presents = (await ParseInput()).ToList();
 
             var ribbon = presents.Sum(RibbonForBox);
             var bows = presents.Sum(x => x.Height * x.Length * x.Width);
@@ -41,10 +42,10 @@ namespace AdventOfCode2015
             return 2 * (smallestSides[0] + smallestSides[1]);
         }
 
-        private static IEnumerable<Box> ParseInput()
+        private async Task<IEnumerable<Box>> ParseInput()
         {
-            var lines = File.ReadAllLines("Day02.txt");
-            return lines.Select(ParseBox);
+            var input = await _session.Start("Puzzle Input.txt");
+            return input.Split("\n").Select(ParseBox);
         }
 
         private static Box ParseBox(string input)

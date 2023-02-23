@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2015
+﻿namespace AdventOfCode2015.Day03
 {
     public class Day03
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2015, 3, "Perfectly Spherical Houses in a Vacuum");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var directions = ParseInput().ToList();
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var directions = (await ParseInput()).ToList();
             var visited = GetVisitedHouses(directions);
 
             var answer = visited.GroupBy(x => x).Count();
@@ -21,9 +22,9 @@ namespace AdventOfCode2015
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var directions = ParseInput().ToList();
+            var directions = (await ParseInput()).ToList();
             var santa = directions.Where((x, i) => i % 2 == 0);
             var roboSanta = directions.Where((x, i) => i % 2 != 0);
 
@@ -65,10 +66,10 @@ namespace AdventOfCode2015
             return visited;
         }
 
-        private static IEnumerable<char> ParseInput()
+        private async Task<IEnumerable<char>> ParseInput()
         {
-            var lines = File.ReadAllLines("Day03.txt");
-            return lines[0].ToCharArray();
+            var input = await _session.Start("Puzzle Input.txt");
+            return input.ToCharArray();
         }
 
         private record Coordinate(int X, int Y);
