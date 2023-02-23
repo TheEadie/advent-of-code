@@ -1,19 +1,20 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2019
+﻿namespace AdventOfCode2019.Day02
 {
     public class Day02
     {
+        private readonly AdventSession _session = new(2019, 2, "1202 Program Alarm");
+
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            _session.PrintHeading();
+        }
+        
         [Test]
         public async Task Part1()
         {
-            var program = (await File.ReadAllLinesAsync("day02.txt"))[0]
+            var input = await _session.Start("Puzzle Input.txt");
+            var program = input
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
@@ -21,7 +22,7 @@ namespace AdventOfCode2019
             program[1] = 12;
             program[2] = 2;
             
-            var emulator = new AdventOfCode.IntCode.IntCode(program);
+            var emulator = new IntCode.IntCode(program);
             await emulator.RunAsync(CancellationToken.None);
             var answer = emulator.Memory[0];
 
@@ -40,7 +41,7 @@ namespace AdventOfCode2019
                     {
                         program[1] = n;
                         program[2] = v;
-                        var emulator = new AdventOfCode.IntCode.IntCode(program);
+                        var emulator = new IntCode.IntCode(program);
                         await emulator.RunAsync(CancellationToken.None);
                         var output = emulator.Memory[0];
 
@@ -52,7 +53,8 @@ namespace AdventOfCode2019
                 throw new Exception($"No inputs found that result in {result}");
             }
 
-            var program = (await File.ReadAllLinesAsync("day02.txt"))[0]
+            var input = await _session.Start("Puzzle Input.txt");
+            var program = input
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();

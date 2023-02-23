@@ -1,4 +1,4 @@
-﻿using AdventOfCode.IntCode;
+﻿using AdventOfCode2019.IntCode;
 using BenchmarkDotNet.Attributes;
 
 namespace Benchmark;

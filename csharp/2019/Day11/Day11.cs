@@ -1,25 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2019
+﻿namespace AdventOfCode2019.Day11
 {
     public class Day11
     {
+        private readonly AdventSession _session = new(2019, 11, "Space Police");
+
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            _session.PrintHeading();
+        }
+        
         [Test]
         public async Task Part1()
         {
-            var program = (await File.ReadAllLinesAsync("day11.txt"))[0]
+            var input = await _session.Start("Puzzle Input.txt");
+            var program = input
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
 
-            var emulator = new AdventOfCode.IntCode.IntCode(program);
+            var emulator = new IntCode.IntCode(program);
             var emulatorTask = emulator.RunAsync(CancellationToken.None);
             
             var panels = new Dictionary<Coordinate, int>();
@@ -39,12 +39,13 @@ namespace AdventOfCode2019
         [Test]
         public async Task Part2()
         {
-            var program = (await File.ReadAllLinesAsync("day11.txt"))[0]
+            var input = await _session.Start("Puzzle Input.txt");
+            var program = input
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
 
-            var emulator = new AdventOfCode.IntCode.IntCode(program);
+            var emulator = new IntCode.IntCode(program);
             var emulatorTask = emulator.RunAsync(CancellationToken.None);
             
             var panels = new Dictionary<Coordinate, int> {{new Coordinate(0, 0), 1}};
@@ -70,7 +71,7 @@ namespace AdventOfCode2019
             Console.WriteLine(answer);
         }
 
-        private void RunRobot(CancellationToken cancellationToken, Robot robot, Dictionary<Coordinate, int> panels, AdventOfCode.IntCode.IntCode emulator)
+        private void RunRobot(CancellationToken cancellationToken, Robot robot, Dictionary<Coordinate, int> panels, IntCode.IntCode emulator)
         {
             while (!cancellationToken.IsCancellationRequested)
             {

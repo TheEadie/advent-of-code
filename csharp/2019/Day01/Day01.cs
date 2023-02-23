@@ -1,17 +1,21 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2019
+﻿namespace AdventOfCode2019.Day01
 {
     public class Day01
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2019, 1, "The Tyranny of the Rocket Equation");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var answer = File.ReadAllLines("Day01.txt")
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var answer = input
+                .Split("\n")
                 .Select(int.Parse)
                 .Select(GetFuelForModule)
                 .Sum();
@@ -21,9 +25,11 @@ namespace AdventOfCode2019
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var answer = File.ReadAllLines("Day01.txt")
+            var input = await _session.Start("Puzzle Input.txt");
+            var answer = input
+                .Split("\n")
                 .Select(int.Parse)
                 .Select(GetTotalFuel)
                 .Sum();

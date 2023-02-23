@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2019
+﻿namespace AdventOfCode2019.Day07
 {
     public class Day07
     {
+        private readonly AdventSession _session = new(2019, 7, "Amplification Circuit");
+
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            _session.PrintHeading();
+        }
+        
         [Test]
         public async Task Part1()
         {
-            var program = (await File.ReadAllLinesAsync("day07.txt"))[0]
+            var input = await _session.Start("Puzzle Input.txt");
+            var program = input
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
@@ -28,13 +28,13 @@ namespace AdventOfCode2019
             answer.ShouldBe(212460);
         }
         
-        private static Task<long> GetOutputPart1(long[] program, int[] inputs)
+        private static Task<long> GetOutputPart1(long[] program, IReadOnlyList<int> inputs)
         {
-            var ampA = new AdventOfCode.IntCode.IntCode(program);
-            var ampB = new AdventOfCode.IntCode.IntCode(program);
-            var ampC = new AdventOfCode.IntCode.IntCode(program);
-            var ampD = new AdventOfCode.IntCode.IntCode(program);
-            var ampE = new AdventOfCode.IntCode.IntCode(program);
+            var ampA = new IntCode.IntCode(program);
+            var ampB = new IntCode.IntCode(program);
+            var ampC = new IntCode.IntCode(program);
+            var ampD = new IntCode.IntCode(program);
+            var ampE = new IntCode.IntCode(program);
             
             ampA.Inputs.Enqueue(inputs[0]);
             ampB.Inputs.Enqueue(inputs[1]);
@@ -76,7 +76,8 @@ namespace AdventOfCode2019
         [Test]
         public async Task Part2()
         {
-            var program = (await File.ReadAllLinesAsync("day07.txt"))[0]
+            var input = await _session.Start("Puzzle Input.txt");
+            var program = input
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
@@ -92,11 +93,11 @@ namespace AdventOfCode2019
         
         private static Task<long> GetOutputPart2(long[] program, int[] inputs)
         {
-            var ampA = new AdventOfCode.IntCode.IntCode(program);
-            var ampB = new AdventOfCode.IntCode.IntCode(program);
-            var ampC = new AdventOfCode.IntCode.IntCode(program);
-            var ampD = new AdventOfCode.IntCode.IntCode(program);
-            var ampE = new AdventOfCode.IntCode.IntCode(program);
+            var ampA = new IntCode.IntCode(program);
+            var ampB = new IntCode.IntCode(program);
+            var ampC = new IntCode.IntCode(program);
+            var ampD = new IntCode.IntCode(program);
+            var ampE = new IntCode.IntCode(program);
             
             ampA.Inputs.Enqueue(inputs[0]);
             ampB.Inputs.Enqueue(inputs[1]);
@@ -136,6 +137,10 @@ namespace AdventOfCode2019
 
             Task.WaitAll(ampATask, ampBTask, ampCTask, ampDTask, ampETask);
             cancellationSource.Cancel();
+            while(ampA.Inputs.IsEmpty)
+            {
+                // Wait for output
+            }
             return Task.FromResult(ampA.Inputs.First());
         }
 

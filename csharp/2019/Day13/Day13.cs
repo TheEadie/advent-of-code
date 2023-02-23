@@ -1,25 +1,27 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using Shouldly;
+﻿using System.Collections.Concurrent;
 
-namespace AdventOfCode2019
+namespace AdventOfCode2019.Day13
 {
     public class Day13
     {
+        private readonly AdventSession _session = new(2019, 13, "Care Package");
+
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            _session.PrintHeading();
+        }
+        
         [Test]
         public async Task Part1()
         {
-            var program = (await File.ReadAllLinesAsync("day13.txt"))[0]
+            var input = await _session.Start("Puzzle Input.txt");
+            var program = input
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
 
-            var emulator = new AdventOfCode.IntCode.IntCode(program);
+            var emulator = new IntCode.IntCode(program);
             var screen = new Screen(emulator.Output);
 
             var cancellationTokenSource = new CancellationTokenSource();
@@ -45,12 +47,13 @@ namespace AdventOfCode2019
         [Test]
         public async Task Part2()
         {
-            var program = (await File.ReadAllLinesAsync("day13.txt"))[0]
+            var input = await _session.Start("Puzzle Input.txt");
+            var program = input
                 .Split(',')
                 .Select(long.Parse)
                 .ToArray();
 
-            var emulator = new AdventOfCode.IntCode.IntCode(program);
+            var emulator = new IntCode.IntCode(program);
             emulator.Memory[0] = 2;
             
             var screen = new Screen(emulator.Output);

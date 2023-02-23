@@ -1,18 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using NUnit.Framework;
-using Shouldly;
-
-namespace AdventOfCode2019
+﻿namespace AdventOfCode2019.Day03
 {
     public class Day03
     {
-        [Test]
-        public void Part1()
+        private readonly AdventSession _session = new(2019, 3, "Crossed Wires");
+
+        [OneTimeSetUp]
+        public void SetUp()
         {
-            var instructions = File.ReadAllLines("day03.txt");
+            _session.PrintHeading();
+        }
+        
+        [Test]
+        public async Task Part1()
+        {
+            var input = await _session.Start("Puzzle Input.txt");
+            var instructions = input.Split("\n");
             var pathOne = instructions[0].Split(',');
             var pathTwo = instructions[1].Split(',');
 
@@ -28,9 +30,10 @@ namespace AdventOfCode2019
         }
 
         [Test]
-        public void Part2()
+        public async Task Part2()
         {
-            var instructions = File.ReadAllLines("day03.txt");
+            var input = await _session.Start("Puzzle Input.txt");
+            var instructions = input.Split("\n");
             var pathOne = instructions[0].Split(',');
             var pathTwo = instructions[1].Split(',');
 

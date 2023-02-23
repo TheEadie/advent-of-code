@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 
-namespace AdventOfCode.IntCode;
+namespace AdventOfCode2019.IntCode;
 
 public class IntCode
 {
@@ -30,43 +27,48 @@ public class IntCode
 
         while (Memory[_pc] != 99)
         {
-            var opCode = Memory[_pc] % 100;
-            var modeA = (ParamMode)((Memory[_pc] / 100) % 10);
-            var modeB = (ParamMode)((Memory[_pc] / 1000) % 10);
-            var modeC = (ParamMode)((Memory[_pc] / 10000) % 10);
+            Step();
+        }
+    }
 
-            switch (opCode)
-            {
-                case 1:
-                    Add(modeA, modeB, modeC);
-                    break;
-                case 2:
-                    Multiply(modeA, modeB, modeC);
-                    break;
-                case 3:
-                    ReadInput(modeA);
-                    break;
-                case 4:
-                    WriteOutput(modeA);
-                    break;
-                case 5:
-                    JumpIfTrue(modeA, modeB);
-                    break;
-                case 6:
-                    JumpIfFalse(modeA, modeB);
-                    break;
-                case 7:
-                    LessThan(modeA, modeB, modeC);
-                    break;
-                case 8:
-                    Equals(modeA, modeB, modeC);
-                    break;
-                case 9:
-                    AdjustRelativeBase(modeA);
-                    break;
-                default:
-                    throw new Exception($"Unknown op code {opCode}");
-            }
+    private void Step()
+    {
+        var opCode = Memory[_pc] % 100;
+        var modeA = (ParamMode)((Memory[_pc] / 100) % 10);
+        var modeB = (ParamMode)((Memory[_pc] / 1000) % 10);
+        var modeC = (ParamMode)((Memory[_pc] / 10000) % 10);
+
+        switch (opCode)
+        {
+            case 1:
+                Add(modeA, modeB, modeC);
+                break;
+            case 2:
+                Multiply(modeA, modeB, modeC);
+                break;
+            case 3:
+                ReadInput(modeA);
+                break;
+            case 4:
+                WriteOutput(modeA);
+                break;
+            case 5:
+                JumpIfTrue(modeA, modeB);
+                break;
+            case 6:
+                JumpIfFalse(modeA, modeB);
+                break;
+            case 7:
+                LessThan(modeA, modeB, modeC);
+                break;
+            case 8:
+                Equals(modeA, modeB, modeC);
+                break;
+            case 9:
+                AdjustRelativeBase(modeA);
+                break;
+            default:
+                throw new Exception($"Unknown op code {opCode}");
         }
     }
 
