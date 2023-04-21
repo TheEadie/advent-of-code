@@ -3,7 +3,7 @@ import { Day } from "../../day";
 class Day11 implements Day {
   year = 2020;
   day = 11;
-  name = "Adapter Array";
+  name = "Seating System";
 
   expectationsPartOne = [
     { input: "sample.txt", output: "37" },
@@ -15,9 +15,14 @@ class Day11 implements Day {
     let current = new WaitingArea([]);
     let next = new WaitingArea(seats);
 
+    const neighbours = new Map<string, Coordinate[]>();
+    for (const seat of seats) {
+      neighbours.set(`${seat[0]},${seat[1]}`, next.getNeighbours(seat));
+    }
+
     while (!current.equals(next)) {
       current = next;
-      next = step(current);
+      next = runStep(current, neighbours, 4);
     }
 
     return next
@@ -27,28 +32,56 @@ class Day11 implements Day {
   };
 
   expectationsPartTwo = [
-    { input: "sample-1.txt", output: "26" },
-    //{ input: "input.txt", output: "259172170858496" },
+    { input: "sample.txt", output: "26" },
+    { input: "input.txt", output: "2019" },
   ];
 
   partTwo = (input: string): string => {
-    return "";
+    const seats = parseInput(input);
+    let current = new WaitingArea([]);
+    let next = new WaitingArea(seats);
+
+    const neighbours = new Map<string, Coordinate[]>();
+    for (const seat of seats) {
+      neighbours.set(`${seat[0]},${seat[1]}`, next.getVisibleNeighbours(seat));
+    }
+
+    while (!current.equals(next)) {
+      current = next;
+      next = runStep(current, neighbours, 5);
+    }
+
+    return next
+      .getSeats()
+      .filter((x) => next.isOccupied(x))
+      .length.toString();
   };
 }
 
 export default new Day11();
 
 class WaitingArea {
-  private readonly seats: Set<Coordinate>;
+  private readonly seats: Coordinate[];
   private readonly occupied: Map<string, boolean>;
+  private readonly maxX: number;
+  private readonly maxY: number;
 
   constructor(seats: Coordinate[]) {
-    this.seats = new Set<Coordinate>(seats);
+    this.seats = seats;
     this.occupied = new Map<string, boolean>();
+
+    this.maxX = Math.max(...[...this.seats].map((x) => x[0]));
+    this.maxY = Math.max(...[...this.seats].map((x) => x[1]));
   }
 
   public getSeats = (): Coordinate[] => {
-    return [...this.seats];
+    return this.seats;
+  };
+
+  public isSeat = (seat: Coordinate): boolean => {
+    return (
+      this.seats.filter((x) => x[0] === seat[0] && x[1] === seat[1]).length > 0
+    );
   };
 
   public isOccupied = (seat: Coordinate): boolean => {
@@ -59,6 +92,35 @@ class WaitingArea {
   public setOccupied = (seat: Coordinate): void => {
     const key = `${seat[0]},${seat[1]}`;
     this.occupied.set(key, true);
+  };
+
+  public getVisibleNeighbours = (seat: Coordinate): Coordinate[] => {
+    const directions = [
+      [-1, -1],
+      [-1, 0],
+      [-1, 1],
+      [0, -1],
+      [0, 1],
+      [1, -1],
+      [1, 0],
+      [1, 1],
+    ];
+
+    // Find the first seat in each direction
+    const neighbours = directions
+      .map(([dx, dy]) => {
+        let [x, y] = seat;
+        while (x >= 0 && y >= 0 && x <= this.maxX && y <= this.maxY) {
+          x += dx;
+          y += dy;
+          const testSeat: Coordinate = [x, y];
+          if (this.isSeat(testSeat)) {
+            return testSeat;
+          }
+        }
+      })
+      .filter((x) => x !== undefined);
+    return neighbours;
   };
 
   public getNeighbours = ([x, y]: Coordinate): Coordinate[] => {
@@ -77,7 +139,7 @@ class WaitingArea {
 
   public equals = (other: WaitingArea): boolean => {
     return (
-      this.seats.size === other.seats.size &&
+      this.seats.length === other.seats.length &&
       this.occupied.size === other.occupied.size &&
       [...this.occupied.keys()].every((value) => other.occupied.has(value))
     );
@@ -86,23 +148,21 @@ class WaitingArea {
 
 type Coordinate = [X: number, Y: number];
 
-const numberOfOccupiedNeighbours = (
+const runStep = (
   waitingArea: WaitingArea,
-  seat: Coordinate
-): number => {
-  return waitingArea
-    .getNeighbours(seat)
-    .filter((x) => waitingArea.isOccupied(x)).length;
-};
-
-const step = (waitingArea: WaitingArea): WaitingArea => {
+  neighboursForSeat: Map<string, Coordinate[]>,
+  maxOccupiedNeighbours: number
+): WaitingArea => {
   const next = new WaitingArea(waitingArea.getSeats());
   for (const seat of waitingArea.getSeats()) {
     const isOccupied = waitingArea.isOccupied(seat);
-    const occupiedNeighbours = numberOfOccupiedNeighbours(waitingArea, seat);
+    const occupiedNeighbours = neighboursForSeat
+      .get(`${seat[0]},${seat[1]}`)
+      .filter((x) => waitingArea.isOccupied(x)).length;
+
     if (!isOccupied && occupiedNeighbours === 0) {
       next.setOccupied(seat);
-    } else if (isOccupied && occupiedNeighbours >= 4) {
+    } else if (isOccupied && occupiedNeighbours >= maxOccupiedNeighbours) {
       // They leave
     } else if (isOccupied) {
       next.setOccupied(seat);
@@ -124,14 +184,3 @@ const parseInput = (input: string): Coordinate[] => {
   }
   return [...seats];
 };
-
-function toString(area: WaitingArea): string {
-  let str = "";
-  for (let y = 0; y < 10; y++) {
-    for (let x = 0; x < 10; x++) {
-      str += area.isOccupied([x, y]) ? "X" : ".";
-    }
-    str += "\n";
-  }
-  return str;
-}
