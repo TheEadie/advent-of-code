@@ -17,7 +17,7 @@ class Day11 implements Day {
 
     const neighbours = new Map<string, Coordinate[]>();
     for (const seat of seats) {
-      neighbours.set(`${seat[0]},${seat[1]}`, next.getNeighbours(seat));
+      neighbours.set(`${seat.X},${seat.Y}`, next.getNeighbours(seat));
     }
 
     while (!current.equals(next)) {
@@ -43,7 +43,7 @@ class Day11 implements Day {
 
     const neighbours = new Map<string, Coordinate[]>();
     for (const seat of seats) {
-      neighbours.set(`${seat[0]},${seat[1]}`, next.getVisibleNeighbours(seat));
+      neighbours.set(`${seat.X},${seat.Y}`, next.getVisibleNeighbours(seat));
     }
 
     while (!current.equals(next)) {
@@ -70,8 +70,8 @@ class WaitingArea {
     this.seats = seats;
     this.occupied = new Map<string, boolean>();
 
-    this.maxX = Math.max(...[...this.seats].map((x) => x[0]));
-    this.maxY = Math.max(...[...this.seats].map((x) => x[1]));
+    this.maxX = Math.max(...[...this.seats].map((s) => s.X));
+    this.maxY = Math.max(...[...this.seats].map((s) => s.Y));
   }
 
   public getSeats = (): Coordinate[] => {
@@ -80,40 +80,40 @@ class WaitingArea {
 
   public isSeat = (seat: Coordinate): boolean => {
     return (
-      this.seats.filter((x) => x[0] === seat[0] && x[1] === seat[1]).length > 0
+      this.seats.filter((x) => x.X === seat.X && x.Y === seat.Y).length > 0
     );
   };
 
   public isOccupied = (seat: Coordinate): boolean => {
-    const key = `${seat[0]},${seat[1]}`;
+    const key = `${seat.X},${seat.Y}`;
     return this.occupied.get(key) ?? false;
   };
 
   public setOccupied = (seat: Coordinate): void => {
-    const key = `${seat[0]},${seat[1]}`;
+    const key = `${seat.X},${seat.Y}`;
     this.occupied.set(key, true);
   };
 
   public getVisibleNeighbours = (seat: Coordinate): Coordinate[] => {
     const directions = [
-      [-1, -1],
-      [-1, 0],
-      [-1, 1],
-      [0, -1],
-      [0, 1],
-      [1, -1],
-      [1, 0],
-      [1, 1],
+      { X: -1, Y: -1 },
+      { X: -1, Y: 0 },
+      { X: -1, Y: 1 },
+      { X: 0, Y: -1 },
+      { X: 0, Y: 1 },
+      { X: 1, Y: -1 },
+      { X: 1, Y: 0 },
+      { X: 1, Y: 1 },
     ];
 
     // Find the first seat in each direction
     const neighbours = directions
-      .map(([dx, dy]) => {
-        let [x, y] = seat;
-        while (x >= 0 && y >= 0 && x <= this.maxX && y <= this.maxY) {
-          x += dx;
-          y += dy;
-          const testSeat: Coordinate = [x, y];
+      .map((d) => {
+        let { X, Y } = seat;
+        while (X >= 0 && Y >= 0 && X <= this.maxX && Y <= this.maxY) {
+          X += d.X;
+          Y += d.Y;
+          const testSeat = { X, Y };
           if (this.isSeat(testSeat)) {
             return testSeat;
           }
@@ -123,18 +123,18 @@ class WaitingArea {
     return neighbours;
   };
 
-  public getNeighbours = ([x, y]: Coordinate): Coordinate[] => {
+  public getNeighbours = ({ X, Y }: Coordinate): Coordinate[] => {
     const deltas: Coordinate[] = [
-      [-1, -1],
-      [-1, 0],
-      [-1, 1],
-      [0, -1],
-      [0, 1],
-      [1, -1],
-      [1, 0],
-      [1, 1],
+      { X: -1, Y: -1 },
+      { X: -1, Y: 0 },
+      { X: -1, Y: 1 },
+      { X: 0, Y: -1 },
+      { X: 0, Y: 1 },
+      { X: 1, Y: -1 },
+      { X: 1, Y: 0 },
+      { X: 1, Y: 1 },
     ];
-    return deltas.map(([dx, dy]) => [x + dx, y + dy]);
+    return deltas.map((d) => ({ X: X + d.X, Y: Y + d.Y }));
   };
 
   public equals = (other: WaitingArea): boolean => {
@@ -146,7 +146,7 @@ class WaitingArea {
   };
 }
 
-type Coordinate = [X: number, Y: number];
+type Coordinate = { X: number; Y: number };
 
 const runStep = (
   waitingArea: WaitingArea,
@@ -157,7 +157,7 @@ const runStep = (
   for (const seat of waitingArea.getSeats()) {
     const isOccupied = waitingArea.isOccupied(seat);
     const occupiedNeighbours = neighboursForSeat
-      .get(`${seat[0]},${seat[1]}`)
+      .get(`${seat.X},${seat.Y}`)
       .filter((x) => waitingArea.isOccupied(x)).length;
 
     if (!isOccupied && occupiedNeighbours === 0) {
@@ -178,7 +178,7 @@ const parseInput = (input: string): Coordinate[] => {
   for (let [y, row] of chars.entries()) {
     for (let [x, cell] of row.entries()) {
       if (cell === "L") {
-        seats.add([x, y]);
+        seats.add({ X: x, Y: y });
       }
     }
   }
