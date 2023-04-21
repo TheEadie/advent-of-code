@@ -17,7 +17,7 @@ class Day11 implements Day {
 
     const neighbours = new Map<string, Coordinate[]>();
     for (const seat of seats) {
-      neighbours.set(`${seat.x},${seat.y}`, next.getNeighbours(seat));
+      neighbours.set(getKey(seat), next.getNeighbours(seat));
     }
 
     while (!current.equals(next)) {
@@ -43,7 +43,7 @@ class Day11 implements Day {
 
     const neighbours = new Map<string, Coordinate[]>();
     for (const seat of seats) {
-      neighbours.set(`${seat.x},${seat.y}`, next.getVisibleNeighbours(seat));
+      neighbours.set(getKey(seat), next.getVisibleNeighbours(seat));
     }
 
     while (!current.equals(next)) {
@@ -81,10 +81,10 @@ class WaitingArea {
     0;
 
   public isOccupied = (location: Coordinate): boolean =>
-    this.occupied.get(`${location.x},${location.y}`) ?? false;
+    this.occupied.get(getKey(location)) ?? false;
 
   public setOccupied = (location: Coordinate): void => {
-    this.occupied.set(`${location.x},${location.y}`, true);
+    this.occupied.set(getKey(location), true);
   };
 
   public getVisibleNeighbours = (seat: Coordinate): Coordinate[] => {
@@ -141,6 +141,9 @@ class WaitingArea {
 
 type Coordinate = { x: number; y: number };
 
+const getKey = (coordinate: Coordinate): string =>
+  `${coordinate.x},${coordinate.y}`;
+
 const runStep = (
   waitingArea: WaitingArea,
   neighboursForSeat: Map<string, Coordinate[]>,
@@ -150,7 +153,7 @@ const runStep = (
   for (const seat of waitingArea.getSeats()) {
     const isOccupied = waitingArea.isOccupied(seat);
     const occupiedNeighbours = neighboursForSeat
-      .get(`${seat.x},${seat.y}`)
+      .get(getKey(seat))
       .filter((x) => waitingArea.isOccupied(x)).length;
 
     if (!isOccupied && occupiedNeighbours === 0) {
