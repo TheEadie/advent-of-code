@@ -35,8 +35,10 @@ public class Day16
 
     private static int AddVersions(IEnumerable<Packet> packets) => packets.Sum(packet => packet.Version + AddVersions(packet.SubPackets));
 
-    private static long Process(Packet packet)
+    private static long Process(Packet? packet)
     {
+        if (packet is null) throw new ArgumentNullException(nameof(packet));
+
         var first = packet.SubPackets.ElementAtOrDefault(0);
         var second = packet.SubPackets.ElementAtOrDefault(1);
 
