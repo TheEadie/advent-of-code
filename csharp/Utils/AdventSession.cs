@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using NUnit.Framework;
 
 namespace Utils;
@@ -26,11 +26,11 @@ public class AdventSession
         _timer.Start();
         return input;
     }
-    
+
     private async Task<string> GetInput(string filename)
     {
         var filePath = $"../../../Day{_day:00}/{filename}";
-        
+
         if (File.Exists(filePath))
         {
             return await File.ReadAllTextAsync(filePath);
@@ -40,8 +40,10 @@ public class AdventSession
         {
             var sessionToken = Environment.GetEnvironmentVariable("AOC_SESSION_COOKIE");
             if (sessionToken is null)
+            {
                 throw new ArgumentException("AOC_SESSION_COOKIE environment variable has not been set. Cannot download Puzzle Input");
-            
+            }
+
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("Cookie", $"session={sessionToken}");
             var input = await httpClient.GetStringAsync(new Uri($"https://adventofcode.com/{_year}/day/{_day}/input"));
@@ -49,14 +51,11 @@ public class AdventSession
             await File.WriteAllTextAsync($"{filePath}", input);
             return input;
         }
-        
+
         throw new FileNotFoundException("File is not the puzzle input and can not be found", filename);
     }
 
-    public void PrintHeading()
-    {
-        TestContext.Progress.WriteLine($"\n--- {_year} - Day {_day}: {_name}\n");
-    }
+    public void PrintHeading() => TestContext.Progress.WriteLine($"\n--- {_year} - Day {_day}: {_name}\n");
 
     public void PrintAnswer(int part, object answer)
     {

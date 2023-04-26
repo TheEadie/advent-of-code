@@ -5,11 +5,8 @@ public class Day23
     private readonly AdventSession _session = new(2022, 23, "Unstable Diffusion");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 110)]
     [TestCase("Puzzle Input.txt", 4247)]
     public async Task Part1(string inputFile, int expected)
@@ -124,22 +121,19 @@ public class Day23
 
     private static IEnumerable<Coordinate> GetNeighboursInDirection(Coordinate coordinate, Vector vector)
     {
-        if (vector.X != 0)
-        {
-            return new[]
+        return vector.X != 0
+            ? (new[]
             {
                 new Coordinate(coordinate.X + vector.X, coordinate.Y - 1),
                 new Coordinate(coordinate.X + vector.X, coordinate.Y),
                 new Coordinate(coordinate.X + vector.X, coordinate.Y + 1),
-            };
-        }
-
-        return new[]
+            })
+            : (IEnumerable<Coordinate>) (new[]
         {
             new Coordinate(coordinate.X - 1, coordinate.Y + vector.Y),
             new Coordinate(coordinate.X, coordinate.Y + vector.Y),
             new Coordinate(coordinate.X + 1, coordinate.Y + vector.Y),
-        };
+        });
     }
 
     private static void PrintMap(ICollection<Coordinate> nextMap)
@@ -181,11 +175,14 @@ public class Day23
             for (var x = 0; x < sizeX; x++)
             {
                 if (rows[y].Count <= x)
+                {
                     continue;
+                }
+
                 var value = rows[y][x];
                 if (value == '#')
                 {
-                    map.Add(new Coordinate(x, y));
+                    _ = map.Add(new Coordinate(x, y));
                 }
             }
         }

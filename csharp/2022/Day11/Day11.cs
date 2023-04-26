@@ -5,11 +5,8 @@ public class Day11
     private readonly AdventSession _session = new(2022, 11, "Monkey in the Middle");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 10605)]
     [TestCase("Puzzle Input.txt", 95472)]
     public async Task Part1(string inputFile, int expected)
@@ -75,7 +72,7 @@ public class Day11
 
                 foreach (var d in toRemove)
                 {
-                    monkey.Items.Remove(d);
+                    _ = monkey.Items.Remove(d);
                 }
             }
             yield return inspected;
@@ -87,19 +84,16 @@ public class Day11
 
     private static Monkey[] ParseInput(string inputFile)
     {
-        if (inputFile.Contains("Sample"))
-        {
-            return new[]
+        return inputFile.Contains("Sample")
+            ? (new[]
             {
                 new Monkey(0, new List<long> {79, 98}, o => o * 19, 23, 2, 3),
                 new Monkey(1, new List<long> {54, 65, 75, 74}, o => o + 6, 19, 2, 0),
                 new Monkey(2, new List<long> {79, 60, 97}, o => o * o, 13, 1, 3),
                 new Monkey(3, new List<long> {74}, o => o + 3, 17, 0, 1)
-            };
-        }
-        if (inputFile.Contains("Puzzle Input"))
-        {
-            return new[]
+            })
+            : inputFile.Contains("Puzzle Input")
+            ? (new[]
             {
                 new Monkey(0, new List<long> {52, 60, 85, 69, 75, 75}, o => o * 17, 13, 6, 7),
                 new Monkey(1, new List<long> {96, 82, 61, 99, 82, 84, 85}, o => o + 8, 7, 0, 7),
@@ -109,10 +103,8 @@ public class Day11
                 new Monkey(5, new List<long> {92, 75, 62}, o => o * o, 3, 3, 4),
                 new Monkey(6, new List<long> {94, 86, 76, 67}, o => o + 1, 11, 5, 2),
                 new Monkey(7, new List<long> {57}, o => o + 2, 17, 6, 2),
-            };
-        }
-
-        throw new NotImplementedException();
+            })
+            : throw new NotImplementedException();
     }
 
     private record Monkey(

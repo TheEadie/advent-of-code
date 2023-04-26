@@ -7,11 +7,8 @@ public class Day19
     private readonly AdventSession _session = new(2022, 19, "Not Enough Minerals");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 33)]
     [TestCase("Puzzle Input.txt", 1306)]
     public async Task Part1(string inputFile, int expected)
@@ -56,9 +53,11 @@ public class Day19
         {
             var current = statesToTry.Dequeue();
             if (statesTried.Contains(current))
+            {
                 continue;
+            }
 
-            statesTried.Add(current);
+            _ = statesTried.Add(current);
 
             if (current.Time == maxTime)
             {
@@ -108,10 +107,7 @@ public class Day19
             time -= 1;
         }
 
-        if (time < 0)
-            return 0;
-
-        return ((time * (time + 1)) / 2) + next.GeodeRobots * time;
+        return time < 0 ? 0 : time * (time + 1) / 2 + next.GeodeRobots * time;
     }
 
     private static IEnumerable<State> GetPossibleStates(State current, Blueprint blueprint)
@@ -178,7 +174,7 @@ public class Day19
 
     private static IEnumerable<Blueprint> ParseInput(string input)
     {
-        Blueprint ParseBlueprint(string line)
+        static Blueprint ParseBlueprint(string line)
         {
             var regex = new Regex(
                 "^Blueprint ([0-9]+): Each ore robot costs ([0-9]+) ore. Each clay robot costs ([0-9]+) ore. Each obsidian robot costs ([0-9]+) ore and ([0-9]+) clay. Each geode robot costs ([0-9]+) ore and ([0-9]+) obsidian.$");
@@ -202,8 +198,8 @@ public class Day19
                 geodeRobotOreCost,
                 geodeRobotObsidianCost,
                 maxOreNeededPerMin,
-                (int)Math.Floor(Math.Sqrt(2 * obsidianRobotClayCost)),
-                (int)Math.Floor(Math.Sqrt(2 * geodeRobotObsidianCost)));
+                (int) Math.Floor(Math.Sqrt(2 * obsidianRobotClayCost)),
+                (int) Math.Floor(Math.Sqrt(2 * geodeRobotObsidianCost)));
         }
 
         return input.Split("\n").Select(ParseBlueprint);

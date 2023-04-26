@@ -5,11 +5,8 @@ public class Day24
     private readonly AdventSession _session = new(2022, 24, "Blizzard Basin");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 18)]
     [TestCase("Puzzle Input.txt", 251)]
     public async Task Part1(string inputFile, int expected)
@@ -122,6 +119,8 @@ public class Day24
                     case '.':
                     case '#':
                         break;
+                    default:
+                        break;
                 }
             }
         }
@@ -140,8 +139,8 @@ public class Day24
         {
             stormsOverTime[i] = storms
                 .Select(x => new Coordinate(
-                    (int)Mod(x.Key.X + (x.Value.X * (i + 1)), width),
-                    (int)Mod(x.Key.Y + (x.Value.Y * (i + 1)), height)))
+                    (int) Mod(x.Key.X + x.Value.X * (i + 1), width),
+                    (int) Mod(x.Key.Y + x.Value.Y * (i + 1), height)))
                     .ToHashSet();
         }
 
@@ -152,8 +151,5 @@ public class Day24
         return (start, goal, map, stormsOverTime);
     }
 
-    private static double Mod(double x, double m)
-    {
-        return x - m * Math.Floor(x / m);
-    }
+    private static double Mod(double x, double m) => x - m * Math.Floor(x / m);
 }

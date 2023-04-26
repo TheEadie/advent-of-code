@@ -7,11 +7,8 @@ public class Day15
     private readonly AdventSession _session = new(2022, 15, "Beacon Exclusion Zone");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 10, 26)]
     [TestCase("Puzzle Input.txt", 2_000_000, 5_508_234)]
     public async Task Part1(string inputFile, int y, int expected)
@@ -22,7 +19,7 @@ public class Day15
         var minX = sensors.Min(x => x.Position.X - x.Distance);
         var maxX = sensors.Max(x => x.Position.X + x.Distance);
 
-        var answer = Enumerable.Range(minX, (maxX - minX))
+        var answer = Enumerable.Range(minX, maxX - minX)
             .Select(x => new Coordinate(x, y))
             .Count(x => sensors.Any(s => x != s.FirstSensor && s.Distance >= GetDistance(x, s.Position)));
 
@@ -41,7 +38,7 @@ public class Day15
             .Where(x => x.X > 0 && x.X <= maxXy && x.Y > 0 && x.Y <= maxXy)
             .First(x => sensors.All(s => s.Distance < GetDistance(x, s.Position)));
 
-        var answer = (long)found.X * 4_000_000 + found.Y;
+        var answer = (long) found.X * 4_000_000 + found.Y;
 
         _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
@@ -63,7 +60,7 @@ public class Day15
 
     private IEnumerable<Sensor> ParseInput(string input)
     {
-        Sensor ParseSensor(string line)
+        static Sensor ParseSensor(string line)
         {
             var regex = new Regex(
                 "Sensor at x=([-|0-9]+), y=([-|0-9]+): closest beacon is at x=([-|0-9]+), y=([-|0-9]+)");
@@ -78,10 +75,7 @@ public class Day15
         return input.Split("\n").Select(ParseSensor);
     }
 
-    private static int GetDistance(Coordinate start, Coordinate end)
-    {
-        return Math.Abs(end.X - start.X) + Math.Abs(end.Y - start.Y);
-    }
+    private static int GetDistance(Coordinate start, Coordinate end) => Math.Abs(end.X - start.X) + Math.Abs(end.Y - start.Y);
 
     private record Sensor(Coordinate Position, Coordinate FirstSensor, int Distance);
 }

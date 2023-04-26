@@ -5,11 +5,8 @@ public class Day14
     private readonly AdventSession _session = new(2022, 14, "Regolith Reservoir");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 24)]
     [TestCase("Puzzle Input.txt", 858)]
     public async Task Part1(string inputFile, int expected)
@@ -61,19 +58,19 @@ public class Day14
             var downRight = new Coordinate(current.X + 1, current.Y + 1);
             if (!map.ContainsKey(down))
             {
-                map.Remove(current);
+                _ = map.Remove(current);
                 map.Add(down, Item.Sand);
                 current = down;
             }
             else if (!map.ContainsKey(downLeft))
             {
-                map.Remove(current);
+                _ = map.Remove(current);
                 map.Add(downLeft, Item.Sand);
                 current = downLeft;
             }
             else if (!map.ContainsKey(downRight))
             {
-                map.Remove(current);
+                _ = map.Remove(current);
                 map.Add(downRight, Item.Sand);
                 current = downRight;
             }

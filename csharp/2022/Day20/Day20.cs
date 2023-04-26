@@ -5,11 +5,8 @@ public class Day20
     private readonly AdventSession _session = new(2022, 20, "Grove Positioning System");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 3)]
     [TestCase("Puzzle Input.txt", 6640)]
     public async Task Part1(string inputFile, double expected)
@@ -59,8 +56,8 @@ public class Day20
                 var value = startingSet.ElementAt(i);
                 var currentPosition = workingSet.IndexOf(value);
 
-                var offset = currentPosition + value.Item1;
-                var newPosition = (int)Mod(offset, length - 1);
+                var offset = currentPosition + value.x;
+                var newPosition = (int) Mod(offset, length - 1);
 
                 workingSet.RemoveAt(currentPosition);
                 workingSet.Insert(newPosition, value);
@@ -80,8 +77,5 @@ public class Day20
         return (one, two, three);
     }
 
-    private static double Mod(double x, double m)
-    {
-        return x - m * Math.Floor(x / m);
-    }
+    private static double Mod(double x, double m) => x - m * Math.Floor(x / m);
 }

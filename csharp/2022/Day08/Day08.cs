@@ -5,11 +5,8 @@ public class Day08
     private readonly AdventSession _session = new(2022, 8, "Treetop Tree House");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 21)]
     [TestCase("Puzzle Input.txt", 1763)]
     public async Task Part1(string inputFile, int expected)

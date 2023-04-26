@@ -5,17 +5,14 @@ public class Day03
     private readonly AdventSession _session = new(2022, 3, "Rucksack Reorganization");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 157)]
     [TestCase("Puzzle Input.txt", 7727)]
     public async Task Part1(string inputFile, int expected)
     {
         var input = await _session.Start(inputFile);
-        
+
         var answer = input
             .Split("\n")
             .Select(x => (x[..(x.Length / 2)], x[(x.Length / 2)..]))
@@ -32,7 +29,7 @@ public class Day03
     public async Task Part2(string inputFile, int expected)
     {
         var input = await _session.Start(inputFile);
-        
+
         var answer = input
             .Split("\n")
             .Chunk(3)
@@ -44,13 +41,5 @@ public class Day03
         answer.ShouldBe(expected);
     }
 
-    private static int Score(char item)
-    {
-        if (char.IsUpper(item))
-        {
-            return item - 'A' + 27;
-        }
-
-        return item - 'a' + 1;
-    }
+    private static int Score(char item) => char.IsUpper(item) ? item - 'A' + 27 : item - 'a' + 1;
 }

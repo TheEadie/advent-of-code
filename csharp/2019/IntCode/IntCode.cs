@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 
 namespace AdventOfCode2019.IntCode;
 
@@ -6,7 +6,7 @@ public class IntCode
 {
     private long _pc;
     private long _relativeBase;
-    
+
     public long[] Memory { get; }
     public ConcurrentQueue<long> Inputs { get; }
     public ConcurrentQueue<long> Output { get; }
@@ -34,9 +34,9 @@ public class IntCode
     private void Step()
     {
         var opCode = Memory[_pc] % 100;
-        var modeA = (ParamMode)((Memory[_pc] / 100) % 10);
-        var modeB = (ParamMode)((Memory[_pc] / 1000) % 10);
-        var modeC = (ParamMode)((Memory[_pc] / 10000) % 10);
+        var modeA = (ParamMode) (Memory[_pc] / 100 % 10);
+        var modeB = (ParamMode) (Memory[_pc] / 1000 % 10);
+        var modeC = (ParamMode) (Memory[_pc] / 10000 % 10);
 
         switch (opCode)
         {
@@ -74,12 +74,12 @@ public class IntCode
 
     public long WaitForOutput()
     {
-        while(Output.Count == 0)
+        while (Output.Count == 0)
         {
             // Wait for output
         }
 
-        Output.TryDequeue(out var output);
+        _ = Output.TryDequeue(out var output);
         return output;
     }
 
@@ -100,13 +100,14 @@ public class IntCode
             _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
         };
     }
-    
+
     private long GetWriteAddress(ParamMode mode, long location)
     {
         return mode switch
         {
             ParamMode.Position => location,
             ParamMode.Relative => location + _relativeBase,
+            ParamMode.Immediate => throw new NotImplementedException(),
             _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
         };
     }
@@ -132,12 +133,12 @@ public class IntCode
     private void ReadInput(ParamMode modeA)
     {
         var a = GetWriteAddress(modeA, Memory[_pc + 1]);
-        while(Inputs.Count == 0)
+        while (Inputs.Count == 0)
         {
             // Wait for input
         }
 
-        Inputs.TryDequeue(out var input);
+        _ = Inputs.TryDequeue(out var input);
         Memory[a] = input;
 
         _pc += 2;

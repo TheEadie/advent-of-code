@@ -7,11 +7,8 @@ public class Day25
     private readonly AdventSession _session = new(2022, 25, "Full of Hot Air");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", "2=-1=0")]
     [TestCase("Puzzle Input.txt", "2011-=2=-1020-1===-1")]
     public async Task Part1(string inputFile, string expected)
@@ -63,7 +60,7 @@ public class Day25
                 remainder -= 5;
             }
 
-            snafu.Insert(0, remainder switch
+            _ = snafu.Insert(0, remainder switch
             {
                 -2 => "=",
                 -1 => "-",

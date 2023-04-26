@@ -5,11 +5,8 @@ public class Day13
     private readonly AdventSession _session = new(2022, 13, "Distress Signal");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 13)]
     [TestCase("Puzzle Input.txt", 6428)]
     public async Task Part1(string inputFile, int expected)
@@ -36,7 +33,7 @@ public class Day13
     public async Task Part2(string inputFile, int expected)
     {
         var input = await _session.Start(inputFile);
-        
+
         var two = new Element(new List<Element> { new(2) });
         var six = new Element(new List<Element> { new(6) });
 
@@ -82,7 +79,7 @@ public class Day13
                     break;
                 default:
                     {
-                        var contents = new string(line[i..].TakeWhile(x => x != ']' && x != '[').ToArray());
+                        var contents = new string(line[i..].TakeWhile(x => x is not ']' and not '[').ToArray());
                         var numbers = contents
                             .Split(",")
                             .Where(x => !string.IsNullOrEmpty(x))
@@ -149,12 +146,7 @@ public class Day13
                 var inOne = x.GetNumber();
                 var inTwo = y.GetNumber();
 
-                if (inOne < inTwo)
-                    return -1;
-                if (inOne > inTwo)
-                    return 1;
-
-                return 0;
+                return inOne < inTwo ? -1 : inOne > inTwo ? 1 : 0;
             }
 
             if (x.IsList() && y.IsList())
@@ -174,7 +166,9 @@ public class Day13
 
                     var isInCorrectOrder = Compare(inOne, inTwo);
                     if (isInCorrectOrder != 0)
+                    {
                         return isInCorrectOrder;
+                    }
                 }
 
                 if (listTwo.Count > listOne.Count)
@@ -187,15 +181,18 @@ public class Day13
             {
                 var isInCorrectOrder = Compare(new Element(new List<Element> { x }), y);
                 if (isInCorrectOrder != 0)
+                {
                     return isInCorrectOrder;
+                }
             }
 
             if (x.IsList() && y.IsNumber())
             {
                 var isInCorrectOrder = Compare(x, new Element(new List<Element> { y }));
                 if (isInCorrectOrder != 0)
+                {
                     return isInCorrectOrder;
-
+                }
             }
 
             return 0;

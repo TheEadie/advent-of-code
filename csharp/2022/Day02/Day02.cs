@@ -5,17 +5,14 @@ public class Day02
     private readonly AdventSession _session = new(2022, 2, "Rock Paper Scissors");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 15)]
     [TestCase("Puzzle Input.txt", 13009)]
     public async Task Part1(string inputFile, int expected)
     {
         var input = await _session.Start(inputFile);
-        
+
         var strategies = input
             .Split("\n")
             .Select(x => x switch
@@ -78,11 +75,13 @@ public class Day02
         };
 
         if (round.Opponent == round.Us)
+        {
             score += 3;
+        }
 
-        if (round is {Us: Hand.Rock, Opponent: Hand.Scissors} 
-            or {Us: Hand.Scissors, Opponent: Hand.Paper} 
-            or {Us: Hand.Paper, Opponent: Hand.Rock})
+        if (round is { Us: Hand.Rock, Opponent: Hand.Scissors }
+            or { Us: Hand.Scissors, Opponent: Hand.Paper }
+            or { Us: Hand.Paper, Opponent: Hand.Rock })
         {
             score += 6;
         }

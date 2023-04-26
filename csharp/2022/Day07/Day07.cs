@@ -5,11 +5,8 @@ public class Day07
     private readonly AdventSession _session = new(2022, 7, "No Space Left On Device");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 95437)]
     [TestCase("Puzzle Input.txt", 1182909)]
     public async Task Part1(string inputFile, double expected)
@@ -90,15 +87,9 @@ public class Day07
             Directories = new List<Directory>();
         }
 
-        public void ChangeDir(string name)
-        {
-            CurrentDir = CurrentDir.Directories.Single(x => x.Name == name);
-        }
+        public void ChangeDir(string name) => CurrentDir = CurrentDir.Directories.Single(x => x.Name == name);
 
-        public void MoveUpOne()
-        {
-            CurrentDir = CurrentDir.Parent;
-        }
+        public void MoveUpOne() => CurrentDir = CurrentDir.Parent;
 
         public void FoundDir(string name)
         {
@@ -107,20 +98,14 @@ public class Day07
             Directories.Add(dir);
         }
 
-        public void FoundFile(double size)
-        {
-            CurrentDir.Files.Add(new FileDetails(size));
-        }
+        public void FoundFile(double size) => CurrentDir.Files.Add(new FileDetails(size));
     }
 
     private record Directory(string Name, Directory Parent, IList<Directory> Directories, IList<FileDetails> Files)
     {
         public double Size => Directories.Sum(x => x.Size) + Files.Sum(x => x.Size);
 
-        public static Directory Create(string name, Directory parent)
-        {
-            return new Directory(name, parent, new List<Directory>(), new List<FileDetails>());
-        }
+        public static Directory Create(string name, Directory parent) => new(name, parent, new List<Directory>(), new List<FileDetails>());
     }
 
     private record FileDetails(double Size);

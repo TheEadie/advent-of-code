@@ -17,7 +17,9 @@ public static class LinqExtensions
         {
             yield return item;
             if (predicate(item))
+            {
                 break;
+            }
         }
     }
 }

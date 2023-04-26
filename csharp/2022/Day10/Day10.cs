@@ -5,11 +5,8 @@ public class Day10
     private readonly AdventSession _session = new(2022, 10, "Cathode-Ray Tube");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 13140)]
     [TestCase("Puzzle Input.txt", 12460)]
     public async Task Part1(string inputFile, int expected)
@@ -22,7 +19,7 @@ public class Day10
 
         for (var i = 1; i < opCodes.Sum(x => x.Steps.Length); i++)
         {
-            if (i == 20 || ((i - 20) % 40) == 0)
+            if (i == 20 || (i - 20) % 40 == 0)
             {
                 signalStrengths.Add(i * cpu.Registers.X);
             }
@@ -40,7 +37,7 @@ public class Day10
     public async Task Part2(string inputFile, int _)
     {
         var input = await _session.Start(inputFile);
-        
+
         var opCodes = ParseInput(input).ToList();
         var cpu = new Cpu(opCodes);
         var gpu = new Gpu(cpu.Registers);
@@ -91,7 +88,11 @@ public class Day10
         {
             var complete = _currentInstruction.Steps[_subPc](Registers);
             _subPc++;
-            if (!complete) return;
+            if (!complete)
+            {
+                return;
+            }
+
             _subPc = 0;
             _pc++;
             _currentInstruction = _instructions[_pc];
@@ -116,8 +117,8 @@ public class Day10
             var y = _cycle / 40;
 
             _pixels[y, x] = x == _registers.X
-                || x == (_registers.X + 1)
-                || x == (_registers.X - 1);
+                || x == _registers.X + 1
+                || x == _registers.X - 1;
 
             _cycle++;
         }

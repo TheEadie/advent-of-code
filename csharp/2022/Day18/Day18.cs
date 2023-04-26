@@ -5,11 +5,8 @@ public class Day18
     private readonly AdventSession _session = new(2022, 18, "Boiling Boulders");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 64)]
     [TestCase("Puzzle Input.txt", 4548)]
     public async Task Part1(string inputFile, int expected)
@@ -36,10 +33,7 @@ public class Day18
         answer.ShouldBe(expected);
     }
 
-    private static int GetSurfaceArea(IReadOnlySet<Coordinate3D> shape)
-    {
-        return shape.Select(x => 6 - GetNeighbours(x, shape).Count()).Sum();
-    }
+    private static int GetSurfaceArea(IReadOnlySet<Coordinate3D> shape) => shape.Select(x => 6 - GetNeighbours(x, shape).Count()).Sum();
 
     private static IEnumerable<IReadOnlySet<Coordinate3D>> GetAreas(IReadOnlySet<Coordinate3D> map)
     {
@@ -81,9 +75,11 @@ public class Day18
         {
             var next = queue.Dequeue();
             if (area.Contains(next))
+            {
                 continue;
+            }
 
-            area.Add(next);
+            _ = area.Add(next);
 
             foreach (var neighbour in GetNeighbours(next, map))
             {

@@ -5,11 +5,8 @@ public class Day04
     private readonly AdventSession _session = new(2022, 4, "Camp Cleanup");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 2)]
     [TestCase("Puzzle Input.txt", 584)]
     public async Task Part1(string inputFile, int expected)

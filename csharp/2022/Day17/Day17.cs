@@ -5,11 +5,8 @@ public class Day17
     private readonly AdventSession _session = new(2022, 17, "Pyroclastic Flow");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 3068)]
     [TestCase("Puzzle Input.txt", 3193)]
     public async Task Part1(string inputFile, int expected)
@@ -21,7 +18,7 @@ public class Day17
             .ToList();
 
         var answer = Drop(directions, 2022);
-        
+
         _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
@@ -44,10 +41,7 @@ public class Day17
 
     private static long Drop(IReadOnlyList<Direction> input, long numberToDrop)
     {
-        static bool CheckCollision(IEnumerable<Coordinate> block, IEnumerable<Coordinate> map)
-        {
-            return block.Any(position => position.X is < 0 or > 6 || map.Contains(position));
-        }
+        static bool CheckCollision(IEnumerable<Coordinate> block, IEnumerable<Coordinate> map) => block.Any(position => position.X is < 0 or > 6 || map.Contains(position));
 
         var blocks = new List<List<Coordinate>>()
         {
@@ -168,7 +162,7 @@ public class Day17
         var noOfBlocks = stillToGo / lookup.Length;
         stillToGo -= noOfBlocks * lookup.Length;
 
-        return lastHeight + ((noOfBlocks - 1) * lookup.Sum(x => x)) + lookup.Take((int)stillToGo).Sum(x => x);
+        return lastHeight + (noOfBlocks - 1) * lookup.Sum(x => x) + lookup.Take((int) stillToGo).Sum(x => x);
     }
 
     private enum Direction { Left, Right }

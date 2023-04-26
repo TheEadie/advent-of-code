@@ -1,5 +1,5 @@
-﻿// See https://aka.ms/new-console-template for more information
+// See https://aka.ms/new-console-template for more information
 
 using BenchmarkDotNet.Running;
 
-var summary = BenchmarkRunner.Run(typeof(Program).Assembly);
+var _ = BenchmarkRunner.Run(typeof(Program).Assembly);

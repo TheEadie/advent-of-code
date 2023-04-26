@@ -5,11 +5,8 @@ public class Day22
     private readonly AdventSession _session = new(2022, 22, "Monkey Map");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 6032)]
     [TestCase("Puzzle Input.txt", 122_082)]
     public async Task Part1(string inputFile, int expected)
@@ -248,6 +245,7 @@ public class Day22
         {
             Turn.Left => position with { Facing = new Vector(position.Facing.Y, -position.Facing.X) },
             Turn.Right => position with { Facing = new Vector(-position.Facing.Y, position.Facing.X) },
+            Turn.None => position,
             _ => position
         };
 
@@ -272,7 +270,10 @@ public class Day22
             for (var x = 0; x < sizeX; x++)
             {
                 if (rows[y].Count <= x)
+                {
                     continue;
+                }
+
                 var value = rows[y][x];
                 switch (value)
                 {
@@ -295,7 +296,7 @@ public class Day22
             .Select(int.Parse);
 
         var turns = sections[1]
-            .Where(x => !(new[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' }.Contains(x)))
+            .Where(x => !new[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' }.Contains(x))
             .Select(x => x == 'L' ? Turn.Left : Turn.Right)
             .Append(Turn.None);
 

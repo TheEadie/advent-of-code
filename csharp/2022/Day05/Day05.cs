@@ -5,11 +5,8 @@ public class Day05
     private readonly AdventSession _session = new(2022, 5, "Supply Stacks");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", "CMZ")]
     [TestCase("Puzzle Input.txt", "VRWBSFZWM")]
     public async Task Part1(string inputFile, string expected)
@@ -76,9 +73,11 @@ public class Day05
         {
             for (var i = 0; i < noOfStacks; i++)
             {
-                var found = row[(i * 4) + 1];
+                var found = row[i * 4 + 1];
                 if (found != ' ')
+                {
                     stacks[i].Push(found);
+                }
             }
         }
 

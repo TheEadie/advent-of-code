@@ -5,11 +5,8 @@ public class Day09
     private readonly AdventSession _session = new(2022, 9, "Rope Bridge");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 13)]
     [TestCase("Puzzle Input.txt", 5735)]
     public async Task Part1(string inputFile, int expected)
@@ -18,7 +15,7 @@ public class Day09
 
         var answer = ParseInput(input)
             .Aggregate(
-                new List<Rope> {Rope.Create(1)},
+                new List<Rope> { Rope.Create(1) },
                 (ropes, vector) =>
                     ropes.Append(Move(ropes.Last(), vector)).ToList())
             .DistinctBy(x => x.Knots.Last())
@@ -37,7 +34,7 @@ public class Day09
 
         var answer = ParseInput(input)
             .Aggregate(
-                new List<Rope> {Rope.Create(9)},
+                new List<Rope> { Rope.Create(9) },
                 (ropes, vector) =>
                     ropes.Append(Move(ropes.Last(), vector)).ToList())
             .DistinctBy(x => x.Knots.Last())

@@ -5,11 +5,8 @@ public class Day12
     private readonly AdventSession _session = new(2022, 12, "Hill Climbing Algorithm");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 31)]
     [TestCase("Puzzle Input.txt", 425)]
     public async Task Part1(string inputFile, int expected)
@@ -86,10 +83,7 @@ public class Day12
         return (start, goal, map);
     }
 
-    private static int DistanceToGoal(Coordinate current, Coordinate goal)
-    {
-        return (goal.X - current.X) + (goal.Y - current.Y);
-    }
+    private static int DistanceToGoal(Coordinate current, Coordinate goal) => goal.X - current.X + (goal.Y - current.Y);
 
     private static IEnumerable<Coordinate> GetNeighbours(Coordinate input, IReadOnlyDictionary<Coordinate, int> map)
     {

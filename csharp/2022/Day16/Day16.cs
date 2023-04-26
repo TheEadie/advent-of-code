@@ -7,11 +7,8 @@ public class Day16
     private readonly AdventSession _session = new(2022, 16, "Proboscidea Volcanium");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 1651)]
     [TestCase("Puzzle Input.txt", 1896)]
     public async Task Part1(string inputFile, int expected)
@@ -49,7 +46,10 @@ public class Day16
                 if (!myRoute.Valves.Overlaps(elephantRoute.Valves))
                 {
                     if (myRoute.State.TotalFlow + elephantRoute.State.TotalFlow > best.Item1.TotalFlow + best.Item2.TotalFlow)
+                    {
                         best = (myRoute.State, elephantRoute.State);
+                    }
+
                     break;
                 }
             }
@@ -104,7 +104,7 @@ public class Day16
         while (statesToTry.Count > 0)
         {
             var current = statesToTry.Dequeue();
-            statesTried.Add(current);
+            _ = statesTried.Add(current);
 
             var options = neighbours[current.CurrentRoom]
                 .Where(x => !current.OpenValves.Contains(x.Id))
@@ -127,10 +127,12 @@ public class Day16
                 var nextTime = current.Minute + costs[option];
 
                 if (nextTime > maxTime)
+                {
                     continue;
+                }
 
                 var flow = current.OpenValves.Split(",").Sum(x => flowRates[x]);
-                var nextTotalFlow = current.TotalFlow + (flow * costs[option]);
+                var nextTotalFlow = current.TotalFlow + flow * costs[option];
 
                 nextStates.Add(new State(nextRoom, nextOpenValves, nextTime, nextTotalFlow));
             }
@@ -139,7 +141,7 @@ public class Day16
             {
                 Minute = maxTime,
                 TotalFlow = current.TotalFlow +
-                    ((maxTime - current.Minute) * current.OpenValves.Split(",").Sum(x => flowRates[x]))
+                    (maxTime - current.Minute) * current.OpenValves.Split(",").Sum(x => flowRates[x])
             });
 
             foreach (var nextState in nextStates)
@@ -155,7 +157,7 @@ public class Day16
 
     private static IEnumerable<Valve> ParseInput(string input)
     {
-        Valve ParseValve(string line)
+        static Valve ParseValve(string line)
         {
             var regex = new Regex(
                 "^Valve (\\S*) has flow rate=([0-9]+); tunnel[s]? lead[s]? to valve[s]? ([\\S ]*)$");

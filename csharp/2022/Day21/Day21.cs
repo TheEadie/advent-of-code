@@ -5,11 +5,8 @@ public class Day21
     private readonly AdventSession _session = new(2022, 21, "Monkey Math");
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _session.PrintHeading();
-    }
-    
+    public void SetUp() => _session.PrintHeading();
+
     [TestCase("Sample.txt", 152)]
     [TestCase("Puzzle Input.txt", 299_983_725_663_456)]
     public async Task Part1(string inputFile, long expected)
@@ -76,7 +73,7 @@ public class Day21
                     break;
             }
 
-            input.Remove(input.Single(x => x.Id == monkeyIdAwayFromValueToSolve));
+            _ = input.Remove(input.Single(x => x.Id == monkeyIdAwayFromValueToSolve));
             input.Add(new Monkey(monkeyIdAwayFromValueToSolve, Operation.Number, null, null, value));
 
             if (directionFromRootToValueToSolve == Direction.Left)
@@ -90,22 +87,16 @@ public class Day21
                 equalityPoint.Left = nextMonkey.Id;
             }
 
-            input.Remove(nextMonkey);
+            _ = input.Remove(nextMonkey);
         }
 
         var answer = GetMonkeyNumber(GetOppositeDirectionFromMonkey(valueToSolve, equalityPoint, input), input);
         return answer;
     }
 
-    private static string GetOppositeDirectionFromMonkey(Monkey toFind, Monkey start, List<Monkey> input)
-    {
-        return WhichWay(toFind, start, input) == Direction.Left ? start.Right! : start.Left!;
-    }
+    private static string GetOppositeDirectionFromMonkey(Monkey toFind, Monkey start, List<Monkey> input) => WhichWay(toFind, start, input) == Direction.Left ? start.Right! : start.Left!;
 
-    private static string GetDirectionTowardsMonkey(Monkey toFind, Monkey start, List<Monkey> input)
-    {
-        return WhichWay(toFind, start, input) == Direction.Left ? start.Left! : start.Right!;
-    }
+    private static string GetDirectionTowardsMonkey(Monkey toFind, Monkey start, List<Monkey> input) => WhichWay(toFind, start, input) == Direction.Left ? start.Left! : start.Right!;
 
     private enum Direction
     {
@@ -175,6 +166,8 @@ public class Day21
                     case "/":
                         allMonkeys.Add(new Monkey(monkeyId, Operation.Div, opParts[0], opParts[2], null));
                         break;
+                    default:
+                        break;
                 }
             }
         }
@@ -213,6 +206,7 @@ public class Day21
             Operation.Sub => Operation.Add,
             Operation.Mul => Operation.Div,
             Operation.Div => Operation.Mul,
+            Operation.Number => throw new NotImplementedException(),
             _ => throw new ArgumentOutOfRangeException(nameof(op), op, null)
         };
     }
