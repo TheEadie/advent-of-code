@@ -68,7 +68,7 @@ public class Day18
 
     }
 
-    private long GetMagnitude(SnailFishNumber number) => number.Value != null ? number.Value.Value : 3 * GetMagnitude(number.Left) + 2 * GetMagnitude(number.Right);
+    private long GetMagnitude(SnailFishNumber number) => number.Value ?? 3 * GetMagnitude(number.Left!) + 2 * GetMagnitude(number.Right!);
 
     private bool Split(SnailFishNumber root)
     {
@@ -113,14 +113,14 @@ public class Day18
         // increment
         if (left != null)
         {
-            left.Value += numberToExplode.Left.Value;
+            left.Value += numberToExplode.Left!.Value;
         }
         // Find right
         var right = GetRight(numberToExplode);
         // increment
         if (right != null)
         {
-            right.Value += numberToExplode.Right.Value;
+            right.Value += numberToExplode.Right!.Value;
         }
         // set to 0
 
@@ -131,19 +131,19 @@ public class Day18
         return true;
     }
 
-    private SnailFishNumber GetLeft(SnailFishNumber element)
+    private SnailFishNumber? GetLeft(SnailFishNumber element)
     {
         var start = GoUpTillCanGoLeft(element);
-        return start == null ? null : DFSRight(start.Left, x => x.Value != null);
+        return start == null ? null : DFSRight(start.Left!, x => x.Value != null);
     }
 
-    private SnailFishNumber GetRight(SnailFishNumber element)
+    private SnailFishNumber? GetRight(SnailFishNumber element)
     {
         var start = GoUpTillCanGoRight(element);
-        return start == null ? null : DFSLeft(start.Right, x => x.Value != null);
+        return start == null ? null : DFSLeft(start.Right!, x => x.Value != null);
     }
 
-    private static SnailFishNumber DFSRight(SnailFishNumber root, Func<SnailFishNumber, bool> found)
+    private static SnailFishNumber? DFSRight(SnailFishNumber root, Func<SnailFishNumber, bool> found)
     {
         var queue = new Stack<SnailFishNumber>();
         queue.Push(root);
@@ -171,7 +171,7 @@ public class Day18
         return null;
     }
 
-    private static SnailFishNumber DFSLeft(SnailFishNumber root, Func<SnailFishNumber, bool> found)
+    private static SnailFishNumber? DFSLeft(SnailFishNumber root, Func<SnailFishNumber, bool> found)
     {
         var queue = new Stack<SnailFishNumber>();
         queue.Push(root);
@@ -199,7 +199,7 @@ public class Day18
         return null;
     }
 
-    private static SnailFishNumber GoUpTillCanGoLeft(SnailFishNumber element)
+    private static SnailFishNumber? GoUpTillCanGoLeft(SnailFishNumber element)
     {
         while (element.Parent != null)
         {
@@ -216,7 +216,7 @@ public class Day18
         return null;
     }
 
-    private static SnailFishNumber GoUpTillCanGoRight(SnailFishNumber element)
+    private static SnailFishNumber? GoUpTillCanGoRight(SnailFishNumber element)
     {
         while (element.Parent != null)
         {
@@ -233,7 +233,7 @@ public class Day18
         return null;
     }
 
-    private SnailFishNumber GetNextNumberToExplode(SnailFishNumber root)
+    private SnailFishNumber? GetNextNumberToExplode(SnailFishNumber root)
     {
         var queue = new Stack<(SnailFishNumber, int)>();
 
@@ -261,7 +261,7 @@ public class Day18
         return null;
     }
 
-    private SnailFishNumber GetFirstGreaterThanNine(SnailFishNumber root) => DFSLeft(root, x => x.Value > 9);
+    private SnailFishNumber? GetFirstGreaterThanNine(SnailFishNumber root) => DFSLeft(root, x => x.Value > 9);
 
     private bool IsPair(SnailFishNumber number) => number.Left?.Value != null && number.Right?.Value != null;
 
@@ -281,7 +281,7 @@ public class Day18
                         {
                             Parent = current
                         };
-                        current.Left = temp;
+                        current!.Left = temp;
                         current = temp;
                         break;
                     }
@@ -291,13 +291,13 @@ public class Day18
                         {
                             Parent = current
                         };
-                        current.Right = temp;
+                        current!.Right = temp;
                         current = temp;
                         i++;
                         break;
                     }
                 case ']':
-                    current = current.Parent;
+                    current = current!.Parent;
                     break;
                 case ',':
                     {
@@ -305,7 +305,7 @@ public class Day18
                         {
                             Parent = current
                         };
-                        current.Right = temp;
+                        current!.Right = temp;
                         i++;
                         break;
                     }
@@ -315,23 +315,23 @@ public class Day18
                         {
                             Parent = current
                         };
-                        current.Left = temp;
+                        current!.Left = temp;
                         break;
                     }
             }
         }
 
-        return current.Left;
+        return current!.Left ?? throw new ArgumentException("Invalid input");
     }
 
     private class SnailFishNumber
     {
-        public SnailFishNumber Parent { get; set; }
-        public SnailFishNumber Left { get; set; }
-        public SnailFishNumber Right { get; set; }
+        public SnailFishNumber? Parent { get; set; }
+        public SnailFishNumber? Left { get; set; }
+        public SnailFishNumber? Right { get; set; }
         public int? Value { get; set; }
 
-        public SnailFishNumber(SnailFishNumber left, SnailFishNumber right)
+        public SnailFishNumber(SnailFishNumber? left, SnailFishNumber? right)
         {
             Left = left;
             Right = right;

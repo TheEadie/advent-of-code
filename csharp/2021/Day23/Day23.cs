@@ -307,7 +307,7 @@ public class Day23
 
     private int GetSideRoomEntrance(char room) => (room - 'A') * 2 + 2;
 
-    private Amphipod GetTopOfSideRoom(char room, GameState state)
+    private Amphipod? GetTopOfSideRoom(char room, GameState state)
     {
         return state.GetSideRoom(room)
             .Select(x => new Amphipod(x))

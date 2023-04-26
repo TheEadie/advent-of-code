@@ -63,8 +63,14 @@ public class Day19
 
                 if (found.Any())
                 {
-                    _ = locatedScanners.Add(found.Single());
-                    queue.Enqueue(found.Single());
+                    var scanner = found.Single();
+                    if (scanner is null)
+                    {
+                        throw new Exception("Found more than one");
+                    }
+
+                    _ = locatedScanners.Add(scanner);
+                    queue.Enqueue(scanner);
 
                     _ = scannersToLocate.Remove(scannerToFind);
                 }
@@ -74,7 +80,7 @@ public class Day19
         return locatedScanners;
     }
 
-    private Scanner TryLocate(Scanner scannerToLocate, Scanner scannerAlreadyLocated)
+    private Scanner? TryLocate(Scanner scannerToLocate, Scanner scannerAlreadyLocated)
     {
         foreach (var beacon in scannerToLocate.BeaconsInWorld)
         {
@@ -146,25 +152,25 @@ public class Day19
         {
             var (x, y, z) = coordinate;
 
+
             switch (Rotation % 6)
             {
                 case 0:
-                    (x, y, z) = (x, y, z);
                     break;
                 case 1:
-                    (x, y, z) = (-x, y, -z);
+                    (x, z) = (-x, -z);
                     break;
                 case 2:
-                    (x, y, z) = (y, -x, z);
+                    (x, y) = (y, -x);
                     break;
                 case 3:
-                    (x, y, z) = (-y, x, z);
+                    (x, y) = (-y, x);
                     break;
                 case 4:
-                    (x, y, z) = (z, y, -x);
+                    (x, z) = (z, -x);
                     break;
                 case 5:
-                    (x, y, z) = (-z, y, x);
+                    (x, z) = (-z, x);
                     break;
                 default:
                     break;
@@ -173,16 +179,15 @@ public class Day19
             switch (Rotation / 6 % 4)
             {
                 case 0:
-                    (x, y, z) = (x, y, z);
                     break;
                 case 1:
-                    (x, y, z) = (x, -z, y);
+                    (y, z) = (-z, y);
                     break;
                 case 2:
-                    (x, y, z) = (x, -y, -z);
+                    (y, z) = (-y, -z);
                     break;
                 case 3:
-                    (x, y, z) = (x, z, -y);
+                    (y, z) = (z, -y);
                     break;
                 default:
                     break;
