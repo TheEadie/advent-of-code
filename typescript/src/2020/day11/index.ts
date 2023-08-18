@@ -1,4 +1,4 @@
-import { Coordinate, Grid2D, eightDirections } from "../../utils/Space2D";
+import { Coordinate, SparseGrid2D, eightDirections } from "../../utils/Space2D";
 import { Day } from "../../day";
 
 class Day11 implements Day {
@@ -14,7 +14,7 @@ class Day11 implements Day {
   partOne = (input: string): string => {
     const getNeighbours = (
       { x, y }: Coordinate,
-      _: Grid2D<boolean>
+      _: SparseGrid2D<seatType>
     ): Coordinate[] => eightDirections.map((d) => ({ x: x + d.x, y: y + d.y }));
 
     return run(input, getNeighbours, 4);
@@ -28,7 +28,7 @@ class Day11 implements Day {
   partTwo = (input: string): string => {
     const getNeighbours = (
       seat: Coordinate,
-      map: Grid2D<boolean>
+      map: SparseGrid2D<seatType>
     ): Coordinate[] =>
       eightDirections
         .map((d) => {
@@ -49,17 +49,22 @@ class Day11 implements Day {
 
 export default new Day11();
 
+enum seatType {
+  "Floor",
+  "Empty",
+  "Occupied",
+}
+
 const run = (
   input: string,
-  getNeighbours: (s: Coordinate, m: Grid2D<boolean>) => Coordinate[],
+  getNeighbours: (s: Coordinate, m: SparseGrid2D<seatType>) => Coordinate[],
   maxOccupiedNeighbours: number
 ): string => {
-  const seats = parseInput(input);
-  let current = new Grid2D<boolean>([], false);
-  let next = new Grid2D<boolean>(seats, false);
+  let current = new SparseGrid2D<seatType>(seatType.Floor);
+  let next = parseInput(input);
 
   const neighbours = new Map<Coordinate, Coordinate[]>();
-  for (const seat of seats) {
+  for (const seat of next) {
     neighbours.set(seat, getNeighbours(seat, next));
   }
 
@@ -68,44 +73,50 @@ const run = (
     next = runStep(current, neighbours, maxOccupiedNeighbours);
   }
 
-  return next
-    .getCellsWithValues()
-    .filter((x) => next.getValue(x))
+  return Array.from(next)
+    .filter((x) => next.getValue(x) === seatType.Occupied)
     .length.toString();
 };
 
 const runStep = (
-  waitingArea: Grid2D<boolean>,
+  waitingArea: SparseGrid2D<seatType>,
   neighboursForSeat: Map<Coordinate, Coordinate[]>,
   maxOccupiedNeighbours: number
-): Grid2D<boolean> => {
-  const next = new Grid2D<boolean>(waitingArea.getCellsWithValues(), false);
-  for (const seat of waitingArea.getCellsWithValues()) {
-    const isOccupied = waitingArea.getValue(seat);
+): SparseGrid2D<seatType> => {
+  const next = waitingArea.clone();
+
+  for (const seat of waitingArea) {
+    const isOccupied = isSeatOccupied(seat, waitingArea);
     const occupiedNeighbours = neighboursForSeat
       .get(seat)
-      .filter((x) => waitingArea.getValue(x)).length;
+      .filter((x) => isSeatOccupied(x, waitingArea)).length;
     if (!isOccupied && occupiedNeighbours === 0) {
-      next.setValue(seat, true);
+      next.setValue(seat, seatType.Occupied);
     } else if (isOccupied && occupiedNeighbours >= maxOccupiedNeighbours) {
-      next.setValue(seat, false);
+      next.setValue(seat, seatType.Empty);
     } else {
-      next.setValue(seat, isOccupied);
+      next.setValue(seat, isOccupied ? seatType.Occupied : seatType.Empty);
     }
   }
+
   return next;
 };
 
-const parseInput = (input: string): Coordinate[] => {
-  const seats = new Set<Coordinate>();
+const isSeatOccupied = (
+  seat: Coordinate,
+  map: SparseGrid2D<seatType>
+): boolean => map.getValue(seat) === seatType.Occupied;
+
+const parseInput = (input: string): SparseGrid2D<seatType> => {
+  const seats = new SparseGrid2D<seatType>(seatType.Floor);
   const chars = input.split("\n").map((x) => x.split(""));
 
   for (let [y, row] of chars.entries()) {
     for (let [x, cell] of row.entries()) {
       if (cell === "L") {
-        seats.add({ x: x, y: y });
+        seats.setValue({ x: x, y: y }, seatType.Empty);
       }
     }
   }
-  return [...seats];
+  return seats;
 };

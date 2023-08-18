@@ -1,22 +1,30 @@
-class Grid2D<T> {
+class SparseGrid2D<T> implements Iterable<Coordinate> {
   private readonly values: Map<string, { key: Coordinate; value: T }>;
-  private readonly maxX: number;
-  private readonly maxY: number;
+  private minX: number;
+  private minY: number;
+  private maxX: number;
+  private maxY: number;
 
-  constructor(cells: Coordinate[], initialState: T) {
+  constructor(initialState: T, cells: Coordinate[] | [] = []) {
     this.values = new Map<string, { key: Coordinate; value: T }>();
 
     for (const cell of cells) {
       this.setValue(cell, initialState);
     }
 
+    this.minX = Math.min(...[...cells].map((s) => s.x));
+    this.minY = Math.min(...[...cells].map((s) => s.y));
     this.maxX = Math.max(...[...cells].map((s) => s.x));
     this.maxY = Math.max(...[...cells].map((s) => s.y));
   }
 
+  [Symbol.iterator](): Iterator<Coordinate> {
+    return new GridIterator(this.getCoordinatesWithValues());
+  }
+
   public isInBounds = (location: Coordinate): boolean =>
-    location.x >= 0 &&
-    location.y >= 0 &&
+    location.x >= this.minX &&
+    location.y >= this.minY &&
     location.x <= this.maxX &&
     location.y <= this.maxY;
 
@@ -25,15 +33,27 @@ class Grid2D<T> {
 
   public setValue = (location: Coordinate, value: T): void => {
     this.values.set(this.getKey(location), { key: location, value: value });
+    if (location.x < this.minX) this.minX = location.x;
+    if (location.y < this.minY) this.minY = location.y;
+    if (location.x > this.maxX) this.maxX = location.x;
+    if (location.y > this.maxY) this.maxY = location.y;
   };
 
   public hasValue = (location: Coordinate): boolean =>
     this.values.has(this.getKey(location));
 
-  public getCellsWithValues = (): Coordinate[] =>
-    [...this.values.keys()].map((key) => this.values.get(key).key);
+  public clone = (): SparseGrid2D<T> => {
+    const cells = this.getCoordinatesWithValues();
+    const clone = new SparseGrid2D<T>(
+      this.values.get(this.getKey(cells[0])).value
+    );
+    for (const cell of cells) {
+      clone.setValue(cell, this.getValue(cell));
+    }
+    return clone;
+  };
 
-  public equals = (other: Grid2D<T>): boolean => {
+  public equals = (other: SparseGrid2D<T>): boolean => {
     return (
       this.values.size === other.values.size &&
       [...this.values.keys()].every(
@@ -45,6 +65,34 @@ class Grid2D<T> {
 
   private getKey = (coordinate: Coordinate): string =>
     `${coordinate.x},${coordinate.y}`;
+
+  private getCoordinatesWithValues = (): Coordinate[] =>
+    [...this.values.values()].map((x) => x.key);
+}
+
+class GridIterator<T> implements Iterator<T> {
+  private index: number;
+  private done: boolean;
+  private values: T[];
+
+  constructor(values: T[]) {
+    this.index = 0;
+    this.done = false;
+    this.values = values;
+  }
+
+  next(): IteratorResult<T, number | undefined> {
+    if (this.done) {
+      return { value: undefined, done: true };
+    }
+    if (this.index === this.values.length) {
+      this.done = true;
+      return { value: this.index, done: this.done };
+    }
+    const value = this.values[this.index];
+    this.index++;
+    return { value, done: false };
+  }
 }
 
 type Coordinate = { x: number; y: number };
@@ -72,4 +120,4 @@ const eightDirections: Vector[] = [
 
 const fourDirections: Vector[] = [north, south, east, west];
 
-export { Grid2D, Coordinate, Vector, eightDirections, fourDirections };
+export { SparseGrid2D, Coordinate, Vector, eightDirections, fourDirections };
