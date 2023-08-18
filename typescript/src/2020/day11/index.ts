@@ -50,7 +50,6 @@ class Day11 implements Day {
 export default new Day11();
 
 enum seatType {
-  "Floor",
   "Empty",
   "Occupied",
 }
@@ -60,7 +59,7 @@ const run = (
   getNeighbours: (s: Coordinate, m: SparseGrid2D<seatType>) => Coordinate[],
   maxOccupiedNeighbours: number
 ): string => {
-  let current = new SparseGrid2D<seatType>(seatType.Floor);
+  let current = new SparseGrid2D<seatType>();
   let next = parseInput(input);
 
   const neighbours = new Map<Coordinate, Coordinate[]>();
@@ -108,7 +107,7 @@ const isSeatOccupied = (
 ): boolean => map.getValue(seat) === seatType.Occupied;
 
 const parseInput = (input: string): SparseGrid2D<seatType> => {
-  const seats = new SparseGrid2D<seatType>(seatType.Floor);
+  const seats = new SparseGrid2D<seatType>();
   const chars = input.split("\n").map((x) => x.split(""));
 
   for (let [y, row] of chars.entries()) {

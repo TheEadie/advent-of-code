@@ -1,21 +1,12 @@
 class SparseGrid2D<T> implements Iterable<Coordinate> {
   private readonly values: Map<string, { key: Coordinate; value: T }>;
-  private minX: number;
-  private minY: number;
-  private maxX: number;
-  private maxY: number;
+  private minX: number = 0;
+  private minY: number = 0;
+  private maxX: number = 0;
+  private maxY: number = 0;
 
-  constructor(initialState: T, cells: Coordinate[] | [] = []) {
+  constructor() {
     this.values = new Map<string, { key: Coordinate; value: T }>();
-
-    for (const cell of cells) {
-      this.setValue(cell, initialState);
-    }
-
-    this.minX = Math.min(...[...cells].map((s) => s.x));
-    this.minY = Math.min(...[...cells].map((s) => s.y));
-    this.maxX = Math.max(...[...cells].map((s) => s.x));
-    this.maxY = Math.max(...[...cells].map((s) => s.y));
   }
 
   [Symbol.iterator](): Iterator<Coordinate> {
@@ -43,11 +34,8 @@ class SparseGrid2D<T> implements Iterable<Coordinate> {
     this.values.has(this.getKey(location));
 
   public clone = (): SparseGrid2D<T> => {
-    const cells = this.getCoordinatesWithValues();
-    const clone = new SparseGrid2D<T>(
-      this.values.get(this.getKey(cells[0])).value
-    );
-    for (const cell of cells) {
+    const clone = new SparseGrid2D<T>();
+    for (const cell of this) {
       clone.setValue(cell, this.getValue(cell));
     }
     return clone;
