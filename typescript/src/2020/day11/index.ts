@@ -1,3 +1,4 @@
+import { Coordinate, Grid2D, eightDirections } from "../../utils/Space2D";
 import { Day } from "../../day";
 
 class Day11 implements Day {
@@ -13,20 +14,8 @@ class Day11 implements Day {
   partOne = (input: string): string => {
     const getNeighbours = (
       { x, y }: Coordinate,
-      _: WaitingArea
-    ): Coordinate[] => {
-      const deltas: Coordinate[] = [
-        { x: -1, y: -1 },
-        { x: -1, y: 0 },
-        { x: -1, y: 1 },
-        { x: 0, y: -1 },
-        { x: 0, y: 1 },
-        { x: 1, y: -1 },
-        { x: 1, y: 0 },
-        { x: 1, y: 1 },
-      ];
-      return deltas.map((d) => ({ x: x + d.x, y: y + d.y }));
-    };
+      _: Grid2D<boolean>
+    ): Coordinate[] => eightDirections.map((d) => ({ x: x + d.x, y: y + d.y }));
 
     return run(input, getNeighbours, 4);
   };
@@ -39,35 +28,20 @@ class Day11 implements Day {
   partTwo = (input: string): string => {
     const getNeighbours = (
       seat: Coordinate,
-      map: WaitingArea
-    ): Coordinate[] => {
-      const directions: Coordinate[] = [
-        { x: -1, y: -1 },
-        { x: -1, y: 0 },
-        { x: -1, y: 1 },
-        { x: 0, y: -1 },
-        { x: 0, y: 1 },
-        { x: 1, y: -1 },
-        { x: 1, y: 0 },
-        { x: 1, y: 1 },
-      ];
-
-      // Find the first seat in each direction
-      const neighbours = directions
+      map: Grid2D<boolean>
+    ): Coordinate[] =>
+      eightDirections
         .map((d) => {
-          let { x, y } = seat;
-          while (x >= 0 && y >= 0 && x <= map.getMaxX() && y <= map.getMaxY()) {
-            x += d.x;
-            y += d.y;
-            const testSeat = { x, y };
-            if (map.isSeat(testSeat)) {
-              return testSeat;
+          let current = { ...seat };
+          while (map.isInBounds(current)) {
+            current.x += d.x;
+            current.y += d.y;
+            if (map.hasValue(current)) {
+              return current;
             }
           }
         })
         .filter((x) => x !== undefined);
-      return neighbours;
-    };
 
     return run(input, getNeighbours, 5);
   };
@@ -75,63 +49,18 @@ class Day11 implements Day {
 
 export default new Day11();
 
-class WaitingArea {
-  private readonly seats: Coordinate[];
-  private readonly occupied: Map<string, boolean>;
-  private readonly maxX: number;
-  private readonly maxY: number;
-
-  constructor(seats: Coordinate[]) {
-    this.seats = seats;
-    this.occupied = new Map<string, boolean>();
-
-    this.maxX = Math.max(...[...this.seats].map((s) => s.x));
-    this.maxY = Math.max(...[...this.seats].map((s) => s.y));
-  }
-
-  public getMaxX = (): number => this.maxX;
-
-  public getMaxY = (): number => this.maxY;
-
-  public getSeats = (): Coordinate[] => this.seats;
-
-  public isSeat = (location: Coordinate): boolean =>
-    this.seats.filter((s) => s.x === location.x && s.y === location.y).length >
-    0;
-
-  public isOccupied = (location: Coordinate): boolean =>
-    this.occupied.get(getKey(location)) ?? false;
-
-  public setOccupied = (location: Coordinate): void => {
-    this.occupied.set(getKey(location), true);
-  };
-
-  public equals = (other: WaitingArea): boolean => {
-    return (
-      this.seats.length === other.seats.length &&
-      this.occupied.size === other.occupied.size &&
-      [...this.occupied.keys()].every((value) => other.occupied.has(value))
-    );
-  };
-}
-
-type Coordinate = { x: number; y: number };
-
-const getKey = (coordinate: Coordinate): string =>
-  `${coordinate.x},${coordinate.y}`;
-
 const run = (
   input: string,
-  getNeighbours: (s: Coordinate, m: WaitingArea) => Coordinate[],
+  getNeighbours: (s: Coordinate, m: Grid2D<boolean>) => Coordinate[],
   maxOccupiedNeighbours: number
 ): string => {
   const seats = parseInput(input);
-  let current = new WaitingArea([]);
-  let next = new WaitingArea(seats);
+  let current = new Grid2D<boolean>([], false);
+  let next = new Grid2D<boolean>(seats, false);
 
-  const neighbours = new Map<string, Coordinate[]>();
+  const neighbours = new Map<Coordinate, Coordinate[]>();
   for (const seat of seats) {
-    neighbours.set(getKey(seat), getNeighbours(seat, next));
+    neighbours.set(seat, getNeighbours(seat, next));
   }
 
   while (!current.equals(next)) {
@@ -140,29 +69,28 @@ const run = (
   }
 
   return next
-    .getSeats()
-    .filter((x) => next.isOccupied(x))
+    .getCellsWithValues()
+    .filter((x) => next.getValue(x))
     .length.toString();
 };
 
 const runStep = (
-  waitingArea: WaitingArea,
-  neighboursForSeat: Map<string, Coordinate[]>,
+  waitingArea: Grid2D<boolean>,
+  neighboursForSeat: Map<Coordinate, Coordinate[]>,
   maxOccupiedNeighbours: number
-): WaitingArea => {
-  const next = new WaitingArea(waitingArea.getSeats());
-  for (const seat of waitingArea.getSeats()) {
-    const isOccupied = waitingArea.isOccupied(seat);
+): Grid2D<boolean> => {
+  const next = new Grid2D<boolean>(waitingArea.getCellsWithValues(), false);
+  for (const seat of waitingArea.getCellsWithValues()) {
+    const isOccupied = waitingArea.getValue(seat);
     const occupiedNeighbours = neighboursForSeat
-      .get(getKey(seat))
-      .filter((x) => waitingArea.isOccupied(x)).length;
-
+      .get(seat)
+      .filter((x) => waitingArea.getValue(x)).length;
     if (!isOccupied && occupiedNeighbours === 0) {
-      next.setOccupied(seat);
+      next.setValue(seat, true);
     } else if (isOccupied && occupiedNeighbours >= maxOccupiedNeighbours) {
-      // They leave
-    } else if (isOccupied) {
-      next.setOccupied(seat);
+      next.setValue(seat, false);
+    } else {
+      next.setValue(seat, isOccupied);
     }
   }
   return next;
