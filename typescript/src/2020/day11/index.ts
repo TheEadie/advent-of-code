@@ -1,5 +1,6 @@
-import { Coordinate, SparseGrid2D, eightDirections } from "../../utils/Space2D";
+import { Coordinate, SparseGrid2D, eightDirections } from "../../utils/space2d";
 import { Day } from "../../day";
+import { last } from "../../utils/generators";
 
 class Day11 implements Day {
   year = 2020;
@@ -66,18 +67,12 @@ const run = (
     neighbours.set(seat, getNeighbours(seat, initialState));
   }
 
-  var stepGenerator = waitingAreaGenerator(
-    initialState,
-    neighbours,
-    maxOccupiedNeighbours
+  var finalState = last(
+    waitingAreaGenerator(initialState, neighbours, maxOccupiedNeighbours)
   );
-  var finalState = new SparseGrid2D<seatType>();
-  for (const step of stepGenerator) {
-    finalState = step;
-  }
 
   return [...finalState]
-    .filter((x) => finalState.getValue(x) === seatType.Occupied)
+    .filter((x) => isSeatOccupied(x, finalState))
     .length.toString();
 };
 
