@@ -59,46 +59,54 @@ const run = (
   getNeighbours: (s: Coordinate, m: SparseGrid2D<seatType>) => Coordinate[],
   maxOccupiedNeighbours: number
 ): string => {
-  let current = new SparseGrid2D<seatType>();
-  let next = parseInput(input);
+  let initialState = parseInput(input);
 
   const neighbours = new Map<Coordinate, Coordinate[]>();
-  for (const seat of next) {
-    neighbours.set(seat, getNeighbours(seat, next));
+  for (const seat of initialState) {
+    neighbours.set(seat, getNeighbours(seat, initialState));
   }
 
-  while (!current.equals(next)) {
-    current = next;
-    next = runStep(current, neighbours, maxOccupiedNeighbours);
+  var stepGenerator = waitingAreaGenerator(
+    initialState,
+    neighbours,
+    maxOccupiedNeighbours
+  );
+  var finalState = new SparseGrid2D<seatType>();
+  for (const step of stepGenerator) {
+    finalState = step;
   }
 
-  return Array.from(next)
-    .filter((x) => next.getValue(x) === seatType.Occupied)
+  return [...finalState]
+    .filter((x) => finalState.getValue(x) === seatType.Occupied)
     .length.toString();
 };
 
-const runStep = (
+const waitingAreaGenerator = function* (
   waitingArea: SparseGrid2D<seatType>,
   neighboursForSeat: Map<Coordinate, Coordinate[]>,
   maxOccupiedNeighbours: number
-): SparseGrid2D<seatType> => {
-  const next = waitingArea.clone();
+): Generator<SparseGrid2D<seatType>> {
+  let current = new SparseGrid2D<seatType>();
+  let next = waitingArea.clone();
+  while (!current.equals(next)) {
+    current = next.clone();
 
-  for (const seat of waitingArea) {
-    const isOccupied = isSeatOccupied(seat, waitingArea);
-    const occupiedNeighbours = neighboursForSeat
-      .get(seat)
-      .filter((x) => isSeatOccupied(x, waitingArea)).length;
-    if (!isOccupied && occupiedNeighbours === 0) {
-      next.setValue(seat, seatType.Occupied);
-    } else if (isOccupied && occupiedNeighbours >= maxOccupiedNeighbours) {
-      next.setValue(seat, seatType.Empty);
-    } else {
-      next.setValue(seat, isOccupied ? seatType.Occupied : seatType.Empty);
+    for (const seat of current) {
+      const isOccupied = isSeatOccupied(seat, current);
+      const occupiedNeighbours = neighboursForSeat
+        .get(seat)
+        .filter((x) => isSeatOccupied(x, current)).length;
+      if (!isOccupied && occupiedNeighbours === 0) {
+        next.setValue(seat, seatType.Occupied);
+      } else if (isOccupied && occupiedNeighbours >= maxOccupiedNeighbours) {
+        next.setValue(seat, seatType.Empty);
+      } else {
+        next.setValue(seat, isOccupied ? seatType.Occupied : seatType.Empty);
+      }
     }
-  }
 
-  return next;
+    yield next;
+  }
 };
 
 const isSeatOccupied = (
