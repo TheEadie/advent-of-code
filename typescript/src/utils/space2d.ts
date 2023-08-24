@@ -86,6 +86,28 @@ class GridIterator<T> implements Iterator<T> {
 type Coordinate = { x: number; y: number };
 type Vector = { x: number; y: number };
 
+const move = (location: Coordinate, vector: Vector): Coordinate => ({
+  x: location.x + vector.x,
+  y: location.y + vector.y,
+});
+
+const rotate = (
+  point: Coordinate,
+  origin: Coordinate,
+  angle: number
+): Coordinate => {
+  const radians = (Math.PI / 180) * angle;
+  const cos = Math.cos(radians);
+  const sin = Math.sin(radians);
+  const nx = cos * (point.x - origin.x) + sin * (point.y - origin.y) + origin.x;
+  const ny = cos * (point.y - origin.y) - sin * (point.x - origin.x) + origin.y;
+  return { x: Math.round(nx), y: Math.round(ny) };
+};
+
+const manhattanDistance = (a: Coordinate, b: Coordinate): number => {
+  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+};
+
 const north: Vector = { x: 0, y: -1 };
 const south: Vector = { x: 0, y: 1 };
 const east: Vector = { x: 1, y: 0 };
@@ -108,4 +130,13 @@ const eightDirections: Vector[] = [
 
 const fourDirections: Vector[] = [north, south, east, west];
 
-export { SparseGrid2D, Coordinate, Vector, eightDirections, fourDirections };
+export {
+  SparseGrid2D,
+  Coordinate,
+  Vector,
+  eightDirections,
+  fourDirections,
+  move,
+  rotate,
+  manhattanDistance,
+};
