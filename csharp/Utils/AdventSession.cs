@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using NUnit.Framework;
 
 namespace Utils;
 
@@ -55,11 +54,24 @@ public class AdventSession
         throw new FileNotFoundException("File is not the puzzle input and can not be found", filename);
     }
 
-    public void PrintHeading() => TestContext.Progress.WriteLine($"\n--- {_year} - Day {_day}: {_name}\n");
+    public void PrintHeading() => Console.Error.WriteLine($"\n--- {_year} - Day {_day}: {_name}\n");
 
     public void PrintAnswer(int part, object answer)
     {
         _timer.Stop();
-        TestContext.Progress.WriteLine($"Part {part}: ({_filename}) {answer} - {_timer.ElapsedMilliseconds}ms");
+        Console.Error.WriteLine($"Part {part}: ({_filename}) {answer} - {GetHumanTime(_timer.ElapsedMilliseconds)}");
+    }
+
+    private static string GetHumanTime(long milliseconds)
+    {
+        var time = TimeSpan.FromMilliseconds(milliseconds);
+        return time switch
+        {
+            { TotalMinutes: > 1 } => $"{time.TotalMinutes:0.00} mins",
+            { TotalSeconds: > 1 } => $"{time.TotalSeconds:0.00} secs",
+            { TotalMilliseconds: > 1 } => $"{time.TotalMilliseconds:0} ms",
+            _ => $"{time.TotalMilliseconds} ms"
+        };
+
     }
 }
