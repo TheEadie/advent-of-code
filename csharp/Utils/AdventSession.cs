@@ -54,12 +54,12 @@ public class AdventSession
         throw new FileNotFoundException("File is not the puzzle input and can not be found", filename);
     }
 
-    public void PrintHeading() => Console.Error.WriteLine($"\n--- {_year} - Day {_day}: {_name}\n");
+    public void PrintHeading() => Console.Error.WriteLine($"\n--- {_year} - Day {_day}: {_name}");
 
     public void PrintAnswer(int part, object answer)
     {
         _timer.Stop();
-        Console.Error.WriteLine($"Part {part}: ({_filename}) {answer} - {GetHumanTime(_timer.ElapsedMilliseconds)}");
+        Console.Error.WriteLine($"Part {part,-2} {"(" + _filename + ")",-20} {answer,-15} {GetHumanTime(_timer.ElapsedMilliseconds)}");
     }
 
     private static string GetHumanTime(long milliseconds)

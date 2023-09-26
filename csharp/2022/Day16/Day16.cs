@@ -16,10 +16,10 @@ public class Day16
         var input = await _session.Start(inputFile);
         var valves = ParseInput(input).ToList();
 
-        var answer = FindRoute(valves, 30).First();
+        var answer = FindRoute(valves, 30).First().TotalFlow;
 
         _session.PrintAnswer(1, answer);
-        answer.TotalFlow.ShouldBe(expected);
+        answer.ShouldBe(expected);
     }
 
     [TestCase("Sample.txt", 1707)]
@@ -55,8 +55,8 @@ public class Day16
             }
         }
 
-        _session.PrintAnswer(2, best);
         var answer = best.Item1.TotalFlow + best.Item2.TotalFlow;
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 

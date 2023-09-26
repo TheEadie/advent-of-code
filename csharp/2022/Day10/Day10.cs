@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace AdventOfCode2022.Day10;
 
 public class Day10
@@ -127,11 +129,12 @@ public class Day10
         {
             for (var y = 0; y < _pixels.GetLength(0); y++)
             {
+                var row = new StringBuilder();
                 for (var x = 0; x < _pixels.GetLength(1); x++)
                 {
-                    Console.Write(_pixels[y, x] ? "#" : ".");
+                    row.Append(_pixels[y, x] ? "#" : ".");
                 }
-                Console.WriteLine();
+                Console.Error.WriteLine(row.ToString());
             }
         }
     }

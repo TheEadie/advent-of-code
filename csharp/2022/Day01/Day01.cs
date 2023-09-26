@@ -37,15 +37,9 @@ public class Day01
 
     private static IEnumerable<Elf> ParseInput(string input)
     {
-        static Elf ParseElf(string elfString) => new(
-            elfString.Split("\n")
-                .Select(int.Parse)
-                .ToList());
-
-        return input
-            .Split("\n" + "\n")
-            .Select(ParseElf);
+        var elves = input.Split("\n\n");
+        var calaries = elves.Select(x => x.Split("\n").Select(int.Parse));
+        return calaries.Select(x => new Elf(x));
     }
-
-    private record Elf(IReadOnlyCollection<int> Calories);
+    private record Elf(IEnumerable<int> Calories);
 }
