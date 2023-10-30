@@ -1,28 +1,33 @@
-namespace AdventOfCode2022.Dayxx;
+namespace AdventOfCodeYEAR.Dayxx;
 
 public class Dayxx
 {
-    [TestCase("Dayxx/Sample.txt", 0, TestName = "Day xx - Part 1 - Sample")]
-    [TestCase("Dayxx/Puzzle Input.txt", 0, TestName = "Day xx - Part 1 - Puzzle Input")]
-    public void Part1(string inputFile, int expected)
+    private readonly AdventSession _session = new(0000, 00, "");
+
+    [OneTimeSetUp]
+    public void SetUp() => _session.PrintHeading();
+
+    [TestCase("Sample.txt", 0)]
+    [TestCase("Puzzle Input.txt", 0)]
+    public async Task Part1(string inputFile, int expected)
     {
-        var input = File.ReadAllText(inputFile);
+        var input = await _session.Start(inputFile);
 
         var answer = 0;
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Dayxx/Sample.txt", 0, TestName = "Day xx - Part 2 - Sample")]
-    [TestCase("Dayxx/Puzzle Input.txt", 0, TestName = "Day xx - Part 2 - Puzzle Input")]
+    [TestCase("Sample.txt", 0)]
+    [TestCase("Puzzle Input.txt", 0)]
     public void Part2(string inputFile, int expected)
     {
-        var input = File.ReadAllText(inputFile);
+        var input = await _session.Start(inputFile);
 
         var answer = 0;
 
-        Console.WriteLine($"{TestContext.CurrentContext.Test.Name} - {answer}");
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 }

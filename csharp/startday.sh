@@ -26,7 +26,10 @@ if [[ ! -f "${PUZZLE_FILE}" ]]; then
 fi
 if [[ ! -f "${CODE_FILE}" ]]; then
     cp "${TEMPLATE}" "${CODE_FILE}"
+    sed -i "s/YEAR/${YEAR}/g" "${CODE_FILE}"
+    sed -i "s/0000/${YEAR}/g" "${CODE_FILE}"
     sed -i "s/xx/${DAY}/g" "${CODE_FILE}"
+    sed -i "s/00/${DAY}/g" "${CODE_FILE}"
     sed -i "s/Dayxx/Day${DAY}/g" "${CODE_FILE}"
 fi
 if [[ ! -f "${SAMPLE_FILE}" ]]; then
