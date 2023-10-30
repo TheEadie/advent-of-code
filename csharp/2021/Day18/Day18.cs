@@ -16,7 +16,6 @@ public class Day18
         var snailFishNumbers = ParseInput(input).ToList();
 
         var total = snailFishNumbers.Aggregate(Add);
-        Console.WriteLine(total);
 
         var answer = GetMagnitude(total);
         _session.PrintAnswer(1, answer);

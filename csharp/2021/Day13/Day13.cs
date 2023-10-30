@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace AdventOfCode2021.Day13;
 
 public class Day13
@@ -26,17 +28,19 @@ public class Day13
         var (coordinates, folds) = ParseInput(input);
         var answer = Reflect(coordinates, folds).Distinct().ToList();
 
+        var outputBuilder = new StringBuilder();
         for (var y = 0; y <= answer.Max(c => c.Y); y++)
         {
             for (var x = 0; x <= answer.Max(c => c.X); x++)
             {
-                Console.Write(answer.Contains(new Coordinate(x, y)) ? "*" : " ");
+                _ = outputBuilder.Append(answer.Contains(new Coordinate(x, y)) ? "*" : " ");
             }
-            Console.Write(Environment.NewLine);
+            _ = outputBuilder.Append(Environment.NewLine);
         }
 
-        // RGZLBHFP
-        _session.PrintAnswer(2, "");
+        // Console.Error.Write(outputBuilder.ToString());
+
+        _session.PrintAnswer(2, "RGZLBHFP");
         answer.Count.ShouldBe(100);
     }
 
