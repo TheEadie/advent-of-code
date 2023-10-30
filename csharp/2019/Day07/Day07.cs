@@ -21,7 +21,7 @@ public class Day07
 
         var answer = (await Task.WhenAll(possible.Select(x => GetOutputPart1(program, x)))).Max();
 
-        Console.WriteLine(answer);
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(212460);
     }
 
@@ -95,7 +95,7 @@ public class Day07
 
         var answer = (await Task.WhenAll(possible.Select(x => GetOutputPart2(program, x)))).Max();
 
-        Console.WriteLine(answer);
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(21844737);
     }
 

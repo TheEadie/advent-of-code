@@ -17,7 +17,7 @@ public class Day01
             .Select(GetFuelForModule)
             .Sum();
 
-        Console.WriteLine(answer);
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(3401852);
     }
 
@@ -31,7 +31,7 @@ public class Day01
             .Select(GetTotalFuel)
             .Sum();
 
-        Console.WriteLine(answer);
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(5099916);
     }
 
@@ -49,5 +49,5 @@ public class Day01
 
     }
 
-    private static int GetFuelForModule(int moduleSize) => (int) Math.Round((double) moduleSize / 3, 0, MidpointRounding.ToZero) - 2;
+    private static int GetFuelForModule(int moduleSize) => (int)Math.Round((double)moduleSize / 3, 0, MidpointRounding.ToZero) - 2;
 }

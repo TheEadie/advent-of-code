@@ -29,7 +29,7 @@ public class Day11
         cancellationSource.Cancel();
 
         var answer = panels.Count;
-        Console.WriteLine(answer);
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(1930);
     }
 
@@ -65,7 +65,7 @@ public class Day11
         }
 
         const string answer = "PFKHECZU";
-        Console.WriteLine(answer);
+        _session.PrintAnswer(2, answer);
     }
 
     private void RunRobot(CancellationToken cancellationToken, Robot robot, Dictionary<Coordinate, int> panels, IntCode.IntCode emulator)
@@ -74,8 +74,8 @@ public class Day11
         {
             var inputColour = GetPanelColour(robot.Location, panels);
             emulator.Inputs.Enqueue(inputColour);
-            var outputColour = (int) emulator.WaitForOutput();
-            var outputDirection = (int) emulator.WaitForOutput();
+            var outputColour = (int)emulator.WaitForOutput();
+            var outputDirection = (int)emulator.WaitForOutput();
             UpdatePanelColour(robot.Location, panels, outputColour);
             robot.Move(outputDirection);
         }

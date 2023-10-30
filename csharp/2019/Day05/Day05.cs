@@ -22,12 +22,8 @@ public class Day05
 
         await emulator.RunAsync(CancellationToken.None);
 
-        foreach (var value in emulator.Output)
-        {
-            Console.WriteLine(value);
-        }
-
         var answer = emulator.Output.Last();
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(16225258);
     }
 
@@ -46,12 +42,8 @@ public class Day05
 
         await emulator.RunAsync(CancellationToken.None);
 
-        foreach (var value in emulator.Output)
-        {
-            Console.WriteLine(value);
-        }
-
         var answer = emulator.Output.Last();
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(2808771);
     }
 }

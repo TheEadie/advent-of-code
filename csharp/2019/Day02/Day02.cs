@@ -23,7 +23,7 @@ public class Day02
         await emulator.RunAsync(CancellationToken.None);
         var answer = emulator.Memory[0];
 
-        Console.WriteLine(answer);
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(3790645);
     }
 
@@ -61,7 +61,7 @@ public class Day02
         var (noun, verb) = await FindResult(program, 19690720);
 
         var answer = 100 * noun + verb;
-        Console.WriteLine(answer);
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(6577);
     }
 }

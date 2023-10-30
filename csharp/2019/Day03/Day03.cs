@@ -22,7 +22,7 @@ public class Day03
 
         var answer = overlap.Select(x => Math.Abs(x.X) + Math.Abs(x.Y)).Min();
 
-        Console.WriteLine(answer);
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(245);
     }
 
@@ -41,7 +41,7 @@ public class Day03
 
         var answer = overlap.Select(x => pathOneCoordinates[x] + pathTwoCoordinates[x]).Min();
 
-        Console.WriteLine(answer);
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(48262);
     }
 

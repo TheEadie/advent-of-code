@@ -37,7 +37,7 @@ public class Day13
 
         var answer = screen.Tiles.Count(x => x.Value == 2);
 
-        Console.WriteLine(answer);
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(329);
     }
 
@@ -105,7 +105,7 @@ public class Day13
         cancellationTokenSource.Cancel();
 
         var answer = screen.SegmentDisplay;
-        Console.WriteLine(answer);
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(15973);
     }
 
@@ -143,7 +143,7 @@ public class Day13
                     SegmentDisplay = value;
                 }
 
-                var position = new Coordinate((int) x, (int) y);
+                var position = new Coordinate((int)x, (int)y);
                 if (Tiles.ContainsKey(position))
                 {
                     Tiles[position] = value;
