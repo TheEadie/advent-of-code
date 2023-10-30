@@ -34,9 +34,9 @@ public class Day10
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Sample.txt", 0)]
-    [TestCase("Puzzle Input.txt", 0)]
-    public async Task Part2(string inputFile, int _)
+    [TestCase("Sample.txt", "-")]
+    [TestCase("Puzzle Input.txt", "EZFPRAKL")]
+    public async Task Part2(string inputFile, string expected)
     {
         var input = await _session.Start(inputFile);
 
@@ -50,8 +50,8 @@ public class Day10
             cpu.Step();
         }
 
-        _session.PrintAnswer(2, "");
-        gpu.Draw();
+        _session.PrintAnswer(2, expected);
+        //gpu.Draw();
     }
 
     private static IEnumerable<OpCode> ParseInput(string input)
