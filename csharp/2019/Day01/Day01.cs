@@ -49,5 +49,5 @@ public class Day01
 
     }
 
-    private static int GetFuelForModule(int moduleSize) => (int)Math.Round((double)moduleSize / 3, 0, MidpointRounding.ToZero) - 2;
+    private static int GetFuelForModule(int moduleSize) => (int) Math.Round((double) moduleSize / 3, 0, MidpointRounding.ToZero) - 2;
 }

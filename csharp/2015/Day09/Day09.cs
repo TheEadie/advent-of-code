@@ -13,7 +13,7 @@ public class Day09
     public async Task Part1(string inputFile, int expected)
     {
         var input = await _session.Start(inputFile);
-        
+
         var allRoutes = ParseRoutes(input);
         var answer = GetRoutesThatVisitAllCities(allRoutes)
             .Min(x => x.TotalDistance);
@@ -27,11 +27,11 @@ public class Day09
     public async Task Part2(string inputFile, int expected)
     {
         var input = await _session.Start(inputFile);
-        
+
         var allRoutes = ParseRoutes(input);
         var answer = GetRoutesThatVisitAllCities(allRoutes)
             .Max(x => x.TotalDistance);
-        
+
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
@@ -39,7 +39,7 @@ public class Day09
     private static IEnumerable<PossibleRoute> GetRoutesThatVisitAllCities(IReadOnlyCollection<Route> allRoutes)
     {
         var found = new List<PossibleRoute>();
-        
+
         var cities = allRoutes.Select(x => x.From).Distinct().ToList();
 
         foreach (var city in cities)
@@ -51,7 +51,7 @@ public class Day09
             {
                 var next = toVisit.Dequeue();
 
-                if (cities.All(c => next.Visited.Contains(c)))
+                if (cities.All(next.Visited.Contains))
                 {
                     found.Add(next);
                     continue;
@@ -84,10 +84,10 @@ public class Day09
         return input
             .Split("\n")
             .Select(line => line.Split(" "))
-            .Select(parts => 
+            .Select(parts =>
                 new Route(
-                    parts[0], 
-                    parts[2], 
+                    parts[0],
+                    parts[2],
                     int.Parse(parts[4])))
             .SelectMany(route => new[]
             {

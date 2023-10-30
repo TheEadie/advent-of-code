@@ -132,7 +132,7 @@ public class Day10
                 var row = new StringBuilder();
                 for (var x = 0; x < _pixels.GetLength(1); x++)
                 {
-                    row.Append(_pixels[y, x] ? "#" : ".");
+                    row = row.Append(_pixels[y, x] ? "#" : ".");
                 }
                 Console.Error.WriteLine(row.ToString());
             }

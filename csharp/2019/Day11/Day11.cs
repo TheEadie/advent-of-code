@@ -74,8 +74,8 @@ public class Day11
         {
             var inputColour = GetPanelColour(robot.Location, panels);
             emulator.Inputs.Enqueue(inputColour);
-            var outputColour = (int)emulator.WaitForOutput();
-            var outputDirection = (int)emulator.WaitForOutput();
+            var outputColour = (int) emulator.WaitForOutput();
+            var outputDirection = (int) emulator.WaitForOutput();
             UpdatePanelColour(robot.Location, panels, outputColour);
             robot.Move(outputDirection);
         }

@@ -15,7 +15,7 @@ public class Day23
         var goal = new GameState("...........", "AA", "BB", "CC", "DD");
 
 
-        var (answer, _) = Run(start, goal, new Dictionary<GameState, int>());
+        var (answer, _) = Run(start, goal);
 
         _session.PrintAnswer(1, answer);
         answer.ShouldBe(14546);
@@ -28,12 +28,7 @@ public class Day23
         var start = new GameState("...........", "BA", "CD", "BC", "DA");
         var goal = new GameState("...........", "AA", "BB", "CC", "DD");
 
-        var (answer, route) = Run(start, goal, new Dictionary<GameState, int>());
-
-        foreach (var state in route)
-        {
-            //Console.WriteLine(state);
-        }
+        var (answer, _) = Run(start, goal);
 
         _session.PrintAnswer(1, answer);
         answer.ShouldBe(12521);
@@ -46,8 +41,7 @@ public class Day23
         var start = new GameState("...........", "DDDC", "ACBA", "DBAB", "CACB");
         var goal = new GameState("...........", "AAAA", "BBBB", "CCCC", "DDDD");
 
-
-        var (answer, _) = Run(start, goal, new Dictionary<GameState, int>());
+        var (answer, _) = Run(start, goal);
 
         _session.PrintAnswer(2, answer);
         answer.ShouldBe(42308);
@@ -60,18 +54,13 @@ public class Day23
         var start = new GameState("...........", "BDDA", "CCBD", "BBAC", "DACA");
         var goal = new GameState("...........", "AAAA", "BBBB", "CCCC", "DDDD");
 
-        var (answer, route) = Run(start, goal, new Dictionary<GameState, int>());
-
-        foreach (var state in route)
-        {
-            //Console.WriteLine(state);
-        }
+        var (answer, _) = Run(start, goal);
 
         _session.PrintAnswer(2, answer);
         answer.ShouldBe(44169);
     }
 
-    private (int, List<GameState>) Run(GameState start, GameState goal, Dictionary<GameState, int> cost)
+    private (int, List<GameState>) Run(GameState start, GameState goal)
     {
         var queue = new PriorityQueue<GameState, int>();
 

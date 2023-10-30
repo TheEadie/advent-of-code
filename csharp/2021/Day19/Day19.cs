@@ -63,11 +63,8 @@ public class Day19
 
                 if (found.Any())
                 {
-                    var scanner = found.Single();
-                    if (scanner is null)
-                    {
+                    var scanner = found.Single() ??
                         throw new Exception("Found more than one");
-                    }
 
                     _ = locatedScanners.Add(scanner);
                     queue.Enqueue(scanner);

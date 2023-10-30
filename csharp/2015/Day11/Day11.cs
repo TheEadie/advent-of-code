@@ -14,7 +14,7 @@ public class Day11
     {
         var input = await _session.Start(inputFile);
 
-        while(!IsValid(input))
+        while (!IsValid(input))
         {
             input = Increment(input);
         }
@@ -23,20 +23,20 @@ public class Day11
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
-    
+
     [TestCase("Puzzle Input.txt", "heqaabcc")]
     public async Task Part2(string inputFile, string expected)
     {
         var input = await _session.Start(inputFile);
 
-        while(!IsValid(input))
+        while (!IsValid(input))
         {
             input = Increment(input);
         }
 
         input = Increment(input);
-        
-        while(!IsValid(input))
+
+        while (!IsValid(input))
         {
             input = Increment(input);
         }
@@ -73,10 +73,10 @@ public class Day11
         {
             return false;
         }
-        
+
         var hasStraight = false;
-        
-        for(var i = 0; i < input.Length - 2; i++)
+
+        for (var i = 0; i < input.Length - 2; i++)
         {
             var first = input[i] - 'a';
             var second = input[i + 1] - 'a';
@@ -92,7 +92,7 @@ public class Day11
         {
             return false;
         }
-        
+
         var numberOfPairs = 0;
         for (var i = 0; i < input.Length - 1; i++)
         {

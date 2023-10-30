@@ -10,8 +10,8 @@ public class Day17
     [Test]
     public async Task Part1()
     {
-        var input = await _session.Start("Puzzle Input.txt");
-        var (_, areaBottomRight) = ParseInput(input);
+        var _ = await _session.Start("Puzzle Input.txt");
+        var (_, areaBottomRight) = ParseInput();
 
         var maxY = GetMaxYVelocity(areaBottomRight.Y);
         var answer = GetMaxHeight(maxY);
@@ -23,8 +23,8 @@ public class Day17
     [Test]
     public async Task Part2()
     {
-        var input = await _session.Start("Puzzle Input.txt");
-        var (areaTopLeft, areaBottomRight) = ParseInput(input);
+        var _ = await _session.Start("Puzzle Input.txt");
+        var (areaTopLeft, areaBottomRight) = ParseInput();
 
         var minX = GetMinXVelocity(areaTopLeft.X, areaBottomRight.X);
         var maxX = areaBottomRight.X;
@@ -85,7 +85,7 @@ public class Day17
     private int GetMaxHeight(int vy) => vy / 2 * (1 + vy);
 
 
-    private static (Coordinate, Coordinate) ParseInput(string input)
+    private static (Coordinate, Coordinate) ParseInput()
     {
         var topLeft = new Coordinate(150, -70);
         var bottomRight = new Coordinate(171, -129);

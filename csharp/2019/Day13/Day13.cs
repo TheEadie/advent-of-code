@@ -143,7 +143,7 @@ public class Day13
                     SegmentDisplay = value;
                 }
 
-                var position = new Coordinate((int)x, (int)y);
+                var position = new Coordinate((int) x, (int) y);
                 if (Tiles.ContainsKey(position))
                 {
                     Tiles[position] = value;

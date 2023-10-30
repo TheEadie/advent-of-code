@@ -12,22 +12,22 @@ public class Day10
     public async Task Part1(string inputFile, int expected)
     {
         var input = await _session.Start(inputFile);
-        
+
         var start = input.Select(x => int.Parse(x.ToString()));
         var answer = Play(start).Take(40).Last().Count();
-        
+
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
-    
+
     [TestCase("Puzzle Input.txt", 3579328)]
     public async Task Part2(string inputFile, int expected)
     {
         var input = await _session.Start(inputFile);
-        
+
         var start = input.Select(x => int.Parse(x.ToString()));
         var answer = Play(start).Take(50).Last().Count();
-        
+
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
@@ -35,13 +35,13 @@ public class Day10
     private IEnumerable<IEnumerable<int>> Play(IEnumerable<int> input)
     {
         var current = input;
-        
+
         while (true)
         {
             var next = new List<int>();
             var currentDigit = current.First();
             var count = 0;
-            
+
             foreach (var digit in current)
             {
                 if (digit == currentDigit)
@@ -56,7 +56,7 @@ public class Day10
                     count = 1;
                 }
             }
-            
+
             next.Add(count);
             next.Add(currentDigit);
             yield return next;

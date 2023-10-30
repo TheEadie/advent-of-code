@@ -93,8 +93,7 @@ public class Day12
             .SingleOrDefault(x => x.Count() == 2);
 
         return visitedTwoSmallCaves is not null
-            ? visitedTwoSmallCaves.Key == node || pathSoFar.Where(x => x == x.ToLower()).Contains(node)
-            : false;
+                && (visitedTwoSmallCaves.Key == node || pathSoFar.Where(x => x == x.ToLower()).Contains(node));
 
     }
 

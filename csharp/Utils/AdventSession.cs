@@ -37,11 +37,8 @@ public class AdventSession
 
         if (filename.Contains("Puzzle Input"))
         {
-            var sessionToken = Environment.GetEnvironmentVariable("AOC_SESSION_COOKIE");
-            if (sessionToken is null)
-            {
+            var sessionToken = Environment.GetEnvironmentVariable("AOC_SESSION_COOKIE") ??
                 throw new ArgumentException("AOC_SESSION_COOKIE environment variable has not been set. Cannot download Puzzle Input");
-            }
 
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("Cookie", $"session={sessionToken}");
