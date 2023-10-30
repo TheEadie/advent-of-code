@@ -21,7 +21,7 @@ public class Dayxx
 
     [TestCase("Sample.txt", 0)]
     [TestCase("Puzzle Input.txt", 0)]
-    public void Part2(string inputFile, int expected)
+    public async Task Part2(string inputFile, int expected)
     {
         var input = await _session.Start(inputFile);
 
