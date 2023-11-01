@@ -16,10 +16,25 @@ public static class LinqExtensions
         foreach (var item in data)
         {
             yield return item;
+
             if (predicate(item))
             {
                 break;
             }
         }
+    }
+
+    public static IEnumerable<T[]> Permutate<T>(this IEnumerable<T> source)
+    {
+        var array = source.ToArray();
+        return PermutateInner(array, Enumerable.Empty<T>());
+
+        IEnumerable<T[]> PermutateInner(T[] reminder, IEnumerable<T> prefix) =>
+            !reminder.Any()
+                ? new[] { prefix.ToArray() }
+                : reminder.SelectMany(
+                    (c, i) => PermutateInner(
+                        reminder.Take(i).Concat(reminder.Skip(i + 1)).ToArray(),
+                        prefix.Append(c)));
     }
 }

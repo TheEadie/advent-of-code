@@ -20,7 +20,7 @@ public class Day02
         program[2] = 2;
 
         var emulator = new IntCode.IntCode(program);
-        await emulator.RunAsync(CancellationToken.None);
+        _ = emulator.Run();
         var answer = emulator.Memory[0];
 
         _session.PrintAnswer(1, answer);
@@ -30,7 +30,7 @@ public class Day02
     [Test]
     public async Task Part2()
     {
-        static async Task<(int noun, int verb)> FindResult(long[] program, int result)
+        static (int noun, int verb) FindResult(long[] program, int result)
         {
             for (var n = 0; n < 100; n++)
             {
@@ -39,7 +39,7 @@ public class Day02
                     program[1] = n;
                     program[2] = v;
                     var emulator = new IntCode.IntCode(program);
-                    await emulator.RunAsync(CancellationToken.None);
+                    _ = emulator.Run();
                     var output = emulator.Memory[0];
 
                     if (output == result)
@@ -58,7 +58,7 @@ public class Day02
             .Select(long.Parse)
             .ToArray();
 
-        var (noun, verb) = await FindResult(program, 19690720);
+        var (noun, verb) = FindResult(program, 19690720);
 
         var answer = 100 * noun + verb;
         _session.PrintAnswer(2, answer);

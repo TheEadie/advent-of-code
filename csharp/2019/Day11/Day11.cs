@@ -11,48 +11,28 @@ public class Day11
     public async Task Part1()
     {
         var input = await _session.Start("Puzzle Input.txt");
-        var program = input
-            .Split(',')
-            .Select(long.Parse)
-            .ToArray();
+        var program = input.Split(',').Select(long.Parse).ToArray();
 
         var emulator = new IntCode.IntCode(program);
-        var emulatorTask = emulator.RunAsync(CancellationToken.None);
-
         var panels = new Dictionary<Coordinate, int>();
-        var robot = new Robot();
-
-        var cancellationSource = new CancellationTokenSource();
-        var runRobotTask = Task.Run(() => RunRobot(cancellationSource.Token, robot, panels, emulator), cancellationSource.Token);
-
-        await emulatorTask;
-        cancellationSource.Cancel();
+        RunRobot(panels, emulator);
 
         var answer = panels.Count;
         _session.PrintAnswer(1, answer);
         answer.ShouldBe(1930);
     }
 
+
     [Test]
     public async Task Part2()
     {
         var input = await _session.Start("Puzzle Input.txt");
-        var program = input
-            .Split(',')
-            .Select(long.Parse)
-            .ToArray();
+        var program = input.Split(',').Select(long.Parse).ToArray();
 
         var emulator = new IntCode.IntCode(program);
-        var emulatorTask = emulator.RunAsync(CancellationToken.None);
-
         var panels = new Dictionary<Coordinate, int> { { new Coordinate(0, 0), 1 } };
-        var robot = new Robot();
 
-        var cancellationSource = new CancellationTokenSource();
-        var runRobotTask = Task.Run(() => RunRobot(cancellationSource.Token, robot, panels, emulator), cancellationSource.Token);
-
-        await emulatorTask;
-        cancellationSource.Cancel();
+        RunRobot(panels, emulator);
 
         for (var y = 0; y > -6; y--)
         {
@@ -61,6 +41,7 @@ public class Day11
                 var panelColour = GetPanelColour(new Coordinate(x, y), panels);
                 Console.Write(panelColour == 0 ? '.' : 'x');
             }
+
             Console.WriteLine();
         }
 
@@ -68,16 +49,20 @@ public class Day11
         _session.PrintAnswer(2, answer);
     }
 
-    private void RunRobot(CancellationToken cancellationToken, Robot robot, Dictionary<Coordinate, int> panels, IntCode.IntCode emulator)
+    private void RunRobot(Dictionary<Coordinate, int> panels, IntCode.IntCode emulator)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        var robot = new Robot();
+        var inputColour = GetPanelColour(robot.Location, panels);
+        var outputs = emulator.GetOutputs(inputColour, 2).ToArray();
+
+        while (outputs.Any())
         {
-            var inputColour = GetPanelColour(robot.Location, panels);
-            emulator.Inputs.Enqueue(inputColour);
-            var outputColour = (int) emulator.WaitForOutput();
-            var outputDirection = (int) emulator.WaitForOutput();
+            var outputColour = (int) outputs[0];
+            var outputDirection = (int) outputs[1];
             UpdatePanelColour(robot.Location, panels, outputColour);
             robot.Move(outputDirection);
+            inputColour = GetPanelColour(robot.Location, panels);
+            outputs = emulator.GetOutputs(inputColour, 2).ToArray();
         }
     }
 
@@ -92,20 +77,15 @@ public class Day11
         map.Add(panel, colour);
     }
 
-    private int GetPanelColour(Coordinate panel, Dictionary<Coordinate, int> map) => map.ContainsKey(panel) ? map[panel] : 0;
+    private int GetPanelColour(Coordinate panel, Dictionary<Coordinate, int> map) =>
+        map.TryGetValue(panel, out var value) ? value : 0;
 
     private record Coordinate(int X, int Y);
 
     private class Robot
     {
-        public Coordinate Location { get; private set; }
-        private int _direction; // 0=UP, 1=Right, 2=Down, 3=Left
-
-        public Robot()
-        {
-            Location = new Coordinate(0, 0);
-            _direction = 0;
-        }
+        public Coordinate Location { get; private set; } = new(0, 0);
+        private int _direction = 0; // 0=UP, 1=Right, 2=Down, 3=Left
 
         public void Move(int input)
         {

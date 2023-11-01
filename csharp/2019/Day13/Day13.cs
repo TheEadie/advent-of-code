@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+using AdventOfCode2019.IntCode;
 
 namespace AdventOfCode2019.Day13;
 
@@ -13,30 +13,12 @@ public class Day13
     public async Task Part1()
     {
         var input = await _session.Start("Puzzle Input.txt");
-        var program = input
-            .Split(',')
-            .Select(long.Parse)
-            .ToArray();
+        var program = input.Split(',').Select(long.Parse).ToArray();
 
         var emulator = new IntCode.IntCode(program);
-        var screen = new Screen(emulator.Output);
+        var (screen, _) = RunProgram(emulator);
 
-        var cancellationTokenSource = new CancellationTokenSource();
-        var token = cancellationTokenSource.Token;
-        var emulatorTask = emulator.RunAsync(token);
-        var screenTask = screen.RunAsync(token);
-
-        await emulatorTask;
-
-        while (!emulator.Output.IsEmpty)
-        {
-            // wait to process everything
-        }
-
-        cancellationTokenSource.Cancel();
-
-        var answer = screen.Tiles.Count(x => x.Value == 2);
-
+        var answer = screen.Count(x => x.Value == 2);
         _session.PrintAnswer(1, answer);
         answer.ShouldBe(329);
     }
@@ -45,128 +27,59 @@ public class Day13
     public async Task Part2()
     {
         var input = await _session.Start("Puzzle Input.txt");
-        var program = input
-            .Split(',')
-            .Select(long.Parse)
-            .ToArray();
+        var program = input.Split(',').Select(long.Parse).ToArray();
+        var emulator = new IntCode.IntCode(program) { Memory = { [0] = 2 } };
 
-        var emulator = new IntCode.IntCode(program);
-        emulator.Memory[0] = 2;
+        var (_, answer) = RunProgram(emulator);
 
-        var screen = new Screen(emulator.Output);
-
-        var cancellationTokenSource = new CancellationTokenSource();
-        var token = cancellationTokenSource.Token;
-        var emulatorTask = emulator.RunAsync(token);
-        var screenTask = screen.RunAsync(token);
-
-        var aiTask = Task.Run(async () =>
-        {
-            while (!token.IsCancellationRequested)
-            {
-                var ballTile = screen.Tiles.Values.SingleOrDefault(x => x == 4);
-                if (ballTile == 0)
-                {
-                    continue;
-                }
-
-                var ballXPosition = screen.Tiles.Single(x => x.Value == 4).Key.X;
-
-                var paddleTile = screen.Tiles.Values.SingleOrDefault(x => x == 3);
-                if (paddleTile == 0)
-                {
-                    continue;
-                }
-
-                var paddleXPosition = screen.Tiles.Single(x => x.Value == 3).Key.X;
-
-                var distance = ballXPosition - paddleXPosition;
-                var move = distance > 0 ? 1 : distance < 0 ? -1 : 0;
-                var peek = emulator.Inputs.TryPeek(out var currentTop);
-
-                if (peek && currentTop == move)
-                {
-                    continue;
-                }
-
-                emulator.Inputs.Enqueue(move);
-
-                await Task.Delay(1, token);
-            }
-        }, token);
-
-        await emulatorTask;
-
-        while (!emulator.Output.IsEmpty)
-        {
-            // wait to process everything
-        }
-
-        cancellationTokenSource.Cancel();
-
-        var answer = screen.SegmentDisplay;
         _session.PrintAnswer(2, answer);
         answer.ShouldBe(15973);
     }
 
-    private class Screen
+    private static (IDictionary<Coordinate, long>, long) RunProgram(IntCode.IntCode emulator)
     {
-        private readonly ConcurrentQueue<long> _videoMemory;
-        public ConcurrentDictionary<Coordinate, long> Tiles { get; }
-        public long SegmentDisplay { get; private set; }
+        var screen = new Dictionary<Coordinate, long>();
+        var segmentDisplay = 0L;
 
-        public Screen(ConcurrentQueue<long> videoMemory)
+        var result = emulator.Run();
+        while (result.Status != IntCodeStatus.Halted)
         {
-            _videoMemory = videoMemory;
-            Tiles = new ConcurrentDictionary<Coordinate, long>();
-            SegmentDisplay = 0;
-        }
-
-        public Task RunAsync(CancellationToken cancellationToken) =>
-            Task.Run(() => Run(cancellationToken), cancellationToken);
-
-        private void Run(CancellationToken cancellationToken)
-        {
-            while (!cancellationToken.IsCancellationRequested)
+            switch (result.Status)
             {
-                while (_videoMemory.Count < 3)
-                {
-                    // wait for more input
-                }
+                case IntCodeStatus.OutputAvailable:
+                    {
+                        var x = result.Output!.Value;
+                        var y = emulator.Run().Output!.Value;
+                        var output = emulator.Run();
+                        var value = output.Output!.Value;
+                        var coordinate = new Coordinate((int) x, (int) y);
+                        if (x == -1 && y == 0)
+                        {
+                            segmentDisplay = value;
+                        }
+                        else
+                        {
+                            screen[coordinate] = value;
+                        }
 
-                _ = _videoMemory.TryDequeue(out var x);
-                _ = _videoMemory.TryDequeue(out var y);
-                _ = _videoMemory.TryDequeue(out var value);
+                        result = emulator.Run();
+                        continue;
+                    }
+                case IntCodeStatus.AwaitingInput:
+                    {
+                        var ballXPosition = screen.Single(x => x.Value == 4).Key.X;
+                        var paddleXPosition = screen.Single(x => x.Value == 3).Key.X;
+                        var distance = ballXPosition - paddleXPosition;
+                        var move = distance > 0 ? 1 : distance < 0 ? -1 : 0;
 
-                if (x == -1 && y == 0)
-                {
-                    SegmentDisplay = value;
-                }
-
-                var position = new Coordinate((int) x, (int) y);
-                if (Tiles.ContainsKey(position))
-                {
-                    Tiles[position] = value;
-                }
-                else
-                {
-                    _ = Tiles.TryAdd(position, value);
-                }
+                        result = emulator.Run(move);
+                        continue;
+                    }
+                default:
+                    throw new ApplicationException("No idea how we got here!");
             }
         }
 
-        public void Draw()
-        {
-            for (var y = 0; y < Tiles.Keys.Max(x => x.Y); y++)
-            {
-                for (var x = 0; x < Tiles.Keys.Max(x => x.X); x++)
-                {
-                    Console.Write(Tiles[new Coordinate(x, y)]);
-                }
-                Console.WriteLine();
-            }
-        }
-
-        public record Coordinate(int X, int Y);
+        return (screen, segmentDisplay);
     }
 }

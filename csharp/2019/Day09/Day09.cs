@@ -11,18 +11,11 @@ public class Day09
     public async Task Part1()
     {
         var input = await _session.Start("Puzzle Input.txt");
-        var program = input
-            .Split(',')
-            .Select(long.Parse)
-            .ToArray();
+        var program = input.Split(',').Select(long.Parse).ToArray();
 
         var emulator = new IntCode.IntCode(program);
-        emulator.Inputs.Enqueue(1);
-
-        await emulator.RunAsync(CancellationToken.None);
-
-        var answer = emulator.Output.Last();
-        _session.PrintAnswer(1, answer);
+        var answer = emulator.GetOutputs(1).Last();
+        _session.PrintAnswer(1, answer!);
         answer.ShouldBe(2941952859);
     }
 
@@ -30,18 +23,11 @@ public class Day09
     public async Task Part2()
     {
         var input = await _session.Start("Puzzle Input.txt");
-        var program = input
-            .Split(',')
-            .Select(long.Parse)
-            .ToArray();
+        var program = input.Split(',').Select(long.Parse).ToArray();
 
         var emulator = new IntCode.IntCode(program);
-        emulator.Inputs.Enqueue(2);
-
-        await emulator.RunAsync(CancellationToken.None);
-
-        var answer = emulator.Output.Last();
-        _session.PrintAnswer(2, answer);
+        var answer = emulator.GetOutputs(2).Last();
+        _session.PrintAnswer(2, answer!);
         answer.ShouldBe(66113);
     }
 }

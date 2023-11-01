@@ -1,37 +1,63 @@
-using System.Collections.Concurrent;
-
 namespace AdventOfCode2019.IntCode;
 
 public class IntCode
 {
     private long _pc;
     private long _relativeBase;
+    private readonly Queue<long> _inputs;
 
     public long[] Memory { get; }
-    public ConcurrentQueue<long> Inputs { get; }
-    public ConcurrentQueue<long> Output { get; }
 
     public IntCode(long[] program, int memorySpace = 4096)
     {
-        Inputs = new ConcurrentQueue<long>();
-        Output = new ConcurrentQueue<long>();
+        _inputs = new Queue<long>();
         Memory = new long[memorySpace];
         program.CopyTo(Memory, 0);
+        _pc = 0;
     }
 
-    public Task RunAsync(CancellationToken cancellationToken) => Task.Run(Run, cancellationToken);
-
-    private void Run()
+    public IntCodeReturn Run(long? input = null)
     {
-        _pc = 0;
+        if (input.HasValue)
+        {
+            _inputs.Enqueue(input.Value);
+        }
 
         while (Memory[_pc] != 99)
         {
-            Step();
+            var output = Step();
+            if (output.Status != IntCodeStatus.Running)
+            {
+                return output;
+            }
         }
+
+        return new IntCodeReturn(IntCodeStatus.Halted, null);
     }
 
-    private void Step()
+    public IEnumerable<long> GetOutputs(long? input = null, int maxOutputs = int.MaxValue)
+    {
+        var output = new List<long>(0);
+
+        var result = Run(input);
+        if (result.Status == IntCodeStatus.OutputAvailable)
+        {
+            output.Add(result.Output!.Value);
+        }
+
+        while (result.Status != IntCodeStatus.Halted && output.Count < maxOutputs)
+        {
+            result = Run();
+            if (result.Status == IntCodeStatus.OutputAvailable)
+            {
+                output.Add(result.Output!.Value);
+            }
+        }
+
+        return output;
+    }
+
+    private IntCodeReturn Step()
     {
         var opCode = Memory[_pc] % 100;
         var modeA = (ParamMode) (Memory[_pc] / 100 % 10);
@@ -47,11 +73,15 @@ public class IntCode
                 Multiply(modeA, modeB, modeC);
                 break;
             case 3:
+                if (!_inputs.Any())
+                {
+                    return new IntCodeReturn(IntCodeStatus.AwaitingInput, null);
+                }
+
                 ReadInput(modeA);
                 break;
             case 4:
-                WriteOutput(modeA);
-                break;
+                return new IntCodeReturn(IntCodeStatus.OutputAvailable, WriteOutput(modeA));
             case 5:
                 JumpIfTrue(modeA, modeB);
                 break;
@@ -70,17 +100,8 @@ public class IntCode
             default:
                 throw new Exception($"Unknown op code {opCode}");
         }
-    }
 
-    public long WaitForOutput()
-    {
-        while (Output.Count == 0)
-        {
-            // Wait for output
-        }
-
-        _ = Output.TryDequeue(out var output);
-        return output;
+        return new IntCodeReturn(IntCodeStatus.Running, null);
     }
 
     private enum ParamMode
@@ -133,22 +154,16 @@ public class IntCode
     private void ReadInput(ParamMode modeA)
     {
         var a = GetWriteAddress(modeA, Memory[_pc + 1]);
-        while (Inputs.Count == 0)
-        {
-            // Wait for input
-        }
-
-        _ = Inputs.TryDequeue(out var input);
-        Memory[a] = input;
+        Memory[a] = _inputs.Dequeue();
 
         _pc += 2;
     }
 
-    private void WriteOutput(ParamMode modeA)
+    private long WriteOutput(ParamMode modeA)
     {
         var a = GetValue(modeA, Memory[_pc + 1]);
-        Output.Enqueue(a);
         _pc += 2;
+        return a;
     }
 
     private void JumpIfTrue(ParamMode modeA, ParamMode modeB)
