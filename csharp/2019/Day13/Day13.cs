@@ -1,5 +1,3 @@
-using AdventOfCode2019.IntCode;
-
 namespace AdventOfCode2019.Day13;
 
 public class Day13
@@ -41,34 +39,32 @@ public class Day13
         var screen = new Dictionary<Coordinate, long>();
         var segmentDisplay = 0L;
 
-        long? input = null;
-        var status = IntCodeStatus.Running;
-
-        while (status != IntCodeStatus.Halted)
-        {
-            (status, var outputs) = emulator.Run(input);
-
-            foreach (var output in outputs.Chunk(3))
-            {
-                var x = output.ElementAt(0);
-                var y = output.ElementAt(1);
-                var value = output.ElementAt(2);
-                var coordinate = new Coordinate((int) x, (int) y);
-                if (x == -1 && y == 0)
+        emulator.Run(
+            outputs =>
                 {
-                    segmentDisplay = value;
-                }
-                else
+                    foreach (var output in outputs.Chunk(3))
+                    {
+                        var x = output.ElementAt(0);
+                        var y = output.ElementAt(1);
+                        var value = output.ElementAt(2);
+                        var coordinate = new Coordinate((int) x, (int) y);
+                        if (x == -1 && y == 0)
+                        {
+                            segmentDisplay = value;
+                        }
+                        else
+                        {
+                            screen[coordinate] = value;
+                        }
+                    }
+                },
+            () =>
                 {
-                    screen[coordinate] = value;
-                }
-            }
-
-            var ballXPosition = screen.Single(x => x.Value == 4).Key.X;
-            var paddleXPosition = screen.Single(x => x.Value == 3).Key.X;
-            var distance = ballXPosition - paddleXPosition;
-            input = distance > 0 ? 1 : distance < 0 ? -1 : 0;
-        }
+                    var ballXPosition = screen.Single(x => x.Value == 4).Key.X;
+                    var paddleXPosition = screen.Single(x => x.Value == 3).Key.X;
+                    var distance = ballXPosition - paddleXPosition;
+                    return distance > 0 ? 1 : distance < 0 ? -1 : 0;
+                });
 
         return (screen, segmentDisplay);
     }

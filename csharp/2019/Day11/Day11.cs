@@ -1,5 +1,3 @@
-using AdventOfCode2019.IntCode;
-
 namespace AdventOfCode2019.Day11;
 
 public class Day11
@@ -54,18 +52,17 @@ public class Day11
     private void RunRobot(Dictionary<Coordinate, int> panels, IntCode.IntCode emulator)
     {
         var robot = new Robot();
-        var result = IntCodeStatus.Running;
 
-        while (result != IntCodeStatus.Halted)
-        {
-            var inputColour = GetPanelColour(robot.Location, panels);
-            (result, var outputs) = emulator.Run(inputColour);
-            outputs = outputs.ToArray();
-            var outputColour = (int) outputs.ElementAt(0);
-            var outputDirection = (int) outputs.ElementAt(1);
-            UpdatePanelColour(robot.Location, panels, outputColour);
-            robot.Move(outputDirection);
-        }
+        emulator.Run(
+            outputs =>
+                {
+                    outputs = outputs.ToArray();
+                    var outputColour = (int) outputs.ElementAt(0);
+                    var outputDirection = (int) outputs.ElementAt(1);
+                    UpdatePanelColour(robot.Location, panels, outputColour);
+                    robot.Move(outputDirection);
+                },
+            () => GetPanelColour(robot.Location, panels));
     }
 
 

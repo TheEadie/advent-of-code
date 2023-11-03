@@ -16,6 +16,28 @@ public class IntCode
         _pc = 0;
     }
 
+    public void Run(Action<IEnumerable<long>> processOutputs, Func<long> getInput)
+    {
+        var status = IntCodeStatus.Running;
+        long? input = null;
+
+        while (status != IntCodeStatus.Halted)
+        {
+            (status, var outputs) = Run(input);
+            outputs = outputs.ToArray();
+
+            if (outputs.Any())
+            {
+                processOutputs(outputs);
+            }
+
+            if (status == IntCodeStatus.AwaitingInput)
+            {
+                input = getInput();
+            }
+        }
+    }
+
     public IntCodeReturn Run(long? input = null)
     {
         var outputs = new List<long>(0);
