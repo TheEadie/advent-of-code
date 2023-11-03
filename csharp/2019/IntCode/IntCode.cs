@@ -16,6 +16,13 @@ public class IntCode
         _pc = 0;
     }
 
+    public IntCode Clone() =>
+        new(Memory)
+        {
+            _pc = _pc,
+            _relativeBase = _relativeBase
+        };
+
     public void Run(Action<IEnumerable<long>> processOutputs, Func<long> getInput)
     {
         var status = IntCodeStatus.Running;
