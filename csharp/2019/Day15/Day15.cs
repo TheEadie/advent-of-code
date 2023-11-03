@@ -46,7 +46,7 @@ public class Day15
         while (queue.Any())
         {
             var coordinate = queue.Dequeue();
-            visited.Add(coordinate);
+            _ = visited.Add(coordinate);
 
             var toCheck = GetNeighbours(coordinate, map);
             foreach (var neighbour in toCheck)
@@ -81,7 +81,7 @@ public class Day15
         while (queue.Any())
         {
             var coordinate = queue.Dequeue();
-            visited.Add(coordinate);
+            _ = visited.Add(coordinate);
 
             var testCoordinates = new List<(Coordinate, int)>
             {
@@ -115,6 +115,8 @@ public class Day15
                     case 2:
                         map[pos] = (State.OxygenSystem, nextEmulator);
                         queue.Enqueue(pos);
+                        break;
+                    default:
                         break;
                 }
             }

@@ -55,7 +55,7 @@ public class IntCode
             outputs.AddRange(result.Outputs);
         }
 
-        while (result.Status != IntCodeStatus.Halted && result.Status != IntCodeStatus.AwaitingInput)
+        while (result.Status is not IntCodeStatus.Halted and not IntCodeStatus.AwaitingInput)
         {
             result = RunUntilInputOutputOrHalt();
             if (result.Status == IntCodeStatus.OutputAvailable)
