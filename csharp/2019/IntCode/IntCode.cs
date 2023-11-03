@@ -16,29 +16,29 @@ public class IntCode
         _pc = 0;
     }
 
-    public (IntCodeStatus, IEnumerable<long>) Run(long? input = null)
+    public IntCodeReturn Run(long? input = null)
     {
-        var output = new List<long>(0);
+        var outputs = new List<long>(0);
 
-        var result = RunUntilExitOrNeedsInput(input);
+        var result = RunUntilInputOutputOrHalt(input);
         if (result.Status == IntCodeStatus.OutputAvailable)
         {
-            output.Add(result.Output!.Value);
+            outputs.AddRange(result.Outputs);
         }
 
         while (result.Status != IntCodeStatus.Halted && result.Status != IntCodeStatus.AwaitingInput)
         {
-            result = RunUntilExitOrNeedsInput();
+            result = RunUntilInputOutputOrHalt();
             if (result.Status == IntCodeStatus.OutputAvailable)
             {
-                output.Add(result.Output!.Value);
+                outputs.AddRange(result.Outputs);
             }
         }
 
-        return (result.Status, output);
+        return result with { Outputs = outputs };
     }
 
-    private IntCodeReturn RunUntilExitOrNeedsInput(long? input = null)
+    private IntCodeReturn RunUntilInputOutputOrHalt(long? input = null)
     {
         if (input.HasValue)
         {
@@ -54,7 +54,7 @@ public class IntCode
             }
         }
 
-        return new IntCodeReturn(IntCodeStatus.Halted, null);
+        return new IntCodeReturn(IntCodeStatus.Halted, Array.Empty<long>());
     }
 
     private IntCodeReturn Step()
@@ -75,7 +75,7 @@ public class IntCode
             case 3:
                 if (!_inputs.Any())
                 {
-                    return new IntCodeReturn(IntCodeStatus.AwaitingInput, null);
+                    return new IntCodeReturn(IntCodeStatus.AwaitingInput, Array.Empty<long>());
                 }
 
                 ReadInput(modeA);
@@ -101,7 +101,7 @@ public class IntCode
                 throw new Exception($"Unknown op code {opCode}");
         }
 
-        return new IntCodeReturn(IntCodeStatus.Running, null);
+        return new IntCodeReturn(IntCodeStatus.Running, Array.Empty<long>());
     }
 
     private enum ParamMode
@@ -159,11 +159,11 @@ public class IntCode
         _pc += 2;
     }
 
-    private long WriteOutput(ParamMode modeA)
+    private long[] WriteOutput(ParamMode modeA)
     {
         var a = GetValue(modeA, Memory[_pc + 1]);
         _pc += 2;
-        return a;
+        return new[] { a };
     }
 
     private void JumpIfTrue(ParamMode modeA, ParamMode modeB)
