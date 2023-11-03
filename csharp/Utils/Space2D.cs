@@ -1,6 +1,11 @@
 namespace Utils;
 
-public record Coordinate(int X, int Y);
+public record Coordinate(int X, int Y)
+{
+    public static Coordinate operator +(Coordinate left, Coordinate right) => new(left.X + right.X, left.Y + right.Y);
+
+    public static Coordinate operator +(Coordinate left, Vector right) => new(left.X + right.X, left.Y + right.Y);
+}
 
 public record Line(Coordinate Start, Coordinate End)
 {
@@ -30,4 +35,8 @@ public record Vector(int X, int Y)
     public static Vector Down => new(0, 1);
     public static Vector Left => new(-1, 0);
     public static Vector Right => new(1, 0);
+
+    public Vector TurnLeft() => new(Y, -X);
+
+    public Vector TurnRight() => new(-Y, X);
 }
