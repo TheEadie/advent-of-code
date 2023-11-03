@@ -11,10 +11,7 @@ public class Day02
     public async Task Part1()
     {
         var input = await _session.Start("Puzzle Input.txt");
-        var program = input
-            .Split(',')
-            .Select(long.Parse)
-            .ToArray();
+        var program = input.Split(',').Select(long.Parse).ToArray();
 
         program[1] = 12;
         program[2] = 2;
@@ -53,10 +50,7 @@ public class Day02
         }
 
         var input = await _session.Start("Puzzle Input.txt");
-        var program = input
-            .Split(',')
-            .Select(long.Parse)
-            .ToArray();
+        var program = input.Split(',').Select(long.Parse).ToArray();
 
         var (noun, verb) = FindResult(program, 19690720);
 

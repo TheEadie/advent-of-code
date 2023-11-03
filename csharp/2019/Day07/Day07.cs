@@ -65,18 +65,20 @@ public class Day07
         _ = ampB.Run(inputs[1]);
         _ = ampC.Run(inputs[2]);
         _ = ampD.Run(inputs[3]);
-        var ampEResult = ampE.Run(inputs[4]);
-        var ampAResult = ampA.Run(0);
+        var (ampEResult, _) = ampE.Run(inputs[4]);
 
-        while (ampAResult.Status != IntCodeStatus.Halted)
+        var result = 0L;
+
+        while (ampEResult != IntCodeStatus.Halted)
         {
-            var ampBResult = ampB.Run(ampAResult.Output);
-            var ampCResult = ampC.Run(ampBResult.Output);
-            var ampDResult = ampD.Run(ampCResult.Output);
-            ampEResult = ampE.Run(ampDResult.Output);
-            ampAResult = ampA.Run(ampEResult.Output);
+            var (_, ampAOutputs) = ampA.Run(result);
+            var (_, ampBOutputs) = ampB.Run(ampAOutputs.Last());
+            var (_, ampCOutputs) = ampC.Run(ampBOutputs.Last());
+            var (_, ampDOutputs) = ampD.Run(ampCOutputs.Last());
+            (ampEResult, var ampEOutputs) = ampE.Run(ampDOutputs.Last());
+            result = ampEOutputs.Last();
         }
 
-        return Task.FromResult(ampEResult.Output!.Value);
+        return Task.FromResult(result);
     }
 }

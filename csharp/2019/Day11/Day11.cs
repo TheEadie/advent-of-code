@@ -1,3 +1,5 @@
+using AdventOfCode2019.IntCode;
+
 namespace AdventOfCode2019.Day11;
 
 public class Day11
@@ -39,10 +41,10 @@ public class Day11
             for (var x = 0; x < 41; x++)
             {
                 var panelColour = GetPanelColour(new Coordinate(x, y), panels);
-                Console.Write(panelColour == 0 ? '.' : 'x');
+                //Console.Write(panelColour == 0 ? '.' : 'x');
             }
 
-            Console.WriteLine();
+            //Console.WriteLine();
         }
 
         const string answer = "PFKHECZU";
@@ -52,19 +54,20 @@ public class Day11
     private void RunRobot(Dictionary<Coordinate, int> panels, IntCode.IntCode emulator)
     {
         var robot = new Robot();
-        var inputColour = GetPanelColour(robot.Location, panels);
-        var outputs = emulator.GetOutputs(inputColour, 2).ToArray();
+        var result = IntCodeStatus.Running;
 
-        while (outputs.Any())
+        while (result != IntCodeStatus.Halted)
         {
-            var outputColour = (int) outputs[0];
-            var outputDirection = (int) outputs[1];
+            var inputColour = GetPanelColour(robot.Location, panels);
+            (result, var outputs) = emulator.Run(inputColour);
+            outputs = outputs.ToArray();
+            var outputColour = (int) outputs.ElementAt(0);
+            var outputDirection = (int) outputs.ElementAt(1);
             UpdatePanelColour(robot.Location, panels, outputColour);
             robot.Move(outputDirection);
-            inputColour = GetPanelColour(robot.Location, panels);
-            outputs = emulator.GetOutputs(inputColour, 2).ToArray();
         }
     }
+
 
     private void UpdatePanelColour(Coordinate panel, Dictionary<Coordinate, int> map, int colour)
     {

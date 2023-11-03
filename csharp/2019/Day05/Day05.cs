@@ -14,8 +14,9 @@ public class Day05
         var program = input.Split(',').Select(long.Parse).ToArray();
 
         var emulator = new IntCode.IntCode(program);
+        var (_, outputs) = emulator.Run(1);
 
-        var answer = emulator.GetOutputs(1).Last();
+        var answer = outputs.Last();
         _session.PrintAnswer(1, answer!);
         answer.ShouldBe(16225258);
     }
@@ -27,8 +28,9 @@ public class Day05
         var program = input.Split(',').Select(long.Parse).ToArray();
 
         var emulator = new IntCode.IntCode(program);
+        var (_, outputs) = emulator.Run(5);
 
-        var answer = emulator.GetOutputs(5).Last();
+        var answer = outputs.Last();
         _session.PrintAnswer(2, answer!);
         answer.ShouldBe(2808771);
     }

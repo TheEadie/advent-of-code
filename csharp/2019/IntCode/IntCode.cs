@@ -16,7 +16,29 @@ public class IntCode
         _pc = 0;
     }
 
-    public IntCodeReturn Run(long? input = null)
+    public (IntCodeStatus, IEnumerable<long>) Run(long? input = null)
+    {
+        var output = new List<long>(0);
+
+        var result = RunUntilExitOrNeedsInput(input);
+        if (result.Status == IntCodeStatus.OutputAvailable)
+        {
+            output.Add(result.Output!.Value);
+        }
+
+        while (result.Status != IntCodeStatus.Halted && result.Status != IntCodeStatus.AwaitingInput)
+        {
+            result = RunUntilExitOrNeedsInput();
+            if (result.Status == IntCodeStatus.OutputAvailable)
+            {
+                output.Add(result.Output!.Value);
+            }
+        }
+
+        return (result.Status, output);
+    }
+
+    private IntCodeReturn RunUntilExitOrNeedsInput(long? input = null)
     {
         if (input.HasValue)
         {
@@ -33,28 +55,6 @@ public class IntCode
         }
 
         return new IntCodeReturn(IntCodeStatus.Halted, null);
-    }
-
-    public IEnumerable<long> GetOutputs(long? input = null, int maxOutputs = int.MaxValue)
-    {
-        var output = new List<long>(0);
-
-        var result = Run(input);
-        if (result.Status == IntCodeStatus.OutputAvailable)
-        {
-            output.Add(result.Output!.Value);
-        }
-
-        while (result.Status != IntCodeStatus.Halted && output.Count < maxOutputs)
-        {
-            result = Run();
-            if (result.Status == IntCodeStatus.OutputAvailable)
-            {
-                output.Add(result.Output!.Value);
-            }
-        }
-
-        return output;
     }
 
     private IntCodeReturn Step()
