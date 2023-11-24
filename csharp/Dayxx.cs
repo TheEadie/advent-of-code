@@ -2,7 +2,8 @@ namespace AdventOfCodeYEAR.Dayxx;
 
 public class Dayxx
 {
-    private readonly AdventSession _session = new(0000, 00, "");
+    // https://adventofcode.com/YEAR/day/DAYNOZEROPAD
+    private readonly AdventSession _session = new(0000, 00, "TITLE");
 
     [OneTimeSetUp]
     public void SetUp() => _session.PrintHeading();
