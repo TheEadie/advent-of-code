@@ -41,12 +41,14 @@ public static class PathFinding
             foreach (var neighbour in getNeighbours(current))
             {
                 var tentativeGScore = costSoFar[current] + getCost(current, neighbour);
-                if (!costSoFar.ContainsKey(neighbour) || tentativeGScore < costSoFar[neighbour])
+                if (costSoFar.TryGetValue(neighbour, out var value) && tentativeGScore >= value)
                 {
-                    cameFrom[neighbour] = current;
-                    costSoFar[neighbour] = tentativeGScore;
-                    queue.Enqueue(neighbour, tentativeGScore + getDistance(neighbour));
+                    continue;
                 }
+
+                cameFrom[neighbour] = current;
+                costSoFar[neighbour] = tentativeGScore;
+                queue.Enqueue(neighbour, tentativeGScore + getDistance(neighbour));
             }
         }
 

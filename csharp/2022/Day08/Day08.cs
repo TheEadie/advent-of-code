@@ -43,12 +43,12 @@ public class Day08
 
     private static IEnumerable<int> MoveAlongVector(IDictionary<Coordinate, int> input, Coordinate coordinate, Vector step)
     {
-        var next = new Coordinate(coordinate.X + step.X, coordinate.Y + step.Y);
+        var next = coordinate + step;
 
         while (input.ContainsKey(next))
         {
             yield return input[next];
-            next = new Coordinate(next.X + step.X, next.Y + step.Y);
+            next += step;
         }
     }
 

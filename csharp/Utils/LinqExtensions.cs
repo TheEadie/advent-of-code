@@ -29,8 +29,8 @@ public static class LinqExtensions
         var array = source.ToArray();
         return PermutateInner(array, Enumerable.Empty<T>());
 
-        IEnumerable<T[]> PermutateInner(T[] reminder, IEnumerable<T> prefix) =>
-            !reminder.Any()
+        IEnumerable<T[]> PermutateInner(IReadOnlyCollection<T> reminder, IEnumerable<T> prefix) =>
+            reminder.Count == 0
                 ? new[] { prefix.ToArray() }
                 : reminder.SelectMany(
                     (c, i) => PermutateInner(

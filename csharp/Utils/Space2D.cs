@@ -39,4 +39,14 @@ public record Vector(int X, int Y)
     public Vector TurnLeft() => new(Y, -X);
 
     public Vector TurnRight() => new(-Y, X);
+
+    public static IEnumerable<Vector> FourDirections() =>
+    [
+        Up,
+        Down,
+        Left,
+        Right
+    ];
 }
+
+

@@ -2,21 +2,10 @@ using System.Diagnostics;
 
 namespace Utils;
 
-public class AdventSession
+public class AdventSession(int year, int day, string name = "")
 {
-    private readonly int _year;
-    private readonly int _day;
-    private readonly string _name;
     private string? _filename;
-    private readonly Stopwatch _timer;
-
-    public AdventSession(int year, int day, string name = "")
-    {
-        _year = year;
-        _day = day;
-        _name = name;
-        _timer = new Stopwatch();
-    }
+    private readonly Stopwatch _timer = new();
 
     public async Task<string> Start(string filename)
     {
@@ -28,7 +17,7 @@ public class AdventSession
 
     private async Task<string> GetInput(string filename)
     {
-        var filePath = $"../../../Day{_day:00}/{filename}";
+        var filePath = $"../../../Day{day:00}/{filename}";
 
         if (File.Exists(filePath))
         {
@@ -42,7 +31,7 @@ public class AdventSession
 
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("Cookie", $"session={sessionToken}");
-            var input = await httpClient.GetStringAsync(new Uri($"https://adventofcode.com/{_year}/day/{_day}/input"));
+            var input = await httpClient.GetStringAsync(new Uri($"https://adventofcode.com/{year}/day/{day}/input"));
             input = input.Trim('\r', '\n');
             await File.WriteAllTextAsync($"{filePath}", input);
             return input;
@@ -51,7 +40,7 @@ public class AdventSession
         throw new FileNotFoundException("File is not the puzzle input and can not be found", filename);
     }
 
-    public void PrintHeading() => Console.Error.WriteLine($"\n--- {_year} - Day {_day}: {_name}");
+    public void PrintHeading() => Console.Error.WriteLine($"\n--- {year} - Day {day}: {name}");
 
     public void PrintAnswer(int part, object answer)
     {
