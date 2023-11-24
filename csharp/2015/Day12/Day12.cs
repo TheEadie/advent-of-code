@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
 namespace AdventOfCode2015.Day12;
@@ -23,50 +24,25 @@ public class Day12
     }
 
     [TestCase("Sample.txt", 4)]
-    [TestCase("Puzzle Input.txt", 0)]
+    [TestCase("Puzzle Input.txt", 96852)]
     public async Task Part2(string inputFile, int expected)
     {
         var input = await _session.Start(inputFile);
 
-        var objectScopes = new Stack<int>();
-        var arrayScopes = new Stack<int>();
-        var subTotal = 0;
-        var objects = new List<string>();
+        var json = JsonNode.Parse(input);
+        var answer = Traverse(json);
 
-        for (var i = 0; i < input.Length; i++)
-        {
-            var character = input[i];
-            if (character == '{')
-            {
-                objectScopes.Push(i);
-            }
-
-            if (character == '}')
-            {
-                var start = objectScopes.Pop();
-                var content = input.Substring(start, i - start + 1);
-
-                if (objectScopes.Count == 0)
-                {
-                    objects.Add(content);
-                }
-            }
-
-            if (character == '[')
-            {
-                arrayScopes.Push(i);
-            }
-
-            if (character == ',')
-            {
-                var start = arrayScopes.Pop();
-                var _ = input.Substring(start + 1, i - start);
-            }
-        }
-
-
-        var answer = subTotal;
         Console.WriteLine(answer);
         answer.ShouldBe(expected);
     }
+
+    private static int Traverse(JsonNode? node) =>
+        node switch
+        {
+            JsonArray array => array.Sum(Traverse),
+            JsonObject obj => obj.Any(x => x.Value is JsonValue content && content.ToString() == "red")
+                ? 0
+                : obj.Sum(x => Traverse(x.Value)),
+            _ => node is JsonValue value && int.TryParse(value.ToString(), out var num) ? num : 0
+        };
 }
