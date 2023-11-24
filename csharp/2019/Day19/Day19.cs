@@ -41,7 +41,7 @@ public class Day19
         answer.ShouldBe(expected);
     }
 
-    private static Coordinate FindSquare(ICollection<Coordinate> beam)
+    private static Coordinate FindSquare(List<Coordinate> beam)
     {
         foreach (var (x, y) in beam)
         {
