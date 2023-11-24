@@ -10,18 +10,22 @@ public class Day03
     [Test]
     public async Task Part1()
     {
-        var directions = (await ParseInput()).ToList();
-        var visited = GetVisitedHouses(directions);
+        var input = await _session.Start("Puzzle Input.txt");
 
-        var answer = visited.GroupBy(x => x).Count();
-        Console.WriteLine(answer);
+        var directions = input.ToCharArray();
+        var answer = GetVisitedHouses(directions)
+            .GroupBy(x => x)
+            .Count();
+
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(2572);
     }
 
     [Test]
     public async Task Part2()
     {
-        var directions = (await ParseInput()).ToList();
+        var input = await _session.Start("Puzzle Input.txt");
+        var directions = input.ToCharArray();
         var santa = directions.Where((x, i) => i % 2 == 0);
         var roboSanta = directions.Where((x, i) => i % 2 != 0);
 
@@ -29,7 +33,7 @@ public class Day03
         visited.AddRange(GetVisitedHouses(roboSanta));
 
         var answer = visited.GroupBy(x => x).Count();
-        Console.WriteLine(answer);
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(2631);
     }
 
@@ -42,34 +46,24 @@ public class Day03
             switch (direction)
             {
                 case '^':
-                    current = new Coordinate(current.X, current.Y + 1);
+                    current += Vector.Up;
                     visited.Add(current);
                     break;
                 case '>':
-                    current = new Coordinate(current.X + 1, current.Y);
+                    current += Vector.Right;
                     visited.Add(current);
                     break;
                 case '<':
-                    current = new Coordinate(current.X - 1, current.Y);
+                    current += Vector.Left;
                     visited.Add(current);
                     break;
                 case 'v':
-                    current = new Coordinate(current.X, current.Y - 1);
+                    current += Vector.Down;
                     visited.Add(current);
-                    break;
-                default:
                     break;
             }
         }
 
         return visited;
     }
-
-    private async Task<IEnumerable<char>> ParseInput()
-    {
-        var input = await _session.Start("Puzzle Input.txt");
-        return input.ToCharArray();
-    }
-
-    private record Coordinate(int X, int Y);
 }

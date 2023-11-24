@@ -11,9 +11,9 @@ public class Day04
     public void SetUp() => _session.PrintHeading();
 
     [Test]
-    public void Part1()
+    public async Task Part1()
     {
-        const string input = "yzbqklnj";
+        var input = await _session.Start("Puzzle Input.txt");
         const int maxToCheck = 1_000_000;
 
         var answer = Enumerable.Range(0, maxToCheck)
@@ -21,14 +21,14 @@ public class Day04
             .First(x => x.Hash.StartsWith("00000"))
             .Number;
 
-        Console.WriteLine(answer);
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(282749);
     }
 
     [Test]
-    public void Part2()
+    public async Task Part2()
     {
-        const string input = "yzbqklnj";
+        var input = await _session.Start("Puzzle Input.txt");
         const int maxToCheck = 1_000_000_000;
 
         var answer = Enumerable.Range(0, maxToCheck)
@@ -36,7 +36,7 @@ public class Day04
             .First(x => x.Hash.StartsWith("000000"))
             .Number;
 
-        Console.WriteLine(answer);
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(9962624);
     }
 

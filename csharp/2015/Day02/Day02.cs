@@ -10,26 +10,28 @@ public class Day02
     [Test]
     public async Task Part1()
     {
-        var presents = (await ParseInput()).ToList();
+        var input = await _session.Start("Puzzle Input.txt");
+        var presents = ParseInput(input).ToList();
 
         var presentArea = presents.Sum(x => 2 * x.Length * x.Width + 2 * x.Width * x.Height + 2 * x.Height * x.Length);
         var extra = presents.Sum(x => new List<int> { x.Length * x.Width, x.Width * x.Height, x.Height * x.Length }.Min());
 
         var answer = presentArea + extra;
-        Console.WriteLine(answer);
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(1588178);
     }
 
     [Test]
     public async Task Part2()
     {
-        var presents = (await ParseInput()).ToList();
+        var input = await _session.Start("Puzzle Input.txt");
+        var presents = ParseInput(input).ToList();
 
         var ribbon = presents.Sum(RibbonForBox);
         var bows = presents.Sum(x => x.Height * x.Length * x.Width);
 
         var answer = ribbon + bows;
-        Console.WriteLine(answer);
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(3783758);
     }
 
@@ -39,16 +41,11 @@ public class Day02
         return 2 * (smallestSides[0] + smallestSides[1]);
     }
 
-    private async Task<IEnumerable<Box>> ParseInput()
+    private static IEnumerable<Box> ParseInput(string input)
     {
-        var input = await _session.Start("Puzzle Input.txt");
-        return input.Split("\n").Select(ParseBox);
-    }
-
-    private static Box ParseBox(string input)
-    {
-        var sections = input.Split('x');
-        return new Box(int.Parse(sections[0]), int.Parse(sections[1]), int.Parse(sections[2]));
+        return input.Split("\n")
+            .Select(x => x.Split('x'))
+            .Select(x => new Box(int.Parse(x[0]), int.Parse(x[1]), int.Parse(x[2])));
     }
 
     private record Box(int Length, int Width, int Height);
