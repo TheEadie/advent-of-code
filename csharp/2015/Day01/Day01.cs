@@ -10,36 +10,40 @@ public class Day01
     [Test]
     public async Task Part1()
     {
-        var moves = await ParseInput();
+        var input = await _session.Start("Puzzle Input.txt");
 
-        var answer = moves.Sum();
-        Console.WriteLine(answer);
+        var answer = input
+            .ToCharArray()
+            .Select(x => x == '(' ? 1 : -1)
+            .Sum();
+
+        _session.PrintAnswer(1, answer);
         answer.ShouldBe(138);
     }
 
     [Test]
     public async Task Part2()
     {
-        var moves = await ParseInput();
-        var currentFloor = 0;
-        var answer = 0;
-        for (var i = 0; i < moves.Length; i++)
-        {
-            currentFloor += moves[i];
-            if (currentFloor == -1)
-            {
-                answer = i + 1;
-                break;
-            }
-        }
+        var input = await _session.Start("Puzzle Input.txt");
 
-        Console.WriteLine(answer);
+        var runningTotal = 0;
+        var answer = input
+            .ToCharArray()
+            .Select(x => x == '(' ? 1 : -1)
+            .Select((x, i) =>
+                {
+                    runningTotal += x;
+                    return (i, runningTotal);
+                })
+            .First(x => x.runningTotal == -1).i + 1;
+
+        _session.PrintAnswer(2, answer);
         answer.ShouldBe(1771);
     }
 
     private async Task<int[]> ParseInput()
     {
         var input = await _session.Start("Puzzle Input.txt");
-        return input.ToCharArray().Select(x => (x == '(') ? 1 : -1).ToArray();
+        return input.ToCharArray().Select(x => x == '(' ? 1 : -1).ToArray();
     }
 }
