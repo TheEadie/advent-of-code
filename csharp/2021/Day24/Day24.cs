@@ -153,86 +153,34 @@ public class Day24
         void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input);
     }
 
-    private class Inp : ICommand
+    private class Inp(RegisterLetter a) : ICommand
     {
-        private readonly RegisterLetter _a;
-
-        public Inp(RegisterLetter a) => _a = a;
-
-        public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input) => registers[_a] = input.Dequeue();
+        public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input) => registers[a] = input.Dequeue();
     }
 
-    private class Mul : ICommand
+    private class Mul(RegisterLetter a, RegisterOrNumber b) : ICommand
     {
-        private readonly RegisterLetter _a;
-        private readonly RegisterOrNumber _b;
-
-
-        public Mul(RegisterLetter a, RegisterOrNumber b)
-        {
-            _a = a;
-            _b = b;
-        }
-
-        public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input) => registers[_a] *= _b.IsRegister ? registers[_b.Register] : _b.Number;
+        public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input) => registers[a] *= b.IsRegister ? registers[b.Register] : b.Number;
     }
 
-    private class Add : ICommand
+    private class Add(RegisterLetter a, RegisterOrNumber b) : ICommand
     {
-        private readonly RegisterLetter _a;
-        private readonly RegisterOrNumber _b;
 
-
-        public Add(RegisterLetter a, RegisterOrNumber b)
-        {
-            _a = a;
-            _b = b;
-        }
-
-        public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input) => registers[_a] += _b.IsRegister ? registers[_b.Register] : _b.Number;
+        public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input) => registers[a] += b.IsRegister ? registers[b.Register] : b.Number;
     }
 
-    private class Div : ICommand
+    private class Div(RegisterLetter a, RegisterOrNumber b) : ICommand
     {
-        private readonly RegisterLetter _a;
-        private readonly RegisterOrNumber _b;
-
-
-        public Div(RegisterLetter a, RegisterOrNumber b)
-        {
-            _a = a;
-            _b = b;
-        }
-
-        public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input) => registers[_a] /= _b.IsRegister ? registers[_b.Register] : _b.Number;
+        public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input) => registers[a] /= b.IsRegister ? registers[b.Register] : b.Number;
     }
 
-    private class Mod : ICommand
+    private class Mod(RegisterLetter a, RegisterOrNumber b) : ICommand
     {
-        private readonly RegisterLetter _a;
-        private readonly RegisterOrNumber _b;
-
-        public Mod(RegisterLetter a, RegisterOrNumber b)
-        {
-            _a = a;
-            _b = b;
-        }
-
-        public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input) => registers[_a] %= _b.IsRegister ? registers[_b.Register] : _b.Number;
+        public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input) => registers[a] %= b.IsRegister ? registers[b.Register] : b.Number;
     }
 
-    private class Eql : ICommand
+    private class Eql(RegisterLetter a, RegisterOrNumber b) : ICommand
     {
-        private readonly RegisterLetter _a;
-        private readonly RegisterOrNumber _b;
-
-
-        public Eql(RegisterLetter a, RegisterOrNumber b)
-        {
-            _a = a;
-            _b = b;
-        }
-
-        public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input) => registers[_a] = registers[_a] == (_b.IsRegister ? registers[_b.Register] : _b.Number) ? 1 : 0;
+        public void Run(Dictionary<RegisterLetter, int> registers, Queue<int> input) => registers[a] = registers[a] == (b.IsRegister ? registers[b.Register] : b.Number) ? 1 : 0;
     }
 }

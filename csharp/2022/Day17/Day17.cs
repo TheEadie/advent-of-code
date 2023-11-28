@@ -139,7 +139,7 @@ public class Day17
                     map.AddRange(potentialBlockX);
                     nextBlock = (nextBlock + 1) % blocks.Count;
                     var height = map.Max(x => x.Y);
-                    currentBlock = blocks[nextBlock].ConvertAll(x => new Coordinate(x.X + 2, x.Y + height + 4)).ToHashSet();
+                    currentBlock = [.. blocks[nextBlock].ConvertAll(x => new Coordinate(x.X + 2, x.Y + height + 4))];
                     howManyBlocks++;
 
                     if (howManyBlocks == numberToDrop)
@@ -152,7 +152,7 @@ public class Day17
                 }
                 else
                 {
-                    currentBlock = potentialBlockY.ToHashSet();
+                    currentBlock = [.. potentialBlockY];
                 }
             }
         }

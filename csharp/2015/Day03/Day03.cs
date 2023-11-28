@@ -61,6 +61,8 @@ public class Day03
                     current += Vector.Down;
                     visited.Add(current);
                     break;
+                default:
+                    break;
             }
         }
 

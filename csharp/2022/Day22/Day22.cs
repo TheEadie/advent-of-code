@@ -89,8 +89,8 @@ public class Day22
         return new Position(newCoordinate, mapping.Item4);
     }
 
-    private readonly List<(Line, Vector, Line, Vector)> _sampleCubeMappings = new()
-    {
+    private readonly List<(Line, Vector, Line, Vector)> _sampleCubeMappings =
+    [
         (new Line(new Coordinate(0, 3), new Coordinate(3, 3)),
             Vector.Up,
             new Line(new Coordinate(11, 0), new Coordinate(8, 0)),
@@ -143,10 +143,10 @@ public class Day22
             Vector.Down,
             new Line(new Coordinate(8, 11), new Coordinate(8, 8)),
             Vector.Right),
-    };
+    ];
 
-    private readonly List<(Line, Vector, Line, Vector)> _puzzleInputCubeMappings = new()
-    {
+    private readonly List<(Line, Vector, Line, Vector)> _puzzleInputCubeMappings =
+    [
         (new Line(new Coordinate(49, 0), new Coordinate(49, 49)),
             Vector.Left,
             new Line(new Coordinate(0, 149), new Coordinate(0, 100)),
@@ -211,7 +211,7 @@ public class Day22
             Vector.Down,
             new Line(new Coordinate(99, 50), new Coordinate(99, 99)),
             Vector.Left),
-    };
+    ];
 
     private static Position ProcessMove(
         Move move,

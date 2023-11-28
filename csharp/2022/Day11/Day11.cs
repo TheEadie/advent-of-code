@@ -85,24 +85,24 @@ public class Day11
     private static Monkey[] ParseInput(string inputFile)
     {
         return inputFile.Contains("Sample")
-            ? (new[]
-            {
-                new Monkey(0, new List<long> {79, 98}, o => o * 19, 23, 2, 3),
-                new Monkey(1, new List<long> {54, 65, 75, 74}, o => o + 6, 19, 2, 0),
-                new Monkey(2, new List<long> {79, 60, 97}, o => o * o, 13, 1, 3),
-                new Monkey(3, new List<long> {74}, o => o + 3, 17, 0, 1)
-            })
+            ? (
+            [
+                new Monkey(0, [79, 98], o => o * 19, 23, 2, 3),
+                new Monkey(1, [54, 65, 75, 74], o => o + 6, 19, 2, 0),
+                new Monkey(2, [79, 60, 97], o => o * o, 13, 1, 3),
+                new Monkey(3, [74], o => o + 3, 17, 0, 1)
+            ])
             : inputFile.Contains("Puzzle Input")
             ? (new[]
             {
-                new Monkey(0, new List<long> {52, 60, 85, 69, 75, 75}, o => o * 17, 13, 6, 7),
-                new Monkey(1, new List<long> {96, 82, 61, 99, 82, 84, 85}, o => o + 8, 7, 0, 7),
-                new Monkey(2, new List<long> {95, 79}, o => o + 6, 19, 5, 3),
-                new Monkey(3, new List<long> {88, 50, 82, 65, 77}, o => o * 19, 2, 4, 1),
-                new Monkey(4, new List<long> {66, 90, 59, 90, 87, 63, 53, 88}, o => o + 7, 5, 1, 0),
-                new Monkey(5, new List<long> {92, 75, 62}, o => o * o, 3, 3, 4),
-                new Monkey(6, new List<long> {94, 86, 76, 67}, o => o + 1, 11, 5, 2),
-                new Monkey(7, new List<long> {57}, o => o + 2, 17, 6, 2),
+                new Monkey(0, [52, 60, 85, 69, 75, 75], o => o * 17, 13, 6, 7),
+                new Monkey(1, [96, 82, 61, 99, 82, 84, 85], o => o + 8, 7, 0, 7),
+                new Monkey(2, [95, 79], o => o + 6, 19, 5, 3),
+                new Monkey(3, [88, 50, 82, 65, 77], o => o * 19, 2, 4, 1),
+                new Monkey(4, [66, 90, 59, 90, 87, 63, 53, 88], o => o + 7, 5, 1, 0),
+                new Monkey(5, [92, 75, 62], o => o * o, 3, 3, 4),
+                new Monkey(6, [94, 86, 76, 67], o => o + 1, 11, 5, 2),
+                new Monkey(7, [57], o => o + 2, 17, 6, 2),
             })
             : throw new NotImplementedException();
     }

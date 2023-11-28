@@ -192,7 +192,7 @@ public class IntCode
     {
         var a = GetValue(modeA, Memory[_pc + 1]);
         _pc += 2;
-        return new[] { a };
+        return [a];
     }
 
     private void JumpIfTrue(ParamMode modeA, ParamMode modeB)

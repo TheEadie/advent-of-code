@@ -39,72 +39,72 @@ public class Benchmark
     public void SumOfPrimes_100000()
     {
         var sumOfPrimes = new IntCode(_sumOfPrimesRom, 100_000);
-        sumOfPrimes.Run(100_000);
+        _ = sumOfPrimes.Run(100_000);
     }
 
     [Benchmark]
     public void SumOfPrimes_2000000()
     {
         var sumOfPrimes = new IntCode(_sumOfPrimesRom, 2_000_000);
-        sumOfPrimes.Run((2_000_000));
+        _ = sumOfPrimes.Run(2_000_000);
     }
 
     [Benchmark]
     public void Ackermann_3_6()
     {
         var ackermann = new IntCode(_ackermannRom);
-        ackermann.Run(3);
-        ackermann.Run(6);
+        _ = ackermann.Run(3);
+        _ = ackermann.Run(6);
     }
 
     [Benchmark]
     public void ISqrt_130()
     {
         var isqrt = new IntCode(_iSqrtRom);
-        isqrt.Run(130);
+        _ = isqrt.Run(130);
     }
 
     [Benchmark]
     public void ISqrt_1300000()
     {
         var isqrt = new IntCode(_iSqrtRom);
-        var task = isqrt.Run(1_300_000);
+        _ = isqrt.Run(1_300_000);
     }
 
     [Benchmark]
     public void DivMod_1024_3()
     {
         var divMod = new IntCode(_divModRom);
-        divMod.Run(1024);
-        divMod.Run(3);
+        _ = divMod.Run(1024);
+        _ = divMod.Run(3);
     }
 
     [Benchmark]
     public void DivMod_1024000_3()
     {
         var divMod = new IntCode(_divModRom);
-        divMod.Run(1_024_000);
-        divMod.Run(3);
+        _ = divMod.Run(1_024_000);
+        _ = divMod.Run(3);
     }
 
     [Benchmark]
     public void Factors_19338240()
     {
         var factors = new IntCode(_factorsRom, 10_000_000);
-        var task = factors.Run(19_338_240);
+        _ = factors.Run(19_338_240);
     }
 
     [Benchmark]
     public void Factors_2147483647()
     {
         var factors = new IntCode(_factorsRom, 10_000_000);
-        factors.Run(2_147_483_647);
+        _ = factors.Run(2_147_483_647);
     }
 
     [Benchmark]
     public void Factors_19201644899()
     {
         var factors = new IntCode(_factorsRom, int.MaxValue - 100);
-        factors.Run(19201644899);
+        _ = factors.Run(19201644899);
     }
 }

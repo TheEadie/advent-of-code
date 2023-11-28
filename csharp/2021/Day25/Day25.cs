@@ -130,13 +130,11 @@ public class Day25
         return next;
     }
 
-    private class SeaFloor
+    private class SeaFloor(int width, int height)
     {
-        private readonly SeaCucumber?[,] _cucumbers;
+        private readonly SeaCucumber?[,] _cucumbers = new SeaCucumber?[height, width];
         public int Width => _cucumbers.GetLength(1);
         public int Height => _cucumbers.GetLength(0);
-
-        public SeaFloor(int width, int height) => _cucumbers = new SeaCucumber?[height, width];
 
         public void AddCucumber(SeaCucumber? type, int x, int y)
         {

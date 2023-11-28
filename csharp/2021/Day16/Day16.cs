@@ -139,16 +139,10 @@ public class Day16
 
     private enum PacketType { Sum, Product, Minimum, Maximum, Literal, GreaterThan, LessThan, EqualTo }
 
-    private class BinaryStream
+    private class BinaryStream(char[] content)
     {
-        private readonly char[] _bits;
-        private int _pointer;
-
-        public BinaryStream(char[] content)
-        {
-            _bits = content;
-            _pointer = 0;
-        }
+        private readonly char[] _bits = content;
+        private int _pointer = 0;
 
         public char[] Grab(int numberOfBits)
         {

@@ -60,13 +60,10 @@ public class Day10
                 .Select(x =>
                     x.Split(" ")[0] switch
                     {
-                        "noop" => new OpCode(new Func<Registers, bool>[] {
-                            _ => true
-                        }),
-                        "addx" => new OpCode(new Func<Registers, bool>[]{
-                            _ => false,
+                        "noop" => new OpCode([_ => true]),
+                        "addx" => new OpCode([_ => false,
                             r => {r.X += int.Parse(x.Split(" ")[1]); return true;}
-                    }),
+                        ]),
                         _ => throw new ArgumentOutOfRangeException()
                     });
     }
@@ -101,26 +98,19 @@ public class Day10
         }
     }
 
-    private class Gpu
+    private class Gpu(Registers registers)
     {
-        private readonly Registers _registers;
-        private readonly bool[,] _pixels;
+        private readonly bool[,] _pixels = new bool[6, 40];
         private int _cycle;
-
-        public Gpu(Registers registers)
-        {
-            _registers = registers;
-            _pixels = new bool[6, 40];
-        }
 
         public void Step()
         {
             var x = _cycle % 40;
             var y = _cycle / 40;
 
-            _pixels[y, x] = x == _registers.X
-                || x == _registers.X + 1
-                || x == _registers.X - 1;
+            _pixels[y, x] = x == registers.X
+                || x == registers.X + 1
+                || x == registers.X - 1;
 
             _cycle++;
         }

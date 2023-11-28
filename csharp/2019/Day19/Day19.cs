@@ -61,7 +61,7 @@ public class Day19
     private static bool IsInBeam(long[] program, Coordinate c)
     {
         var emulator = new IntCode.IntCode(program);
-        emulator.Run(c.X);
+        _ = emulator.Run(c.X);
         var (_, outputs) = emulator.Run(c.Y);
         return outputs.Last() == 1;
     }

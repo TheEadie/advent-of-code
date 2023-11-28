@@ -211,22 +211,12 @@ public class Day21
         };
     }
 
-    private class Monkey
+    private class Monkey(string id, Operation operation, string? left, string? right, long? value)
     {
-        public string Id { get; }
-        public Operation Operation { get; }
-        public string? Left { get; set; }
-        public string? Right { get; set; }
-        public long? Value { get; }
-
-        public Monkey(string id, Operation operation, string? left, string? right, long? value)
-        {
-            Id = id;
-            Operation = operation;
-            Left = left;
-            Right = right;
-            Value = value;
-        }
-
+        public string Id { get; } = id;
+        public Operation Operation { get; } = operation;
+        public string? Left { get; set; } = left;
+        public string? Right { get; set; } = right;
+        public long? Value { get; } = value;
     }
 }
