@@ -28,35 +28,47 @@ public class Day19
         var input = await _session.Start(inputFile);
         var program = input.Split(',').Select(long.Parse).ToArray();
 
-        var beam = Enumerable.Range(900, 1000)
-            .SelectMany(x => Enumerable.Range(1000, 1000).Select(y => new Coordinate(x, y)))
-            .Where(c => IsInBeam(program, c))
-            .ToList();
+        var firstCoordinate = FindSquare(program, 100);
 
-        var found = FindSquare(beam);
-
-        var answer = 10_000 * found.X + found.Y;
+        var answer = 10_000 * firstCoordinate.X + firstCoordinate.Y;
 
         _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 
-    private static Coordinate FindSquare(List<Coordinate> beam)
+    private static Coordinate FindSquare(long[] program, int size)
     {
-        foreach (var (x, y) in beam)
+        var endOfRow = new Coordinate(0, 100);
+        var startOfRow = new Coordinate(0, 100);
+
+        while (endOfRow.Y < 1_000_000)
         {
-            var coordinateY = new Coordinate(x, y + 99);
-            var coordinateX = new Coordinate(x + 99, y);
-            if (beam.Contains(coordinateY) && beam.Contains(coordinateX))
+            while(!IsInBeam(program, startOfRow))
             {
-                var coordinate = new Coordinate(x, y);
-                Console.Error.WriteLine($"Found it! {coordinate}");
-                return coordinate;
+                startOfRow += Vector.Right;
             }
+
+            endOfRow = startOfRow;
+
+            while (IsInBeam(program, endOfRow))
+            {
+                if (FoundSquare(program, endOfRow, size))
+                {
+                    return endOfRow;
+                }
+
+                endOfRow += Vector.Right;
+            }
+
+            startOfRow += Vector.Down;
         }
 
         return new Coordinate(0, 0);
     }
+
+    private static bool FoundSquare(long[] program, Coordinate coordinate, int size) =>
+        IsInBeam(program, coordinate with { X = coordinate.X + size - 1 }) &&
+        IsInBeam(program, coordinate with { Y = coordinate.Y + size - 1 });
 
     private static bool IsInBeam(long[] program, Coordinate c)
     {
