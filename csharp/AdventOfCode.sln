@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2015", "2015\2015.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{8E402FF2-6B80-4CCD-99C7-B95D4030498C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2023", "2023\2023.csproj", "{3D715368-242A-479D-A7FB-FDE5BAC16B99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{8E402FF2-6B80-4CCD-99C7-B95D4030498C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E402FF2-6B80-4CCD-99C7-B95D4030498C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E402FF2-6B80-4CCD-99C7-B95D4030498C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D715368-242A-479D-A7FB-FDE5BAC16B99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D715368-242A-479D-A7FB-FDE5BAC16B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D715368-242A-479D-A7FB-FDE5BAC16B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D715368-242A-479D-A7FB-FDE5BAC16B99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
