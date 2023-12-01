@@ -6,15 +6,11 @@ if [[ -z "${AOC_SESSION_COOKIE}" ]]; then
     exit
 fi
 
-YEAR="${1}"
-DAY="${2}"
+YEAR="${1-$(date +%Y)}"
+DAY="${2-$(date +%d)}"
 
-if [[ -z "${YEAR}" || -z "${DAY}" ]]; then
-    YEAR="$(date +%Y)"
-    DAY="$(date +%d)"
-fi
-
-if [[ "${DAY}" -lt 10 ]]; then
+# If day is less than 10 and doesn't have a leading zero, add one
+if [[ "${DAY}" -lt 10 && "${DAY}" != 0* ]]; then
     DAY="0${DAY}"
 fi
 
