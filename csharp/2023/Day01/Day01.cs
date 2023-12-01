@@ -15,10 +15,8 @@ public class Day01
         var input = await _session.Start(inputFile);
 
         var answer = input.Split("\n")
-            .Select(x => x.ToCharArray()
-                .Where(c => int.TryParse(c.ToString(), out _))
-                .ToList())
-            .Select(x => $"{x.First()}{x.Last()}")
+            .Select(x => x.ToCharArray().Where(char.IsDigit).ToList())
+            .Select(x => $"{x[0]}{x[^1]}")
             .Select(int.Parse)
             .Sum();
 
@@ -33,25 +31,25 @@ public class Day01
         var input = await _session.Start(inputFile);
 
         var answer = input.Split("\n")
-            .Select(input1 => input1.Select((x, i) => input1[i..])
-                .Select(
-                    x => (char?) (x switch
-                    {
-                        ['1', ..] or ['o', 'n', 'e', ..] => '1',
-                        ['2', ..] or ['t', 'w', 'o', ..] => '2',
-                        ['3', ..] or ['t', 'h', 'r', 'e', 'e', ..] => '3',
-                        ['4', ..] or ['f', 'o', 'u', 'r', ..] => '4',
-                        ['5', ..] or ['f', 'i', 'v', 'e', ..] => '5',
-                        ['6', ..] or ['s', 'i', 'x', ..] => '6',
-                        ['7', ..] or ['s', 'e', 'v', 'e', 'n', ..] => '7',
-                        ['8', ..] or ['e', 'i', 'g', 'h', 't', ..] => '8',
-                        ['9', ..] or ['n', 'i', 'n', 'e', ..] => '9',
-                        _ => null
-                    }))
-                .Where(x => x is not null)
-                .Select(number => number!.Value)
-                .ToList())
-            .Select(x => $"{x.First()}{x.Last()}")
+            .Select(
+                line => line.Select((x, i) => line[i..])
+                    .Select(
+                        subString => (char?) (subString switch
+                        {
+                            ['1', ..] or ['o', 'n', 'e', ..] => '1',
+                            ['2', ..] or ['t', 'w', 'o', ..] => '2',
+                            ['3', ..] or ['t', 'h', 'r', 'e', 'e', ..] => '3',
+                            ['4', ..] or ['f', 'o', 'u', 'r', ..] => '4',
+                            ['5', ..] or ['f', 'i', 'v', 'e', ..] => '5',
+                            ['6', ..] or ['s', 'i', 'x', ..] => '6',
+                            ['7', ..] or ['s', 'e', 'v', 'e', 'n', ..] => '7',
+                            ['8', ..] or ['e', 'i', 'g', 'h', 't', ..] => '8',
+                            ['9', ..] or ['n', 'i', 'n', 'e', ..] => '9',
+                            _ => null
+                        }))
+                    .Where(x => x is not null)
+                    .ToList())
+            .Select(x => $"{x[0]}{x[^1]}")
             .Select(int.Parse)
             .Sum();
 
