@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace AdventOfCode2023.Day01;
 
 public class Day01
@@ -14,11 +16,7 @@ public class Day01
     {
         var input = await _session.Start(inputFile);
 
-        var answer = input.Split("\n")
-            .Select(x => x.ToCharArray().Where(char.IsDigit).ToList())
-            .Select(x => $"{x[0]}{x[^1]}")
-            .Select(int.Parse)
-            .Sum();
+        var answer = GetAnswer(input, @"\d");
 
         _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
@@ -30,30 +28,35 @@ public class Day01
     {
         var input = await _session.Start(inputFile);
 
-        var answer = input.Split("\n")
-            .Select(
-                line => line.Select((x, i) => line[i..])
-                    .Select(
-                        subString => (char?) (subString switch
-                        {
-                            ['1', ..] or ['o', 'n', 'e', ..] => '1',
-                            ['2', ..] or ['t', 'w', 'o', ..] => '2',
-                            ['3', ..] or ['t', 'h', 'r', 'e', 'e', ..] => '3',
-                            ['4', ..] or ['f', 'o', 'u', 'r', ..] => '4',
-                            ['5', ..] or ['f', 'i', 'v', 'e', ..] => '5',
-                            ['6', ..] or ['s', 'i', 'x', ..] => '6',
-                            ['7', ..] or ['s', 'e', 'v', 'e', 'n', ..] => '7',
-                            ['8', ..] or ['e', 'i', 'g', 'h', 't', ..] => '8',
-                            ['9', ..] or ['n', 'i', 'n', 'e', ..] => '9',
-                            _ => null
-                        }))
-                    .Where(x => x is not null)
-                    .ToList())
-            .Select(x => $"{x[0]}{x[^1]}")
-            .Select(int.Parse)
-            .Sum();
+        var answer = GetAnswer(input, @"\d|one|two|three|four|five|six|seven|eight|nine");
 
         _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
+
+    private static int GetAnswer(string input, string regex) =>
+        input.Split("\n")
+            .Select(x =>
+                {
+                    var first = GetNumber(Regex.Match(x, regex).Value);
+                    var last = GetNumber(Regex.Match(x, regex, RegexOptions.RightToLeft).Value);
+                    return $"{first}{last}";
+                })
+            .Select(int.Parse)
+            .Sum();
+
+    private static int GetNumber(string input) =>
+        input switch
+        {
+            "one" or "1" => 1,
+            "two" or "2" => 2,
+            "three" or "3" => 3,
+            "four" or "4" => 4,
+            "five" or "5" => 5,
+            "six" or "6" => 6,
+            "seven" or "7" => 7,
+            "eight" or "8" => 8,
+            "nine" or "9" => 9,
+            _ => throw new ArgumentOutOfRangeException(nameof(input))
+        };
 }
