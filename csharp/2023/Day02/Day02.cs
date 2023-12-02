@@ -29,6 +29,27 @@ public class Day02
         answer.ShouldBe(expected);
     }
 
+    [TestCase("Sample.txt", 2_286)]
+    [TestCase("Puzzle Input.txt", 71_535)]
+    public async Task Part2(string inputFile, int expected)
+    {
+        var input = await _session.Start(inputFile);
+        var games = input.Split("\n").Select(ParseLine).ToList();
+
+        var answer = games
+            .Select(
+                x => (
+                    x.Id,
+                    Red: x.Rounds.Max(r => r.Red),
+                    Green: x.Rounds.Max(r => r.Green),
+                    Blue: x.Rounds.Max(r => r.Blue)))
+            .Select(x => x.Red * x.Green * x.Blue)
+            .Sum();
+
+        _session.PrintAnswer(2, answer);
+        answer.ShouldBe(expected);
+    }
+
     private Game ParseLine(string line)
     {
         var parts = line.Split(":");
@@ -52,18 +73,6 @@ public class Day02
         }
 
         return new Game(id, rounds);
-    }
-
-    [TestCase("Sample.txt", 0)]
-    [TestCase("Puzzle Input.txt", 0)]
-    public async Task Part2(string inputFile, int expected)
-    {
-        var input = await _session.Start(inputFile);
-
-        var answer = 0;
-
-        _session.PrintAnswer(2, answer);
-        answer.ShouldBe(expected);
     }
 
     private record Game(int Id, IEnumerable<Round> Rounds);
