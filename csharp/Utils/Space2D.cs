@@ -36,6 +36,11 @@ public record Vector(int X, int Y)
     public static Vector Left => new(-1, 0);
     public static Vector Right => new(1, 0);
 
+    public static Vector UpLeft => new(-1, -1);
+    public static Vector UpRight => new(1, -1);
+    public static Vector DownLeft => new(-1, 1);
+    public static Vector DownRight => new(1, 1);
+
     public Vector TurnLeft() => new(Y, -X);
 
     public Vector TurnRight() => new(-Y, X);
@@ -44,6 +49,18 @@ public record Vector(int X, int Y)
     [
         Up,
         Down,
+        Left,
+        Right
+    ];
+
+    public static IEnumerable<Vector> EightDirections() =>
+    [
+        Up,
+        UpLeft,
+        UpRight,
+        Down,
+        DownLeft,
+        DownRight,
         Left,
         Right
     ];
