@@ -18,9 +18,7 @@ public class Day03
         var (numbers, symbols) = ParseInput(input);
 
         var answer = symbols
-            .Select(x => Vector.EightDirections().Select(v => x.Position + v).ToHashSet())
-            .Select(x => numbers.Where(n => n.Positions.Intersect(x).Any()))
-            .SelectMany(x => x)
+            .SelectMany(x => GetAdjacentNumbers(x.Key, numbers))
             .Sum(x => x.Value);
 
         _session.PrintAnswer(1, answer);
@@ -36,8 +34,7 @@ public class Day03
 
         var answer = symbols
             .Where(x => x.Value == "*")
-            .Select(x => Vector.EightDirections().Select(v => x.Position + v).ToHashSet())
-            .Select(x => numbers.Where(n => n.Positions.Intersect(x).Any()).ToList())
+            .Select(x => GetAdjacentNumbers(x.Key, numbers).ToList())
             .Where(x => x.Count == 2)
             .Select(x => x[0].Value * x[1].Value)
             .Sum();
@@ -46,25 +43,41 @@ public class Day03
         answer.ShouldBe(expected);
     }
 
-    private static (IEnumerable<Number>, IEnumerable<Symbol>) ParseInput(string input)
+    private static IEnumerable<Number> GetAdjacentNumbers(
+        Coordinate position,
+        IDictionary<Coordinate, Number> numbers) =>
+            Vector.EightDirections().Select(v => position + v)
+                .Select(c => numbers.TryGetValue(c, out var n) ? n : null)
+                .Where(n => n != null)
+                .Distinct()!;
+
+    private static (IDictionary<Coordinate, Number>, IDictionary<Coordinate, string>) ParseInput(string input)
     {
         var lines = input.Split("\n");
 
         var numbers = lines.SelectMany(
             (x, i) => Regex.Matches(x, @"\d+").Select(
-                m => new Number(
-                    int.Parse(m.Value),
-                    Enumerable.Range(m.Index, m.Length)
+                m => (
+                    Value: int.Parse(m.Value),
+                    Positions: Enumerable.Range(m.Index, m.Length)
                         .Select(j => new Coordinate(j, i))
                         .ToList())));
-
         var symbols = lines.SelectMany(
             (x, i) => Regex.Matches(x, @"[^.0-9]").Select(
-                m => new Symbol(m.Value, new Coordinate(m.Index, i))));
-        return (numbers, symbols);
+                m => (m.Value, Position: new Coordinate(m.Index, i))))
+            .ToDictionary(x => x.Position, x => x.Value);
+
+        var map = new Dictionary<Coordinate, Number>();
+        foreach (var number in numbers)
+        {
+            foreach (var position in number.Positions)
+            {
+                map.Add(position, new Number(number.Item1));
+            }
+        }
+
+        return (map, symbols);
     }
 
-    private record Number(int Value, IReadOnlyList<Coordinate> Positions);
-
-    private record Symbol(string Value, Coordinate Position);
+    private record Number(int Value);
 }
