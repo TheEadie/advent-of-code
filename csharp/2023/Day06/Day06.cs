@@ -21,11 +21,7 @@ public class Day06
         var records = Regex.Matches(lines[1], @"\d+").Select(x => int.Parse(x.Value));
         var races = times.Select((x, i) => new Race(x, records.ElementAt(i)));
 
-        var answer = races.Select(
-                x => LongEnumerable.Range(0, x.Time)
-                    .Select(t => (x.Time -t) *t)
-                    .Count(d => d > x.Record))
-            .Aggregate(1L, (current, x) => current * x);
+        var answer = races.Select(WaysToWin).Aggregate(1L, (current, x) => current * x);
 
         _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
@@ -41,13 +37,14 @@ public class Day06
         var records = new string(lines[1].Split(":")[1].Where(x => x != ' ').ToArray());
         var race = new Race(long.Parse(times), long.Parse(records));
 
-        var answer = LongEnumerable.Range(0, race.Time)
-            .Select(t => (race.Time - t) * t)
-            .Count(d => d > race.Record);
+        var answer = WaysToWin(race);
 
         _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
+
+    private static int WaysToWin(Race race) =>
+        LongEnumerable.Range(0, race.Time).Count(t => (race.Time - t) * t > race.Record);
 
     private record Race(long Time, long Record);
 }
