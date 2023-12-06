@@ -22,16 +22,9 @@ public class Day06
         var races = times.Select((x, i) => new Race(x, records.ElementAt(i)));
 
         var answer = races.Select(
-            x =>
-                {
-                    var distances = new List<long>();
-                    for (var t = 0; t < x.Time; t++)
-                    {
-                        distances.Add((x.Time - t) * t);
-                    }
-
-                    return distances.Count(d => d > x.Record);
-                })
+                x => LongEnumerable.Range(0, x.Time)
+                    .Select(t => (x.Time -t) *t)
+                    .Count(d => d > x.Record))
             .Aggregate(1L, (current, x) => current * x);
 
         _session.PrintAnswer(1, answer);
@@ -48,13 +41,9 @@ public class Day06
         var records = new string(lines[1].Split(":")[1].Where(x => x != ' ').ToArray());
         var race = new Race(long.Parse(times), long.Parse(records));
 
-        var distances = new List<long>();
-        for (var t = 0; t < race.Time; t++)
-        {
-            distances.Add((race.Time - t) * t);
-        }
-
-        var answer = distances.Count(x => x > race.Record);
+        var answer = LongEnumerable.Range(0, race.Time)
+            .Select(t => (race.Time - t) * t)
+            .Count(d => d > race.Record);
 
         _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
