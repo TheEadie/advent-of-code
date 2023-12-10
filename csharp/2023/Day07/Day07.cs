@@ -16,7 +16,7 @@ public class Day07
         var input = await _session.Start(inputFile);
         var hands = Parse(input);
 
-        var answer = hands.OrderBy(x => x, new HandComparer())
+        var answer = hands.OrderBy(x => x, new HandComparer(false))
             .Select((x, i) => x.Bet * (i + 1))
             .Sum();
 
@@ -32,7 +32,7 @@ public class Day07
         var input = await _session.Start(inputFile);
         var hands = Parse(input);
 
-        var answer = hands.OrderBy(x => x, new HandComparerPart2())
+        var answer = hands.OrderBy(x => x, new HandComparer(true))
             .Select((x, i) => x.Bet * (i + 1))
             .Sum();
 
@@ -40,7 +40,7 @@ public class Day07
         answer.ShouldBe(expected);
     }
 
-    private class HandComparer : IComparer<Hand>
+    private class HandComparer(bool joker) : IComparer<Hand>
     {
         public int Compare(Hand? x, Hand? y)
         {
@@ -73,96 +73,30 @@ public class Day07
             return 0;
         }
 
-        public static int GetValue(char card) => card switch
+        public int GetValue(char card) => card switch
         {
             'A' => 14,
             'K' => 13,
             'Q' => 12,
-            'J' => 11,
+            'J' => joker ? 0 : 11,
             'T' => 10,
             _ => int.Parse(card.ToString())
         };
 
-        public static HandType GetType(Hand hand)
+        public int GetType(Hand hand)
         {
-            var matches = hand.Cards.GroupBy(x => x).Select(x => x.Count()).ToList();
-            return matches.Contains(5) ? HandType.FiveOfAKind
-                : matches.Contains(4) ? HandType.FourOfAKind
-                : matches.Contains(3) && matches.Contains(2) ? HandType.FullHouse
-                : matches.Contains(3) ? HandType.ThreeOfAKind
-                : matches.Count(x => x == 2) == 2 ? HandType.TwoPair
-                : matches.Contains(2) ? HandType.Pair
+            var jokers = joker ? hand.Cards.Count(x => x == 'J') : 0;
+            var cards = joker ? hand.Cards.Where(x => x != 'J') : hand.Cards;
+            var matches = cards.GroupBy(x => x).Select(x => x.Count()).ToList();
+            return matches.Contains(5 - jokers) || jokers == 5 ? 6
+                : matches.Contains(4 - jokers) ? 5
+                : matches.Count(x => x == 2) == 2 && jokers == 1 ||
+                  matches.Contains(3) && matches.Contains(2) ? 4
+                : matches.Contains(3 - jokers) ? 3
+                : matches.Count(x => x == 2) == 2 ? 2
+                : matches.Contains(2 - jokers) ? 1
                 : 0;
         }
-    }
-
-    private class HandComparerPart2 : IComparer<Hand>
-    {
-        public int Compare(Hand? x, Hand? y)
-        {
-            if (x == null || y == null)
-            {
-                return 0;
-            }
-
-            var xType = GetType(x);
-            var yType = GetType(y);
-
-            if (xType != yType)
-            {
-                return xType.CompareTo(yType);
-            }
-
-            foreach (var (xCard, yCard) in x.Cards.Zip(y.Cards))
-            {
-                var xValue = GetValue(xCard);
-                var yValue = GetValue(yCard);
-
-                if (xValue == yValue)
-                {
-                    continue;
-                }
-
-                return xValue.CompareTo(yValue);
-            }
-
-            return 0;
-        }
-
-        public static int GetValue(char card) => card switch
-        {
-            'A' => 14,
-            'K' => 13,
-            'Q' => 12,
-            'J' => 0,
-            'T' => 10,
-            _ => int.Parse(card.ToString())
-        };
-
-        public static HandType GetType(Hand hand)
-        {
-            var jokers = hand.Cards.Count(x => x == 'J');
-            var matches = hand.Cards.Where(x => x != 'J').GroupBy(x => x).Select(x => x.Count()).ToList();
-            return matches.Contains(5 - jokers) || jokers == 5 ? HandType.FiveOfAKind
-                : matches.Contains(4 - jokers) ? HandType.FourOfAKind
-                : matches.Count(x => x == 2) == 2 && jokers == 1 ||
-                  matches.Contains(3) && matches.Contains(2) ? HandType.FullHouse
-                : matches.Contains(3 - jokers) ? HandType.ThreeOfAKind
-                : matches.Count(x => x == 2) == 2 ? HandType.TwoPair
-                : matches.Contains(2 - jokers) ? HandType.Pair
-                : HandType.HighCard;
-        }
-    }
-
-    private enum HandType
-    {
-        HighCard = 0,
-        Pair = 1,
-        TwoPair = 2,
-        ThreeOfAKind = 3,
-        FullHouse = 4,
-        FourOfAKind = 5,
-        FiveOfAKind = 6
     }
 
     private record Hand(IReadOnlyList<char> Cards, int Bet);
