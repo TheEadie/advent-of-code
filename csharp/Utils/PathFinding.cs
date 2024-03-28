@@ -24,7 +24,7 @@ public static class PathFinding
         {
             var current = queue.Dequeue();
 
-            if (isGoal(current))
+            if (isGoal(current) && cameFrom.Count != 0)
             {
                 var totalPath = new List<TNode> { current };
 
