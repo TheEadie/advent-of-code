@@ -14,9 +14,9 @@ public class Day10
     {
         var input = await _session.Start(inputFile);
         var (start, map) = Parse(input);
-        var loop = GetLoop(start, map);
+        var (_, maxDistance) = GetLoop(start, map);
 
-        var answer = loop.Values.Max() / 3;
+        var answer = maxDistance / 3;
 
         _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
@@ -30,8 +30,8 @@ public class Day10
         var (start, map) = Parse(input);
         var bottomRight = new Coordinate(map.Max(x => x.X) + 1, map.Max(x => x.Y) + 1);
 
-        var loop = GetLoop(start, map);
-        var outside = FloodFill(loop.Keys.ToHashSet(), new Coordinate(0,0), bottomRight);
+        var (loop, _) = GetLoop(start, map);
+        var outside = FloodFill(loop, new Coordinate(0,0), bottomRight);
 
         var answer = 0;
 
@@ -41,7 +41,7 @@ public class Day10
             {
                 var middle = new Coordinate(x * 3 + 1, y * 3 + 1);
                 if (!outside.Contains(middle) &&
-                    !loop.ContainsKey(middle))
+                    !loop.Contains(middle))
                 {
                     answer++;
                 }
@@ -87,7 +87,7 @@ public class Day10
         return visited;
     }
 
-    private static Dictionary<Coordinate, int> GetLoop(Coordinate start, IReadOnlySet<Coordinate> map)
+    private static (IReadOnlySet<Coordinate>, int) GetLoop(Coordinate start, IReadOnlySet<Coordinate> map)
     {
         var queue = new Queue<Coordinate>();
         var visited = new HashSet<Coordinate>();
@@ -115,7 +115,7 @@ public class Day10
             }
         }
 
-        return distances;
+        return (visited, distances.Max(x => x.Value));
     }
 
 
