@@ -14,9 +14,9 @@ public class Day10
     {
         var input = await _session.Start(inputFile);
         var (start, map) = Parse(input);
-        var (_, maxDistance) = GetLoop(start, map);
 
-        var answer = maxDistance / 3;
+        var loop = GetLoop(start, map);
+        var answer = loop.Count / 2 / 3;
 
         _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
@@ -28,52 +28,65 @@ public class Day10
     {
         var input = await _session.Start(inputFile);
         var (start, map) = Parse(input);
-        var bottomRight = new Coordinate(map.Max(x => x.X) + 1, map.Max(x => x.Y) + 1);
+        var mapWidth = map.Max(x => x.X);
+        var mapHeight = map.Max(x => x.Y);
 
-        var (loop, _) = GetLoop(start, map);
-        var outside = FloodFill(loop, new Coordinate(0,0), bottomRight);
-
-        var answer = 0;
-
-        for (var y = 0; y < bottomRight.Y / 3; y++)
-        {
-            for (var x = 0; x < bottomRight.X / 3; x++)
-            {
-                var middle = new Coordinate(x * 3 + 1, y * 3 + 1);
-                if (!outside.Contains(middle) &&
-                    !loop.Contains(middle))
-                {
-                    answer++;
-                }
-            }
-        }
+        var loop = GetLoop(start, map);
+        var outside = FloodFill(mapWidth, mapHeight, loop, new Coordinate(0, 0));
+        var answer = CountCellsInside(mapHeight, mapWidth, outside, loop);
 
         _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
 
-    private static IReadOnlySet<Coordinate> FloodFill(IReadOnlySet<Coordinate> map, Coordinate startPoint, Coordinate bottomRight)
+    private static HashSet<Coordinate> GetLoop(Coordinate start, IReadOnlySet<Coordinate> map)
+    {
+        var queue = new Queue<Coordinate>();
+        var loop = new HashSet<Coordinate>();
+        var distances = new Dictionary<Coordinate, int> { { start, 0 } };
+
+        queue.Enqueue(start);
+        while (queue.Count != 0)
+        {
+            var current = queue.Dequeue();
+            _ = loop.Add(current);
+
+            var neighbours = Vector.FourDirections().Select(x => current + x).Where(map.Contains);
+
+            foreach (var neighbour in neighbours)
+            {
+                if (loop.Contains(neighbour))
+                {
+                    continue;
+                }
+
+                distances[neighbour] = distances[current] + 1;
+                queue.Enqueue(neighbour);
+            }
+        }
+
+        return loop;
+    }
+
+    private static HashSet<Coordinate> FloodFill(int width, int height, HashSet<Coordinate> loop, Coordinate startPoint)
     {
         var queue = new Queue<Coordinate>();
         var visited = new HashSet<Coordinate>();
 
         queue.Enqueue(startPoint);
-        while(queue.Count != 0)
+        while (queue.Count != 0)
         {
             var current = queue.Dequeue();
             if (visited.Contains(current))
             {
                 continue;
             }
+
             _ = visited.Add(current);
 
             var neighbours = Vector.FourDirections()
                 .Select(x => current + x)
-                .Where(x => x.X >= 0 &&
-                    x.Y >= 0 &&
-                    x.X <= bottomRight.X &&
-                    x.Y <= bottomRight.Y &&
-                    !map.Contains(x));
+                .Where(x => x.X >= 0 && x.Y >= 0 && x.X <= width && x.Y <= height && !loop.Contains(x));
 
             foreach (var neighbour in neighbours)
             {
@@ -87,35 +100,27 @@ public class Day10
         return visited;
     }
 
-    private static (IReadOnlySet<Coordinate>, int) GetLoop(Coordinate start, IReadOnlySet<Coordinate> map)
+    private static int CountCellsInside(
+        int mapHeight,
+        int mapWidth,
+        HashSet<Coordinate> outside,
+        HashSet<Coordinate> loop)
     {
-        var queue = new Queue<Coordinate>();
-        var visited = new HashSet<Coordinate>();
-        var distances = new Dictionary<Coordinate, int>{ { start, 0 } };
+        var answer = 0;
 
-        queue.Enqueue(start);
-        while(queue.Count != 0)
+        for (var y = 0; y < mapHeight / 3; y++)
         {
-            var current = queue.Dequeue();
-            _ = visited.Add(current);
-
-            var neighbours = Vector.FourDirections()
-                .Select(x => current + x)
-                .Where(map.Contains);
-
-            foreach (var neighbour in neighbours)
+            for (var x = 0; x < mapWidth / 3; x++)
             {
-                if (visited.Contains(neighbour))
+                var middle = new Coordinate(x * 3 + 1, y * 3 + 1);
+                if (!outside.Contains(middle) && !loop.Contains(middle))
                 {
-                    continue;
+                    answer++;
                 }
-
-                distances[neighbour] = distances[current] + 1;
-                queue.Enqueue(neighbour);
             }
         }
 
-        return (visited, distances.Max(x => x.Value));
+        return answer;
     }
 
 
@@ -150,14 +155,44 @@ public class Day10
     private static IEnumerable<Vector> GetVectors(char c) =>
         c switch
         {
-            '|' => [Vector.Up, Vector.Down],
-            '-' => [Vector.Left, Vector.Right],
-            'L' => [Vector.Up, Vector.Right],
-            'J' => [Vector.Up, Vector.Left],
-            '7' => [Vector.Down, Vector.Left],
-            'F' => [Vector.Down, Vector.Right],
+            '|' =>
+            [
+                Vector.Up,
+                Vector.Down
+            ],
+            '-' =>
+            [
+                Vector.Left,
+                Vector.Right
+            ],
+            'L' =>
+            [
+                Vector.Up,
+                Vector.Right
+            ],
+            'J' =>
+            [
+                Vector.Up,
+                Vector.Left
+            ],
+            '7' =>
+            [
+                Vector.Down,
+                Vector.Left
+            ],
+            'F' =>
+            [
+                Vector.Down,
+                Vector.Right
+            ],
             '.' => [],
-            'S' => [Vector.Up, Vector.Down, Vector.Left, Vector.Right],
+            'S' =>
+            [
+                Vector.Up,
+                Vector.Down,
+                Vector.Left,
+                Vector.Right
+            ],
             _ => throw new ArgumentOutOfRangeException(nameof(c), c, null)
         };
 }
