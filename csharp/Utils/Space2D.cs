@@ -65,5 +65,3 @@ public record Vector(int X, int Y)
         Right
     ];
 }
-
-
