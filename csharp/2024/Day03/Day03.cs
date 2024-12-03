@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace AdventOfCode2024.Day03;
 
-public class Day03
+public partial class Day03
 {
     // https://adventofcode.com/2024/day/3
     private readonly AdventSession _session = new(2024, 03, "Mull It Over");
@@ -16,10 +16,8 @@ public class Day03
     {
         var input = await _session.Start(inputFile);
 
-        var regex = new Regex(@"mul\((\d+),(\d+)\)");
-        var matches = regex.Matches(input);
-
-        var answer = matches.Select(x => int.Parse(x.Groups[1].Value) * int.Parse(x.Groups[2].Value)).Sum();
+        var ops = ParseMul(input);
+        var answer = Run(ops);
 
         _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
@@ -31,33 +29,62 @@ public class Day03
     {
         var input = await _session.Start(inputFile);
 
-        var regex = new Regex(@"(do\(\)|don't\(\)|mul\((\d+),(\d+)\))");
-        var matches = regex.Matches(input);
-
-        var on = true;
-        var answer = 0;
-
-        foreach (Match match in matches)
-        {
-            switch (match.Groups[0].Value)
-            {
-                case "do()":
-                    on = true;
-                    break;
-                case "don't()":
-                    on = false;
-                    break;
-                default:
-                    if (on)
-                    {
-                        answer += int.Parse(match.Groups[2].Value) * int.Parse(match.Groups[3].Value);
-                    }
-
-                    break;
-            }
-        }
+        var ops = ParseAll(input);
+        var answer = Run(ops);
 
         _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
     }
+
+    private static IEnumerable<Operation> ParseMul(string input) =>
+        MulOperations().Matches(input).Select(x => new Mul(int.Parse(x.Groups[1].Value), int.Parse(x.Groups[2].Value)));
+
+    private static IEnumerable<Operation> ParseAll(string input) =>
+        AllOperations()
+            .Matches(input)
+            .Select<Match, Operation>(
+                x => x.Groups[0].Value switch
+                {
+                    "do()" => new Do(),
+                    "don't()" => new Dont(),
+                    _ => new Mul(int.Parse(x.Groups[1].Value), int.Parse(x.Groups[2].Value))
+                });
+
+    private static int Run(IEnumerable<Operation> operations)
+    {
+        var on = true;
+        var answer = 0;
+
+        foreach (var operation in operations)
+        {
+            switch (operation)
+            {
+                case Do:
+                    on = true;
+                    break;
+                case Dont:
+                    on = false;
+                    break;
+                case Mul mul when on:
+                    answer += mul.A * mul.B;
+                    break;
+            }
+        }
+
+        return answer;
+    }
+
+    private record Operation;
+
+    private record Do : Operation;
+
+    private record Dont : Operation;
+
+    private record Mul(int A, int B) : Operation;
+
+    [GeneratedRegex(@"mul\((\d+),(\d+)\)")]
+    private static partial Regex MulOperations();
+
+    [GeneratedRegex(@"do\(\)|don't\(\)|mul\((\d+),(\d+)\)")]
+    private static partial Regex AllOperations();
 }
