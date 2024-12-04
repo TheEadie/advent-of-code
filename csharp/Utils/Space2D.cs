@@ -5,6 +5,8 @@ public record Coordinate(int X, int Y)
     public static Coordinate operator +(Coordinate left, Coordinate right) => new(left.X + right.X, left.Y + right.Y);
 
     public static Coordinate operator +(Coordinate left, Vector right) => new(left.X + right.X, left.Y + right.Y);
+
+    public static Coordinate operator -(Coordinate left, Vector right) => new(left.X - right.X, left.Y - right.Y);
 }
 
 public record Line(Coordinate Start, Coordinate End)
@@ -51,6 +53,14 @@ public record Vector(int X, int Y)
         Down,
         Left,
         Right
+    ];
+
+    public static IEnumerable<Vector> DiagonalDirections() =>
+    [
+        UpLeft,
+        UpRight,
+        DownLeft,
+        DownRight
     ];
 
     public static IEnumerable<Vector> EightDirections() =>
