@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace AdventOfCode2024.Day09;
 
 public class Day09
@@ -17,17 +15,25 @@ public class Day09
         var input = await _session.Start(inputFile);
         var diskMap = ParseDiskLayout(input);
 
+        var toSort = new Stack<DiskSection>();
+        var freeSpace = new Stack<DiskSection>();
+
+        toSort.PushRange(diskMap.Where(disk => disk.Value != -1));
+        freeSpace.PushRange(diskMap.Where(disk => disk.Value == -1).Reverse());
+
         while (true)
         {
-            var lastUsed = diskMap.Last(x => x.Value != -1);
-            var firstFree = diskMap.First(x => x.Value == -1);
+            var lastUsed = toSort.Pop();
+            var firstFree = freeSpace.Pop();
 
             if (lastUsed.Start <= firstFree.Start)
             {
                 break;
             }
 
-            Insert(lastUsed, firstFree, diskMap);
+            var (newUsed, newFree) = Move(diskMap, lastUsed, firstFree);
+            newUsed.ToList().ForEach(toSort.Push);
+            newFree.ToList().ForEach(freeSpace.Push);
         }
 
         var finalLayout = diskMap.Where(x => x.Value != -1);
@@ -45,20 +51,22 @@ public class Day09
         var diskMap = ParseDiskLayout(input);
 
         var orderedBlocks = diskMap.Where(x => x.Value != -1).OrderByDescending(x => x.Value).ToList();
+        var freeSpace = new Stack<DiskSection>();
+        freeSpace.PushRange(diskMap.Where(disk => disk.Value == -1).Reverse());
 
         foreach (var block in orderedBlocks)
         {
-            var firstFree = diskMap.Where(x => x.Value == -1)
-                .OrderBy(x => x.Start)
-                .ToList()
-                .FirstOrDefault(x => x.Length >= block.Length && x.Start <= block.Start);
+            var (rejected, firstFree) = freeSpace.Pop(x => x.Length >= block.Length && x.Start <= block.Start);
 
-            if (firstFree == null)
+            if (firstFree is null)
             {
+                freeSpace.PushRange(rejected.Reverse());
                 continue;
             }
 
-            Insert(block, firstFree, diskMap);
+            var (_, newFree) = Move(diskMap, block, firstFree);
+            newFree.ToList().ForEach(freeSpace.Push);
+            freeSpace.PushRange(rejected.Reverse());
         }
 
         var finalLayout = diskMap.Where(x => x.Value != -1).OrderBy(x => x.Start);
@@ -68,7 +76,34 @@ public class Day09
         answer.ShouldBe(expected);
     }
 
-    private static SortedSet<DiskSection> ParseDiskLayout(string input)
+    private static (IEnumerable<DiskSection> NewUsed, IEnumerable<DiskSection> NewFree) Move(
+        HashSet<DiskSection> map,
+        DiskSection used,
+        DiskSection free)
+    {
+        map.Remove(used);
+        map.Remove(free);
+
+        if (used.Length > free.Length)
+        {
+            map.Add(new DiskSection(used.Start, used.End - free.Length, used.Value));
+            map.Add(new DiskSection(free.Start, free.End, used.Value));
+            return ([new DiskSection(used.Start, used.End - free.Length, used.Value)], []);
+        }
+
+        if (used.Length == free.Length)
+        {
+            map.Add(new DiskSection(free.Start, free.End, used.Value));
+            return ([], []);
+        }
+
+        map.Add(new DiskSection(free.Start, free.Start + used.Length - 1, used.Value));
+        map.Add(new DiskSection(free.Start + used.Length, free.End, -1));
+        return ([], [new DiskSection(free.Start + used.Length, free.End, -1)]);
+    }
+
+
+    private static HashSet<DiskSection> ParseDiskLayout(string input)
     {
         var numbers = input.Select(x => int.Parse(x.ToString()));
         var diskMap = new List<DiskSection>();
@@ -88,35 +123,12 @@ public class Day09
             free = !free;
         }
 
-        return new SortedSet<DiskSection>(diskMap);
+        return diskMap.ToHashSet();
     }
 
-    private static void Insert(DiskSection disk, DiskSection free, SortedSet<DiskSection> diskMap)
-    {
-        diskMap.Remove(disk);
-        diskMap.Remove(free);
-
-        if (disk.Length > free.Length)
-        {
-            diskMap.Add(new DiskSection(disk.Start, disk.End - free.Length, disk.Value));
-            diskMap.Add(new DiskSection(free.Start, free.End, disk.Value));
-        }
-        else if (disk.Length == free.Length)
-        {
-            diskMap.Add(new DiskSection(free.Start, free.End, disk.Value));
-        }
-        else
-        {
-            diskMap.Add(new DiskSection(free.Start, free.Start + disk.Length - 1, disk.Value));
-            diskMap.Add(new DiskSection(free.Start + disk.Length, free.End, -1));
-        }
-    }
-
-    private record DiskSection(int Start, int End, int Value) : IComparable<DiskSection>
+    private record DiskSection(int Start, int End, int Value)
     {
         public int Length => End - Start + 1;
         public long CheckSum => Enumerable.Range(Start, Length).Sum(x => (long) x * Value);
-
-        public int CompareTo(DiskSection? other) => other == null ? 1 : Start.CompareTo(other.Start);
     }
 }
