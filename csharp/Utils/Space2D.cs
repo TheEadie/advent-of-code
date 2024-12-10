@@ -4,6 +4,8 @@ public record Coordinate(int X, int Y)
 {
     public static Coordinate operator +(Coordinate left, Coordinate right) => new(left.X + right.X, left.Y + right.Y);
 
+    public static Coordinate operator -(Coordinate left, Coordinate right) => new(left.X - right.X, left.Y - right.Y);
+
     public static Coordinate operator +(Coordinate left, Vector right) => new(left.X + right.X, left.Y + right.Y);
 
     public static Coordinate operator -(Coordinate left, Vector right) => new(left.X - right.X, left.Y - right.Y);
@@ -33,6 +35,9 @@ public record Line(Coordinate Start, Coordinate End)
 
 public record Vector(int X, int Y)
 {
+    public Vector(Coordinate from, Coordinate to)
+        : this(to.X - from.X, to.Y - from.Y) { }
+
     public static Vector Up => new(0, -1);
     public static Vector Down => new(0, 1);
     public static Vector Left => new(-1, 0);
