@@ -32,8 +32,8 @@ public class Day09
             }
 
             var (newUsed, newFree) = Move(diskMap, lastUsed, firstFree);
-            newUsed.ToList().ForEach(toSort.Push);
-            newFree.ToList().ForEach(freeSpace.Push);
+            toSort.PushRange(newUsed);
+            freeSpace.PushRange(newFree);
         }
 
         var finalLayout = diskMap.Where(x => x.Value != -1);
@@ -51,22 +51,43 @@ public class Day09
         var diskMap = ParseDiskLayout(input);
 
         var orderedBlocks = diskMap.Where(x => x.Value != -1).OrderByDescending(x => x.Value).ToList();
-        var freeSpace = new Stack<DiskSection>();
-        freeSpace.PushRange(diskMap.Where(disk => disk.Value == -1).Reverse());
+
+        var freeSpace = diskMap.Where(x => x.Value == -1)
+            .GroupBy(x => x.Length)
+            .ToDictionary(
+                x => x.Key,
+                x =>
+                    {
+                        var spaces = new PriorityQueue<DiskSection, int>();
+                        spaces.EnqueueRange(x.Select(y => (y, y.Start)));
+                        return spaces;
+                    });
 
         foreach (var block in orderedBlocks)
         {
-            var (rejected, firstFree) = freeSpace.Pop(x => x.Length >= block.Length && x.Start <= block.Start);
+            var candidates = freeSpace.Where(x => x.Key >= block.Length)
+                .Select(
+                    x =>
+                        {
+                            x.Value.TryPeek(out var found, out var score);
+                            return (found, score);
+                        })
+                .Where(x => x.found is not null && x.score < block.Start)
+                .ToList();
 
-            if (firstFree is null)
+            if (candidates.Count == 0)
             {
-                freeSpace.PushRange(rejected.Reverse());
                 continue;
             }
 
-            var (_, newFree) = Move(diskMap, block, firstFree);
-            newFree.ToList().ForEach(freeSpace.Push);
-            freeSpace.PushRange(rejected.Reverse());
+            var (free, _) = candidates.MinBy(x => x.score);
+            freeSpace[free!.Length].Dequeue();
+
+            var (_, newFree) = Move(diskMap, block, free);
+            foreach (var section in newFree)
+            {
+                freeSpace[section.Length].Enqueue(section, section.Start);
+            }
         }
 
         var finalLayout = diskMap.Where(x => x.Value != -1).OrderBy(x => x.Start);
