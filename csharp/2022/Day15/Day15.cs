@@ -33,8 +33,7 @@ public class Day15
     {
         var input = await _session.Start(inputFile);
         var sensors = ParseInput(input).ToList();
-        var found = sensors
-            .SelectMany(GetBorder)
+        var found = sensors.SelectMany(GetBorder)
             .Where(x => x.X > 0 && x.X <= maxXy && x.Y > 0 && x.Y <= maxXy)
             .First(x => sensors.All(s => s.Distance < GetDistance(x, s.Position)));
 
@@ -54,6 +53,7 @@ public class Day15
             yield return new Coordinate(sensor.Position.X + xOffset, sensor.Position.Y - yOffset);
             yield return new Coordinate(sensor.Position.X - xOffset, sensor.Position.Y + yOffset);
             yield return new Coordinate(sensor.Position.X - xOffset, sensor.Position.Y - yOffset);
+
             yOffset--;
         }
     }
@@ -75,7 +75,8 @@ public class Day15
         return input.Split("\n").Select(ParseSensor);
     }
 
-    private static int GetDistance(Coordinate start, Coordinate end) => Math.Abs(end.X - start.X) + Math.Abs(end.Y - start.Y);
+    private static int GetDistance(Coordinate start, Coordinate end) =>
+        Math.Abs(end.X - start.X) + Math.Abs(end.Y - start.Y);
 
     private record Sensor(Coordinate Position, Coordinate FirstSensor, int Distance);
 }

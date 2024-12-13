@@ -14,12 +14,12 @@ public class Day12
         var input = await _session.Start(inputFile);
         var (start, goal, map) = ParseInput(input);
 
-        var (answer, _) =
-            PathFinding.AStar(start,
-                n => n == goal,
-                n => GetNeighbours(n, map),
-                (_, _) => 1,
-                n => DistanceToGoal(n, goal));
+        var (answer, _) = PathFinding.AStar(
+            start,
+            n => n == goal,
+            n => GetNeighbours(n, map),
+            (_, _) => 1,
+            n => DistanceToGoal(n, goal));
 
         _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
@@ -33,13 +33,13 @@ public class Day12
         var (_, goal, map) = ParseInput(input);
 
         var answer = map.Where(x => x.Value == 0)
-            .Select(x =>
-                PathFinding.AStar(x.Key,
+            .Select(
+                x => PathFinding.AStar(
+                    x.Key,
                     n => n == goal,
                     n => GetNeighbours(n, map),
                     (_, _) => 1,
-                    n => DistanceToGoal(n, goal))
-            )
+                    n => DistanceToGoal(n, goal)))
             .Min(x => x.Item1);
 
         _session.PrintAnswer(2, answer);
@@ -50,10 +50,7 @@ public class Day12
     {
         var map = new Dictionary<Coordinate, int>();
         var lines = input.Split("\n");
-        var rows = lines
-            .Select(line => line.ToCharArray()
-                .Select(x => x - 'a').ToList())
-            .ToList();
+        var rows = lines.Select(line => line.ToCharArray().Select(x => x - 'a').ToList()).ToList();
 
         var sizeX = rows.Count;
         var sizeY = rows[0].Count;
@@ -76,6 +73,7 @@ public class Day12
                     goal = new Coordinate(x, y);
                     rows[x][y] = 25;
                 }
+
                 map.Add(new Coordinate(x, y), rows[x][y]);
             }
         }
@@ -95,8 +93,6 @@ public class Day12
             new(input.X + 1, input.Y)
         };
 
-        return testCoordinates
-            .Where(map.ContainsKey)
-            .Where(x => map[x] - map[input] <= 1);
+        return testCoordinates.Where(map.ContainsKey).Where(x => map[x] - map[input] <= 1);
     }
 }

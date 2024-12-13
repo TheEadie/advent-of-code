@@ -9,6 +9,13 @@ public record Coordinate(int X, int Y)
     public static Coordinate operator +(Coordinate left, Vector right) => new(left.X + right.X, left.Y + right.Y);
 
     public static Coordinate operator -(Coordinate left, Vector right) => new(left.X - right.X, left.Y - right.Y);
+
+    public static int ManhattanDistance(Coordinate start, Coordinate goal)
+    {
+        var xDiff = start.X - goal.X;
+        var yDiff = start.Y - goal.Y;
+        return Math.Abs(xDiff) + Math.Abs(yDiff);
+    }
 }
 
 public record Line(Coordinate Start, Coordinate End)
