@@ -13,10 +13,7 @@ public static class PathFinding
         var queue = new PriorityQueue<TNode, int>();
 
         var cameFrom = new Dictionary<TNode, TNode>();
-        var costSoFar = new Dictionary<TNode, int>
-        {
-            [start] = 0
-        };
+        var costSoFar = new Dictionary<TNode, int> { [start] = 0 };
 
         queue.Enqueue(start, getDistance(start));
 
@@ -53,5 +50,74 @@ public static class PathFinding
         }
 
         return (int.MaxValue, new List<TNode>());
+    }
+
+    public static IEnumerable<(int cost, IEnumerable<TNode> path)> AStarMultiplePaths<TNode>(
+        TNode start,
+        Func<TNode, bool> isGoal,
+        Func<TNode, IEnumerable<TNode>> getNeighbours,
+        Func<TNode, TNode, int> getCost,
+        Func<TNode, int> getDistance)
+        where TNode : IEquatable<TNode>
+    {
+        var queue = new PriorityQueue<TNode, int>();
+
+        var cameFrom = new Dictionary<TNode, HashSet<TNode>>();
+        var costSoFar = new Dictionary<TNode, int> { [start] = 0 };
+
+        queue.Enqueue(start, getDistance(start));
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+
+            if (isGoal(current) && cameFrom.Count != 0)
+            {
+                var cost = costSoFar[current];
+                var queueResult = new Queue<List<TNode>>();
+                queueResult.Enqueue([current]);
+
+                while (queueResult.Count > 0)
+                {
+                    var currentResult = queueResult.Dequeue();
+                    var toCheck = currentResult.Last();
+                    if (!cameFrom.TryGetValue(toCheck, out var value))
+                    {
+                        yield return (cost, currentResult);
+                    }
+                    else
+                    {
+                        foreach (var item in value)
+                        {
+                            queueResult.Enqueue(currentResult.Append(item).ToList());
+                        }
+                    }
+                }
+
+                continue;
+            }
+
+            foreach (var neighbour in getNeighbours(current))
+            {
+                var tentativeGScore = costSoFar[current] + getCost(current, neighbour);
+                var currentBestCost = costSoFar.TryGetValue(neighbour, out var value);
+                if (currentBestCost && tentativeGScore > value)
+                {
+                    continue;
+                }
+
+                if (currentBestCost && tentativeGScore == value)
+                {
+                    cameFrom[neighbour].Add(current);
+                }
+                else
+                {
+                    cameFrom[neighbour] = [current];
+                }
+
+                costSoFar[neighbour] = tentativeGScore;
+                queue.Enqueue(neighbour, tentativeGScore + getDistance(neighbour));
+            }
+        }
     }
 }
