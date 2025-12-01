@@ -50,15 +50,18 @@ public class Day01
         var previous = startPosition;
         foreach (var rotation in rotations)
         {
-            var newPosition = rotation.Right ? previous + rotation.Steps : previous - rotation.Steps;
-            var crosses = (Math.Abs(newPosition) - 1) / 100;
-            if (previous < 0 && newPosition > 0 || previous > 0 && newPosition < 0)
+            var zeros = rotation.Steps / 100;
+            var simplifiedSteps = rotation.Steps % 100;
+
+            var newPosition = rotation.Right ? previous + simplifiedSteps : previous - simplifiedSteps;
+
+            if (previous != 0 && newPosition is < 0 or > 100)
             {
-                crosses++;
+                zeros += 1;
             }
 
-            newPosition = (newPosition + 100) % 100;
-            yield return (newPosition, crosses);
+            newPosition = (newPosition % 100 + 100) % 100;
+            yield return (newPosition, zeros);
 
             previous = newPosition;
         }
