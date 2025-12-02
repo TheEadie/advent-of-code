@@ -15,7 +15,7 @@ public class Day02
         var input = await _session.Start(inputFile);
 
         var answer = ParseInput(input)
-            .SelectMany(r => LongEnumerable.Range(r.Item1, r.Item2 - r.Item1 + 1))
+            .SelectMany(r => LongEnumerable.Range(r.Start, r.End - r.Start + 1))
             .Where(x => NumberRepeats(x, 2))
             .Sum();
 
@@ -30,7 +30,7 @@ public class Day02
         var input = await _session.Start(inputFile);
 
         var answer = ParseInput(input)
-            .SelectMany(r => LongEnumerable.Range(r.Item1, r.Item2 - r.Item1 + 1))
+            .SelectMany(r => LongEnumerable.Range(r.Start, r.End - r.Start + 1))
             .Where(number => Enumerable.Range(2, number.ToString().Length - 1).Any(x => NumberRepeats(number, x)))
             .Sum();
 
@@ -40,7 +40,7 @@ public class Day02
 
     private static bool NumberRepeats(long number, int times)
     {
-        var str = number.ToString();
+        var str = number.ToString().AsSpan();
         if (str.Length % times != 0)
         {
             return false;
@@ -49,15 +49,25 @@ public class Day02
         var partLength = str.Length / times;
         var firstPart = str[..partLength];
 
-        return Enumerable.Range(1, times - 1).All(x => str[(x * partLength)..((x + 1) * partLength)] == firstPart);
+        for (var i = 1; i < times; i++)
+        {
+            if (!firstPart.SequenceEqual(str[(i * partLength)..((i + 1) * partLength)]))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    private static List<(long, long)> ParseInput(string input) =>
+    private record Range(long Start, long End);
+
+    private static List<Range> ParseInput(string input) =>
         input.Split(",")
             .Select(s =>
                 {
                     var parts = s.Split("-");
-                    return (long.Parse(parts[0]), long.Parse(parts[1]));
+                    return new Range(long.Parse(parts[0]), long.Parse(parts[1]));
                 })
             .ToList();
 }
