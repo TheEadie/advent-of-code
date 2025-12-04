@@ -22,32 +22,38 @@ public class Day20
             (_, _) => 1,
             _ => 1);
 
-        var enumeratedPath = orderedPath.ToList();
-        var pathWithIndex = enumeratedPath.Index().ToDictionary(k => k.Item, v => v.Index);
-
-        var shortcuts = pathWithIndex.SelectMany(x =>
-            Vector.FourDirections()
-                .Select(v => (Start: x, End: x.Key + v + v))
-                .Where(n => pathWithIndex.ContainsKey(n.End)));
-        var timeSaved = shortcuts.Select(n => (n.Start.Key, n.End, pathWithIndex[n.End] - n.Start.Value - 2))
-            .Where(n => n.Item3 >= saveAtLeast);
-
-        var answer = timeSaved.Count();
+        var answer = GetCheats(orderedPath.ToList(), 2).Count(n => n >= saveAtLeast);
 
         _session.PrintAnswer(1, answer);
         answer.ShouldBe(expected);
     }
 
-    [TestCase("Sample.txt", 0)]
-    [TestCase("Puzzle Input.txt", 0)]
-    public async Task Part2(string inputFile, int expected)
+    [TestCase("Sample.txt", 285, 50)]
+    [TestCase("Puzzle Input.txt", 971_737, 100)]
+    public async Task Part2(string inputFile, int expected, int saveAtLeast)
     {
         var input = await _session.Start(inputFile);
+        var (start, finish, path) = Parse(input);
 
-        var answer = 0;
+        var (_, orderedPath) = PathFinding.AStar(
+            start,
+            x => x == finish,
+            (x) => Vector.FourDirections().Select(v => x + v).Where(n => path.Contains(n)),
+            (_, _) => 1,
+            _ => 1);
+
+        var answer = GetCheats(orderedPath.ToList(), 20).Count(n => n >= saveAtLeast);
 
         _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
+    }
+
+    private static IEnumerable<int> GetCheats(List<Coordinate> path, int maxLength)
+    {
+        var pathWithIndex = path.Index().ToDictionary(k => k.Item, v => v.Index);
+        return path.SelectMany(x => path.Select(y => (Start: x, End: y, Distance: Coordinate.ManhattanDistance(x, y))))
+            .Where(x => x.Distance <= maxLength && pathWithIndex.ContainsKey(x.End))
+            .Select(x => pathWithIndex[x.End] - pathWithIndex[x.Start] - x.Distance);
     }
 
     private static (Coordinate Start, Coordinate Finish, HashSet<Coordinate> Path) Parse(string input)
