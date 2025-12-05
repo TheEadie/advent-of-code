@@ -28,26 +28,24 @@ public class Day05
         var input = await _session.Start(inputFile);
         var (ranges, _) = ParseInput(input);
 
-        var orderedRanges = ranges.OrderBy(r => r.Min).ToList();
-        var mergedRanges = new List<Range>();
-        var currentRange = orderedRanges.First();
+        var answer = ranges.OrderBy(r => r.Min)
+            .Aggregate(
+                new List<Range>(),
+                (acc, x) =>
+                    {
+                        var current = acc.LastOrDefault();
+                        if (current != null && current.Overlaps(x))
+                        {
+                            acc[^1] = current.Merge(x);
+                        }
+                        else
+                        {
+                            acc.Add(x);
+                        }
 
-        foreach (var range in orderedRanges)
-        {
-            if (!currentRange.Overlaps(range))
-            {
-                mergedRanges.Add(currentRange);
-                currentRange = range;
-            }
-            else
-            {
-                currentRange = currentRange.Merge(range);
-            }
-        }
-
-        mergedRanges.Add(currentRange);
-
-        var answer = mergedRanges.Sum(r => r.Length());
+                        return acc;
+                    })
+            .Sum(r => r.Length());
 
         _session.PrintAnswer(2, answer);
         answer.ShouldBe(expected);
